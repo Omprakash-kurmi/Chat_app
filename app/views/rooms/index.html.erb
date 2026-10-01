@@ -1,0 +1,15 @@
+<h1>All Rooms</h1>
+
+<% if current_user.admin? %>
+  <%= link_to "New Room", new_room_path %>
+<% end %>
+
+<% if @rooms.any? %>
+  <ul>
+    <% @rooms.each do |room| %>
+      <li><%= link_to room.name, room_path(room) %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No rooms yet.</p>
+<% end %>

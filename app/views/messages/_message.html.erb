@@ -1,0 +1,8 @@
+<%# app/views/messages/_message.html.erb %>
+<div class="message" data-user-id="<%= message.user_id %>">
+  <div class="bubble">
+    <span class="sender"><%= message.user.email %></span>
+    <p class="content"><%= message.content %></p>
+    <span class="time"><%= message.created_at.strftime("%H:%M") %></span>
+  </div>
+</div>

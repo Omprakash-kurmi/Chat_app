@@ -1,0 +1,336 @@
+<% content_for :head do %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<% end %>
+
+<style>
+  :root {
+    --ink: #191d24;
+    --paper: #f5f6f3;
+    --text: #20242c;
+    --muted: #666e7a;
+    --signal: #3462f9;
+    --bubble-received: #ecebe6;
+    --line: #e2e0d8;
+  }
+
+  .home-wrap {
+    font-family: "Inter", -apple-system, sans-serif;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .home-wrap h1,
+  .home-wrap h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero {
+    background: var(--ink);
+    color: #f2f1ec;
+    padding: 4rem 1.5rem 5rem;
+  }
+
+  .hero-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 3.5rem;
+    align-items: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.1rem, 4vw, 3.1rem);
+    line-height: 1.12;
+    margin: 0 0 1.1rem;
+    max-width: 15ch;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    color: #c7c6c0;
+    max-width: 38ch;
+    margin: 0 0 2rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.7rem 1.4rem;
+    border-radius: 7px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: var(--signal);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: #2850d6;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: #f2f1ec;
+    border: 1px solid #454b57;
+  }
+
+  .btn-ghost:hover {
+    border-color: #6a7draw180;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* ---------- Chat mock ---------- */
+
+  .chat-mock {
+    background: #20242c;
+    border: 1px solid #2e333d;
+    border-radius: 14px;
+    padding: 1.1rem;
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+  }
+
+  .chat-mock-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.8rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid #2e333d;
+    font-size: 0.85rem;
+    color: #9a9992;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #3ecf6b;
+  }
+
+  .bubble-row {
+    display: flex;
+    margin-bottom: 0.6rem;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: rise 0.5s ease forwards;
+  }
+
+  .bubble-row:nth-child(2) { animation-delay: 0.15s; }
+  .bubble-row:nth-child(3) { animation-delay: 0.35s; }
+  .bubble-row:nth-child(4) { animation-delay: 0.55s; }
+  .bubble-row:nth-child(5) { animation-delay: 0.75s; }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .bubble-row.sent { justify-content: flex-end; }
+
+  .bubble {
+    max-width: 78%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+  }
+
+  .bubble-row.received .bubble {
+    background: var(--bubble-received);
+    color: #20242c;
+    border-top-left-radius: 2px;
+  }
+
+  .bubble-row.sent .bubble {
+    background: var(--signal);
+    color: #fff;
+    border-top-right-radius: 2px;
+  }
+
+  .bubble time {
+    display: block;
+    font-size: 0.7rem;
+    margin-top: 0.2rem;
+    opacity: 0.65;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bubble-row {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ---------- Feature section ---------- */
+
+  .features {
+    background: var(--paper);
+    padding: 5rem 1.5rem;
+  }
+
+  .features-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 3.5rem;
+    align-items: start;
+  }
+
+  .features h2 {
+    font-size: 1.9rem;
+    margin: 0 0 1rem;
+    max-width: 12ch;
+  }
+
+  .features > .features-inner > div:first-child p {
+    color: var(--muted);
+    max-width: 34ch;
+  }
+
+  .point-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+
+  .point {
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--line);
+  }
+
+  .point h3 {
+    font-family: "Inter", sans-serif;
+    font-size: 1.02rem;
+    font-weight: 600;
+    margin: 0 0 0.3rem;
+  }
+
+  .point p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 46ch;
+  }
+
+  /* ---------- Footer CTA ---------- */
+
+  .closing {
+    padding: 4rem 1.5rem;
+    text-align: center;
+  }
+
+  .closing h2 {
+    font-size: 1.7rem;
+    margin: 0 0 0.6rem;
+  }
+
+  .closing p {
+    color: var(--muted);
+    margin: 0 0 1.6rem;
+  }
+
+  @media (max-width: 800px) {
+    .hero-inner,
+    .features-inner {
+      grid-template-columns: 1fr;
+    }
+    .hero { padding: 3rem 1.25rem 3.5rem; }
+    .features { padding: 3.5rem 1.25rem; }
+  }
+</style>
+
+<div class="home-wrap">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <h1>Say it once. Everyone in the room sees it the moment you do.</h1>
+        <p>
+          <%= application_name = "Chat_App" %> keeps conversations in dedicated rooms and delivers every message instantly — no refresh, no delay.
+        </p>
+        <div class="hero-actions">
+          <% if user_signed_in? %>
+            <%= link_to "Go to your rooms", rooms_path, class: "btn btn-primary" %>
+          <% else %>
+            <%= link_to "Create an account", new_user_registration_path, class: "btn btn-primary" %>
+            <%= link_to "Sign in", new_user_session_path, class: "btn btn-ghost" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="chat-mock" aria-hidden="true">
+        <div class="chat-mock-header">
+          <span class="dot"></span> Weekend Plans — 3 online
+        </div>
+        <div class="bubble-row received">
+          <div class="bubble">Are we still on for Saturday?<time>10:02</time></div>
+        </div>
+        <div class="bubble-row sent">
+          <div class="bubble">Yep, I'll bring the tent.<time>10:03</time></div>
+        </div>
+        <div class="bubble-row received">
+          <div class="bubble">Perfect, see you both there.<time>10:03</time></div>
+        </div>
+        <div class="bubble-row sent">
+          <div class="bubble">🎒<time>10:04</time></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="features-inner">
+      <div>
+        <h2>Built around real conversations</h2>
+        <p>Nothing about this app tries to be everything. It does one job — getting a message from one screen to another without you noticing the trip.</p>
+      </div>
+
+      <div class="point-list">
+        <div class="point">
+          <h3>Delivered as you type it</h3>
+          <p>Messages travel over a live connection, so the person on the other end sees your words while you're still in the room.</p>
+        </div>
+        <div class="point">
+          <h3>Organized into rooms</h3>
+          <p>Every conversation has its own space, so a chat about the weekend never gets tangled up with one about work.</p>
+        </div>
+        <div class="point">
+          <h3>Nothing lost on refresh</h3>
+          <p>Reload the page, come back tomorrow — the last fifty messages are always right where you left them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <h2>Pick a room, start talking.</h2>
+    <p>It takes about ten seconds to get set up.</p>
+    <% if user_signed_in? %>
+      <%= link_to "Go to your rooms", rooms_path, class: "btn btn-primary" %>
+    <% else %>
+      <%= link_to "Create an account", new_user_registration_path, class: "btn btn-primary" %>
+    <% end %>
+  </section>
+
+</div>
