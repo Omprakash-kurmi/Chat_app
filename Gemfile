@@ -37,7 +37,7 @@ gem "bootsnap", require: false
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
+  gem 'factory_bot_rails'
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
@@ -62,3 +62,11 @@ gem 'oj'
 gem 'json', '>= 2.7.1'
 gem 'activeadmin'
 gem 'sassc-rails'
+gem 'rspec'
+gem 'active_admin_role'
+gem 'activeadmin_json_editor'
+gem 'active_admin_datetimepicker'
+gem 'rack-cors'
+gem 'activeadmin_quill_editor'
+gem 'active_admin_flat_skin'
+gem 'font-awesome-rails'
