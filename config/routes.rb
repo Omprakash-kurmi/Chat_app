@@ -5,7 +5,10 @@ Rails.application.routes.draw do
 
   mount ActionCable.server => "/cable"
 
-  resources :rooms, only: [:index, :show, :new, :create]
+  # resources :rooms, only: [:index, :show, :new, :create]
+  resources :rooms, only: [:index, :show, :new, :create] do
+    resources :messages, only: [:create]
+  end
   get "up" => "rails/health#show", as: :rails_health_check
 
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker

@@ -32,3 +32,20 @@ local:
 #   service: Mirror
 #   primary: local
 #   mirrors: [ amazon, google, microsoft ]
+
+# amazon:
+#   service: S3
+#   access_key_id: <%= Rails.application.credentials.dig(:aws, :access_key_id) %>
+#   secret_access_key: <%= Rails.application.credentials.dig(:aws, :secret_access_key) %>
+#   region: us-east-1
+#   bucket: your-bucket-name
+
+  
+minio:
+  service: S3
+  access_key_id: <%= ENV['STORAGE_ACCESS_KEY'] %>
+  secret_access_key: <%= ENV['STORAGE_SECRET_ACCESS_KEY'] %>
+  region: <%= ENV['STORAGE_REGION'] %>
+  bucket: <%= ENV['STORAGE_BUCKET'] %>
+  endpoint: <%= ENV['STORAGE_ENDPOINT'] %>
+  force_path_style: true

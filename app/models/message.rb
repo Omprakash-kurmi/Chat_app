@@ -2,9 +2,9 @@ class Message < ApplicationRecord
   belongs_to :room
   belongs_to :user
 
-  validates :content, presence: true
+  has_one_attached :image
 
-  after_create_commit :broadcast_message
+  validates :content, presence: true, unless: -> { image.attached? }
 
   def self.ransackable_attributes(auth_object = nil)
     ["content", "created_at", "updated_at", "id", "room_id", "user_id"]
@@ -13,6 +13,8 @@ class Message < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     ["room", "user"]
   end
+
+  after_create_commit :broadcast_message
 
   private
 
