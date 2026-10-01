@@ -41,3 +41,4 @@ config/master.key
 cred
 config/master.key
 cred
+.env

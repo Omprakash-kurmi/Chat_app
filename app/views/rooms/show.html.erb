@@ -3,13 +3,19 @@
   <h2><%= @room.name %></h2>
 </div>
 
-<div id="chat-container" data-current-user-id="<%= current_user.id %>">
+<div id="chat-container" data-current-user-id="<%= current_user.id %>" data-room-id="<%= @room.id %>">
   <div id="messages" data-room-id="<%= @room.id %>">
     <%= render @messages %>
   </div>
 
+  <div id="typing-indicator"></div>
+
   <form id="message-form">
+    <label for="image-input" class="attach-btn">📎</label>
+    <input type="file" id="image-input" accept="image/*" hidden>
     <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
     <button type="submit">➤</button>
   </form>
+
+  <div id="image-preview"></div>
 </div>
