@@ -1,0 +1,281 @@
+:root {
+  --ink: #191d24;
+  --paper: #f5f6f3;
+  --text: #20242c;
+  --muted: #6b7280;
+  --signal: #3462f9;
+  --line: #e2e0d8;
+}
+
+.rooms-wrap {
+  font-family: "Inter", -apple-system, sans-serif;
+  color: var(--text);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ---------- Live animated banner ---------- */
+
+.hero-band {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+  border-radius: 18px;
+  padding: 2.6rem 2rem;
+  margin-bottom: 2.4rem;
+  color: #f2f1ec;
+  isolation: isolate;
+}
+
+.hero-band::before,
+.hero-band::after {
+  content: "";
+  position: absolute;
+  width: 60%;
+  padding-bottom: 60%;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  z-index: -1;
+}
+
+.hero-band::before {
+  background: radial-gradient(circle, #3462f9, transparent 70%);
+  top: -20%;
+  left: -10%;
+  animation: drift-a 22s ease-in-out infinite alternate;
+}
+
+.hero-band::after {
+  background: radial-gradient(circle, #e8543e, transparent 70%);
+  bottom: -25%;
+  right: -10%;
+  animation: drift-b 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift-a {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(8%, 10%) scale(1.15); }
+}
+
+@keyframes drift-b {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-6%, -12%) scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-band::before,
+  .hero-band::after { animation: none; }
+}
+
+.hero-band h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: 2rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+}
+
+.hero-band > p {
+  margin: 0 0 1.6rem;
+  color: #c7c6c0;
+  font-size: 0.98rem;
+  max-width: 46ch;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 2.2rem;
+  flex-wrap: wrap;
+}
+
+.hero-stat .num {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 1;
+  display: block;
+}
+
+.hero-stat .label {
+  font-size: 0.8rem;
+  color: #a9a8a1;
+  margin-top: 0.3rem;
+}
+
+.live-pill {
+  position: absolute;
+  top: 1.6rem;
+  right: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: #c7c6c0;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3ecf6b;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+}
+
+/* ---------- Header row above grid ---------- */
+
+.rooms-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.3rem;
+}
+
+.rooms-top h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.new-room-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--signal);
+  color: #fff;
+  text-decoration: none;
+  padding: 0.6rem 1.1rem;
+  border-radius: 7px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+
+.new-room-btn:hover { background: #2850d6; }
+.new-room-btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.new-room-btn svg { width: 14px; height: 14px; }
+
+/* ---------- Room cards ---------- */
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.room-card {
+  display: flex;
+  gap: 0.85rem;
+  padding: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+  background: #fff;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.room-card:hover {
+  border-color: var(--signal);
+  transform: translateY(-2px);
+}
+
+.room-card:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.room-avatar {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.room-info { min-width: 0; flex: 1; }
+
+.room-info-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.room-name {
+  font-weight: 500;
+  font-size: 0.98rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.room-time {
+  font-size: 0.74rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.room-preview {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.room-count {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--signal);
+  font-weight: 500;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+}
+
+.empty-state h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: 1.4rem;
+  margin: 0 0 0.5rem;
+}
+
+.empty-state p {
+  color: var(--muted);
+  margin: 0 0 1.4rem;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 480px) {
+  .rooms-top { flex-direction: column; align-items: flex-start; }
+  .live-pill { position: static; margin-bottom: 1rem; }
+}
