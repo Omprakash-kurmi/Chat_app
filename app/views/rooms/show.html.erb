@@ -1,21 +1,34 @@
-<div class="room-heading">
-  <h1>Welcome to the live chat</h1>
-  <h2><%= @room.name %></h2>
-</div>
+<%
+  avatar_palette = ["#3462f9", "#e8543e", "#1d9a6c", "#c27803", "#7c4fe0"]
+%>
 
-<div id="chat-container" data-current-user-id="<%= current_user.id %>" data-room-id="<%= @room.id %>">
-  <div id="messages" data-room-id="<%= @room.id %>">
-    <%= render @messages %>
+<div class="room-page">
+  <%= link_to "← Back to rooms", rooms_path, class: "back-link" %>
+
+  <div class="room-page-heading">
+    <span class="room-page-avatar" style="background: <%= avatar_palette[@room.id % avatar_palette.length] %>">
+      <%= @room.name.first.upcase %>
+    </span>
+    <div>
+      <h1><%= @room.name %></h1>
+      <p>Live room</p>
+    </div>
   </div>
 
-  <div id="typing-indicator"></div>
+  <div id="chat-container" data-current-user-id="<%= current_user.id %>" data-room-id="<%= @room.id %>">
+    <div id="messages" data-room-id="<%= @room.id %>">
+      <%= render @messages %>
+    </div>
 
-  <form id="message-form">
-    <label for="image-input" class="attach-btn">📎</label>
-    <input type="file" id="image-input" accept="image/*" hidden>
-    <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
-    <button type="submit">➤</button>
-  </form>
+    <div id="typing-indicator"></div>
 
-  <div id="image-preview"></div>
+    <form id="message-form">
+      <label for="image-input" class="attach-btn">📎</label>
+      <input type="file" id="image-input" accept="image/*" hidden>
+      <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
+      <button type="submit">➤</button>
+    </form>
+
+    <div id="image-preview"></div>
+  </div>
 </div>

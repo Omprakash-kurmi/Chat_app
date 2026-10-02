@@ -1,0 +1,139 @@
+:root {
+  --ink: #191d24;
+  --paper: #f5f6f3;
+  --text: #20242c;
+  --muted: #6b7280;
+  --signal: #3462f9;
+  --line: #e2e0d8;
+}
+
+.profile-wrap {
+  font-family: "Inter", -apple-system, sans-serif;
+  color: var(--text);
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--signal);
+}
+
+.profile-avatar-fallback {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: #fff;
+  background: var(--signal);
+  flex-shrink: 0;
+}
+
+.profile-header h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: 1.6rem;
+  margin: 0 0 0.15rem;
+}
+
+.profile-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.profile-bio {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.profile-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.3rem;
+}
+
+.profile-field {
+  margin-bottom: 1.1rem;
+}
+
+.profile-field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.profile-field input[type="text"],
+.profile-field textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.profile-field textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.current-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.65rem 1.3rem;
+  border-radius: 7px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  background: var(--signal);
+  color: #fff;
+}
+
+.btn:hover { background: #2850d6; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  margin-left: 0.5rem;
+}
+
+.errors-box {
+  background: #fdeceb;
+  border: 1px solid #f3b4ae;
+  color: #a4201a;
+  padding: 0.8rem 1rem;
+  border-radius: 7px;
+  font-size: 0.88rem;
+  margin-bottom: 1.2rem;
+}
