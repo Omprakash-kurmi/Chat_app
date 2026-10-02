@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   validates :name, length: { maximum: 50 }
   validates :bio, length: { maximum: 280 }
+  after_create_commit :send_welcome_email
 
   def admin?
     admin == true
@@ -21,5 +22,11 @@ class User < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     ["messages"]
+  end
+
+  private
+
+  def send_welcome_email
+    UserMailer.welcome(self).deliver_later
   end
 end
