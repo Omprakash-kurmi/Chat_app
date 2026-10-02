@@ -1,26 +1,48 @@
+<%# app/views/layouts/application.html.erb %>
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Cheat App" %></title>
+    <title>Chat_App</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "application", "rooms", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "application", "rooms", "chat_room", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "application", "home", "rooms", "chat_room", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= yield :head %>
   </head>
 
   <body>
-    <%= yield %>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <%= link_to "Chat_App", root_path, class: "brand" %>
+
+        <nav class="site-nav">
+          <% if user_signed_in? %>
+            <%= link_to "Rooms", rooms_path, class: "nav-link" %>
+            <%= link_to "Profile", profile_path, class: "nav-link" %>
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "nav-btn" %>
+          <% else %>
+            <%= link_to "Sign in", new_user_session_path, class: "nav-link" %>
+            <%= link_to "Create account", new_user_registration_path, class: "nav-btn" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <% if notice %>
+      <div class="flash flash-notice"><%= notice %></div>
+    <% end %>
+    <% if alert %>
+      <div class="flash flash-alert"><%= alert %></div>
+    <% end %>
+
+    <main class="page-shell">
+      <%= yield %>
+    </main>
   </body>
 </html>

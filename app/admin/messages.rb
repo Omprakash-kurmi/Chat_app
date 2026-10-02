@@ -1,18 +1,39 @@
 ActiveAdmin.register Message do
+  permit_params :content, :room_id, :user_id, :image
 
-  # See permitted parameters documentation:
-  # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
-  #
-  # Uncomment all parameters which should be permitted for assignment
-  #
-  # permit_params :room_id, :content, :user_id
-  #
-  # or
-  #
-  # permit_params do
-  #   permitted = [:room_id, :content, :user_id]
-  #   permitted << :other if params[:action] == 'create' && current_user.admin?
-  #   permitted
-  # end
-  
+  index do
+    selectable_column
+    id_column
+    column :room
+    column :user
+    column :content
+    column :image do |message|
+      image_tag(rails_storage_proxy_url(message.image.variant(resize_to_limit: [60, 60]))) if message.image.attached?
+    end
+    column :created_at
+    actions
+  end
+
+  filter :content
+  filter :room
+  filter :user
+  filter :created_at
+
+  show do
+    attributes_table do
+      row :id
+      row :room
+      row :user
+      row :content
+      row :image do |message|
+        if message.image.attached?
+          image_tag(rails_storage_proxy_url(message.image.variant(resize_to_limit: [400, 400])))
+        else
+          status_tag("No image", class: "no")
+        end
+      end
+      row :created_at
+      row :updated_at
+    end
+  end
 end

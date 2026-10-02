@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   mount ActionCable.server => "/cable"
 
-  # resources :rooms, only: [:index, :show, :new, :create]
+  resource :profile, only: [:show, :edit, :update]
   resources :rooms, only: [:index, :show, :new, :create] do
     resources :messages, only: [:create]
   end

@@ -1,0 +1,45 @@
+<div class="profile-wrap">
+  <div class="profile-header">
+    <% if @user.avatar.attached? %>
+      <%= image_tag rails_storage_proxy_url(@user.avatar.variant(resize_to_fill: [72, 72])), class: "profile-avatar" %>
+    <% else %>
+      <span class="profile-avatar-fallback"><%= @user.display_name.first.upcase %></span>
+    <% end %>
+    <div>
+      <h1>Edit profile</h1>
+      <p><%= @user.email %></p>
+    </div>
+  </div>
+
+  <% if @user.errors.any? %>
+    <div class="errors-box">
+      <ul>
+        <% @user.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="profile-card">
+    <%= form_with model: @user, url: profile_path, method: :patch, local: true do |f| %>
+      <div class="profile-field">
+        <%= f.label :name %>
+        <%= f.text_field :name, placeholder: @user.email.split("@").first %>
+      </div>
+
+      <div class="profile-field">
+        <%= f.label :bio %>
+        <%= f.text_area :bio, placeholder: "A short line about you" %>
+      </div>
+
+      <div class="profile-field">
+        <%= f.label :avatar, "Profile photo" %>
+        <%= f.file_field :avatar, accept: "image/*" %>
+      </div>
+
+      <%= f.submit "Save changes", class: "btn" %>
+      <%= link_to "Cancel", profile_path, class: "btn btn-ghost" %>
+    <% end %>
+  </div>
+</div>
