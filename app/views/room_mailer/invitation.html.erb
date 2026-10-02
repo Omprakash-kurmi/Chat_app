@@ -1,0 +1,18 @@
+<div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px; color: #20242c;">
+  <h2 style="font-family: Georgia, serif; font-weight: 500;">New room: <%= @room.name %></h2>
+
+  <p>Hi <%= @user.display_name %>,</p>
+
+  <p>A new room called <strong><%= @room.name %></strong> was just created on Chat_App. Jump in and say hello.</p>
+
+  <p style="margin: 28px 0;">
+    <a href="<%= @room_url %>"
+       style="background: #3462f9; color: #fff; padding: 12px 22px; border-radius: 7px; text-decoration: none; font-weight: 500;">
+      Open the room
+    </a>
+  </p>
+
+  <p style="color: #6b7280; font-size: 13px;">
+    If the button doesn't work, copy this link: <%= @room_url %>
+  </p>
+</div>
