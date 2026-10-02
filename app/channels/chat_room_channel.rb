@@ -28,4 +28,43 @@ class ChatRoomChannel < ApplicationCable::Channel
       user_id: current_user.id
     )
   end
+
+  # ---- Call signaling ----
+
+  def call_offer(data)
+    ChatRoomChannel.broadcast_to(
+      Room.find(params[:room_id]),
+      call_event: "offer",
+      call_type: data["call_type"], # "voice" or "video"
+      from_user_id: current_user.id,
+      from_user_name: current_user.display_name,
+      sdp: data["sdp"]
+    )
+  end
+
+  def call_answer(data)
+    ChatRoomChannel.broadcast_to(
+      Room.find(params[:room_id]),
+      call_event: "answer",
+      from_user_id: current_user.id,
+      sdp: data["sdp"]
+    )
+  end
+
+  def call_ice_candidate(data)
+    ChatRoomChannel.broadcast_to(
+      Room.find(params[:room_id]),
+      call_event: "ice_candidate",
+      from_user_id: current_user.id,
+      candidate: data["candidate"]
+    )
+  end
+
+  def call_hangup
+    ChatRoomChannel.broadcast_to(
+      Room.find(params[:room_id]),
+      call_event: "hangup",
+      from_user_id: current_user.id
+    )
+  end
 end
