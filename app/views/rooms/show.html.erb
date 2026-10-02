@@ -13,22 +13,85 @@
       <h1><%= @room.name %></h1>
       <p>Live room</p>
     </div>
+    <%# <div class="call-buttons"> %>
+      <%# <button id="voice-call-btn" class="call-btn" title="Start a voice call">🎤</button> %>
+      <%# <button id="video-call-btn" class="call-btn" title="Start a video call">📹</button> %>
+    <%# </div> %>
+
+    <div class="call-buttons">
+      <button id="voice-call-btn" class="call-btn" title="Start a voice call">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v1a7 7 0 0 1-14 0v-1"/>
+          <line x1="12" y1="18" x2="12" y2="22"/>
+          <line x1="8" y1="22" x2="16" y2="22"/>
+        </svg>
+      </button>
+
+      <button id="video-call-btn" class="call-btn" title="Start a video call">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="6" width="14" height="12" rx="2.5"/>
+          <path d="M16 10.5 21.5 7v10L16 13.5"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <div id="chat-container" data-current-user-id="<%= current_user.id %>" data-room-id="<%= @room.id %>">
+  <div id="chat-container" data-current-user-id="<%= current_user.id %>" data-room-id="<%= @room.id %>" data-current-user-name="<%= current_user.display_name %>">
     <div id="messages" data-room-id="<%= @room.id %>">
       <%= render @messages %>
     </div>
 
-    <div id="typing-indicator"></div>
+      <div id="typing-indicator"></div>
+
+        <form id="message-form">
+          <label for="image-input" class="attach-btn">📎</label>
+          <input type="file" id="image-input" accept="image/*" hidden>
+          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
+          <button type="submit">➤</button>
+        </form>
+
+      <div id="image-preview"></div>
+
+      <%# app/views/rooms/show.html.erb %>
+    <%# <div id="typing-indicator"></div>
 
     <form id="message-form">
-      <label for="image-input" class="attach-btn">📎</label>
+      <label for="image-input" class="attach-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3.33 3.33 0 1 1 4.71 4.71l-9.2 9.19a1.67 1.67 0 0 1-2.36-2.36l8.49-8.48"/>
+        </svg>
+      </label>
       <input type="file" id="image-input" accept="image/*" hidden>
       <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
-      <button type="submit">➤</button>
+      <button type="submit" id="send-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 11.5 21 3l-7.5 18-3-7.5L3 11.5Z"/>
+        </svg>
+      </button>
     </form>
 
-    <div id="image-preview"></div>
+    <div id="image-preview"></div> %>
+  </div>
+
+  <!-- Call modal -->
+  <div id="call-modal" class="call-modal hidden">
+    <div class="call-modal-inner">
+      <p id="call-status">Calling...</p>
+
+      <div id="call-videos" class="call-videos">
+        <video id="local-video" autoplay muted playsinline></video>
+        <video id="remote-video" autoplay playsinline></video>
+      </div>
+
+      <div id="voice-call-display" class="voice-call-display hidden">
+        <div class="voice-avatar">🎤</div>
+      </div>
+
+      <div class="call-controls">
+        <button id="answer-call-btn" class="call-action accept hidden">Answer</button>
+        <button id="decline-call-btn" class="call-action decline">Hang up</button>
+      </div>
+    </div>
   </div>
 </div>

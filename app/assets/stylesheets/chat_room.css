@@ -175,7 +175,7 @@
 
 #message-input {
   flex: 1;
-  padding: 10px 14px;
+  padding: 25px 44px;
   border: none;
   border-radius: 20px;
   outline: none;
@@ -218,3 +218,199 @@
   .room-page { padding: 1.4rem 1rem 2rem; }
   #chat-container { height: 75vh; }
 }
+
+/* add to app/assets/stylesheets/chat_room.css */
+/*
+.call-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.call-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: #1d9a6c;
+  color: #fff;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.call-btn:hover { background: #167a55; }
+*/
+.call-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 16, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.call-modal.hidden { display: none; }
+
+.call-modal-inner {
+  background: #20242c;
+  border-radius: 14px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 560px;
+  text-align: center;
+  color: #f2f1ec;
+}
+
+#call-status {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  color: #c7c6c0;
+}
+
+.call-videos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.call-videos.hidden { display: none; }
+
+.call-videos video {
+  width: 100%;
+  border-radius: 10px;
+  background: #0d0f13;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.voice-call-display {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.voice-call-display.hidden { display: none; }
+
+.voice-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #3462f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+}
+
+.call-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.call-action {
+  border: none;
+  border-radius: 7px;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.call-action.accept { background: #1d9a6c; color: #fff; }
+.call-action.decline { background: #e8543e; color: #fff; }
+.call-action.hidden { display: none; }
+
+
+.call-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.call-btn {
+  width: 102px;
+  height: 102px;
+  border-radius: 70%;
+  border: none;
+  background: #1d9a6c;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.call-btn:hover { background: #167a55; }
+
+.call-btn svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* replace the existing #message-form, .attach-btn, #message-input, #message-form button rules in chat_room.css */
+/*
+#message-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: #f0f0f0;
+}
+
+.attach-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 50%;
+  color: #667781;
+  cursor: pointer;
+}
+
+.attach-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.attach-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+#message-input {
+  flex: 1;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 24px;
+  outline: none;
+  font-size: 15px;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+#send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #075e54;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  cursor: pointer;
+}
+
+#send-btn:hover {
+  background: #064c44;
+}
+
+#send-btn svg {
+  width: 20px;
+  height: 20px;
+}*/
