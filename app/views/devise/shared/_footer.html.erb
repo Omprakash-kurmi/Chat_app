@@ -1,0 +1,46 @@
+<footer class="site-footer">
+  <% footer_columns = FooterColumn.includes(:footer_links).to_a %>
+  <% social_links   = SocialLink.all.to_a %>
+  <div class="footer-top">
+    <% footer_columns.each do |col| %>
+      <nav class="footer-col">
+        <h4><%= col.title %></h4>
+        <ul>
+          <% col.footer_links.each do |link| %>
+            <li><%= link_to link.label, link.url %></li>
+          <% end %>
+        </ul>
+      </nav>
+    <% end %>
+
+    <div class="footer-col footer-contact">
+      <h4>Mail us</h4>
+      <p><%= simple_format SiteSetting.get("mail_address", "") %></p>
+      <% if social_links.any? %>
+        <h4>Social</h4>
+        <div class="footer-social">
+          <% social_links.each do |s| %>
+            <%= link_to s.platform, s.url, target: "_blank", rel: "noopener", title: s.platform %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="footer-col footer-contact">
+      <h4>Registered office</h4>
+      <p><%= simple_format SiteSetting.get("office_address", "") %></p>
+      <% if (tel = SiteSetting.get("telephone")).present? %>
+        <p>Telephone: <%= link_to tel, "tel:#{tel.delete(' ')}" %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-quick">
+      <% footer_columns.find { |c| c.title == "Quick links" }&.footer_links&.each do |l| %>
+        <%= link_to l.label, l.url %>
+      <% end %>
+    </div>
+    <span>© <%= Date.current.year %> <%= SiteSetting.get("company_name", "Your App") %></span>
+  </div>
+</footer>
