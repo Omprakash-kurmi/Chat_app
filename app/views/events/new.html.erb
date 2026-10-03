@@ -1,0 +1,40 @@
+<div class="events-page">
+  <div class="events-top">
+    <div>
+      <h1>New event</h1>
+      <p><%= link_to "← Back to events", room_events_path(@room) %></p>
+    </div>
+  </div>
+
+  <% if @event.errors.any? %>
+    <div class="errors-box">
+      <ul>
+        <% @event.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="event-form-card">
+    <%= form_with model: @event, url: room_events_path(@room), local: true do |f| %>
+      <div class="event-field">
+        <%= f.label :title %>
+        <%= f.text_field :title, placeholder: "Weekend camping trip" %>
+      </div>
+
+      <div class="event-field">
+        <%= f.label :starts_at, "Date & time" %>
+        <%= f.datetime_field :starts_at %>
+      </div>
+
+      <div class="event-field">
+        <%= f.label :description %>
+        <%= f.text_area :description, placeholder: "Any details people should know" %>
+      </div>
+
+      <%= f.submit "Create event", class: "btn" %>
+      <%= link_to "Cancel", room_events_path(@room), class: "btn btn-ghost" %>
+    <% end %>
+  </div>
+</div>

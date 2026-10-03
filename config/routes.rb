@@ -5,10 +5,6 @@ Rails.application.routes.draw do
 
   mount ActionCable.server => "/cable"
 
-  resource :profile, only: [:show, :edit, :update]
-  resources :rooms, only: [:index, :show, :new, :create] do
-    resources :messages, only: [:create]
-  end
   get "up" => "rails/health#show", as: :rails_health_check
 
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
@@ -16,4 +12,14 @@ Rails.application.routes.draw do
 
   # root to: "devise/registrations#new"
   root to: "pages#home"
+  resource :profile, only: [:show, :edit, :update]
+  resources :rooms, only: [:index, :show, :new, :create] do
+    resources :messages, only: [:create]
+    resources :events, only: [:index, :new, :create, :destroy] do
+      resources :rsvps, only: [:create, :update]
+      collection do
+        get :calendar
+      end
+    end
+  end
 end
