@@ -1,0 +1,142 @@
+:root {
+  --ink: #191d24;
+  --paper: #f5f6f3;
+  --text: #20242c;
+  --muted: #6b7280;
+  --signal: #3462f9;
+  --line: #e2e0d8;
+}
+
+.auth-wrap {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  font-family: "Inter", -apple-system, sans-serif;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 2.1rem 2rem;
+  box-shadow: 0 24px 48px -28px rgba(25, 29, 36, 0.25);
+}
+
+.auth-card h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 500;
+  font-size: 1.6rem;
+  margin: 0 0 0.3rem;
+  color: var(--text);
+}
+
+.auth-sub {
+  margin: 0 0 1.6rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.auth-field {
+  margin-bottom: 1.1rem;
+}
+
+.auth-field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+  color: var(--text);
+}
+
+.auth-field input[type="email"],
+.auth-field input[type="password"] {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.auth-field input:focus {
+  outline: none;
+  border-color: var(--signal);
+}
+
+.auth-hint {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.auth-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.3rem;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.auth-checkbox label {
+  margin: 0;
+  font-weight: 400;
+}
+
+.auth-submit {
+  width: 100%;
+  background: var(--signal);
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.auth-submit:hover {
+  background: #2850d6;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+  text-align: center;
+}
+
+.auth-links a {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  color: var(--signal);
+}
+
+.errors-box {
+  background: #fdeceb;
+  border: 1px solid #f3b4ae;
+  color: #a4201a;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1.2rem;
+}
+
+.errors-box ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
