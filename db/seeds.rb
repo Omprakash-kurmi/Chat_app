@@ -10,27 +10,27 @@
 AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
 
 about = FooterColumn.create!(title: "About", position: 1)
-[["Contact us","/contact"],["About us","/about"],["Careers","/careers"]].each_with_index do |(l,u),i|
+[ [ "Contact us", "/contact" ], [ "About us", "/about" ], [ "Careers", "/careers" ] ].each_with_index do |(l, u), i|
   about.footer_links.create!(label: l, url: u, position: i)
 end
 
 help = FooterColumn.create!(title: "Help", position: 2)
-[["Payments","/payments"],["Shipping","/shipping"],["FAQ","/faq"]].each_with_index do |(l,u),i|
+[ [ "Payments", "/payments" ], [ "Shipping", "/shipping" ], [ "FAQ", "/faq" ] ].each_with_index do |(l, u), i|
   help.footer_links.create!(label: l, url: u, position: i)
 end
 
 policy = FooterColumn.create!(title: "Policy", position: 3)
-[["Terms of use","/terms"],["Privacy","/privacy"],["Security","/security"]].each_with_index do |(l,u),i|
+[ [ "Terms of use", "/terms" ], [ "Privacy", "/privacy" ], [ "Security", "/security" ] ].each_with_index do |(l, u), i|
   policy.footer_links.create!(label: l, url: u, position: i)
 end
 
 quick = FooterColumn.create!(title: "Quick links", position: 99)
-[["Help center","/help"],["Advertise","/advertise"]].each_with_index do |(l,u),i|
+[ [ "Help center", "/help" ], [ "Advertise", "/advertise" ] ].each_with_index do |(l, u), i|
   quick.footer_links.create!(label: l, url: u, position: i)
 end
 
-[["Facebook","https://facebook.com"],["X","https://x.com"],["YouTube","https://youtube.com"],["Instagram","https://instagram.com"]]
-  .each_with_index { |(p,u),i| SocialLink.create!(platform: p, url: u, position: i) }
+[ [ "Facebook", "https://facebook.com" ], [ "X", "https://x.com" ], [ "YouTube", "https://youtube.com" ], [ "Instagram", "https://instagram.com" ] ]
+  .each_with_index { |(p, u), i| SocialLink.create!(platform: p, url: u, position: i) }
 
 {
   "company_name"   => "My Chat App",
