@@ -423,3 +423,44 @@
   white-space: nowrap;
 }
 .events-link:hover { color: var(--signal); }
+
+.emoji-picker {
+  position: relative;
+  background: #fff;
+  border-top: 1px solid var(--line, #e2e0d8);
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.emoji-picker.hidden { display: none; }
+
+.emoji-picker button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.emoji-picker button:hover {
+  background: #f0f0f0;
+}
+
+#emoji-btn {
+  color: #667781;
+}
+
+#emoji-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+#emoji-btn svg {
+  width: 22px;
+  height: 22px;
+}

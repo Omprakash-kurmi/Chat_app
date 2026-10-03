@@ -60,8 +60,7 @@ end
 gem "devise"
 gem "redis"
 gem "oj"
-# gem 'json', '3.0.2'
-gem "json", ">= 2.7.1"
+gem "json", "~> 2.9"
 gem "activeadmin"
 gem "sassc-rails"
 gem "rspec"
