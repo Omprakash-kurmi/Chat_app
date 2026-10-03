@@ -4,7 +4,8 @@
 
 <div class="room-page">
   <%= link_to "← Back to rooms", rooms_path, class: "back-link" %>
-
+  <%# add near the top of app/views/rooms/show.html.erb, inside .room-page-heading, after the call buttons %>
+  <%= link_to "📅 Events", room_events_path(@room), class: "events-link" %>
   <div class="room-page-heading">
     <span class="room-page-avatar" style="background: <%= avatar_palette[@room.id % avatar_palette.length] %>">
       <%= @room.name.first.upcase %>

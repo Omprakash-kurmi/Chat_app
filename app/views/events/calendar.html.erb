@@ -1,0 +1,32 @@
+<div class="events-page">
+  <div class="events-top">
+    <div>
+      <h1><%= @current_date.strftime("%B %Y") %></h1>
+      <p><%= link_to "← Back to room", room_path(@room) %></p>
+    </div>
+    <%= link_to "List view", room_events_path(@room), class: "new-event-btn" %>
+  </div>
+
+  <div class="calendar-nav">
+    <%= link_to "‹ Prev", calendar_room_events_path(@room, month: @first_day.prev_month.strftime("%Y-%m")), class: "cal-nav-link" %>
+    <%= link_to "Today", calendar_room_events_path(@room), class: "cal-nav-link" %>
+    <%= link_to "Next ›", calendar_room_events_path(@room, month: @first_day.next_month.strftime("%Y-%m")), class: "cal-nav-link" %>
+  </div>
+
+
+  <div class="calendar-grid">
+    <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day| %>
+      <div class="calendar-weekday"><%= day %></div>
+    <% end %>
+
+    <% ((@first_day.beginning_of_week(:sunday))..(@last_day.end_of_week(:sunday))).each do |date| %>
+      <div class="calendar-cell <%= 'outside-month' unless date.month == @current_date.month %> <%= 'is-today' if date == Date.today %>">
+        <span class="calendar-date-num"><%= date.day %></span>
+
+        <% (@events_by_day[date] || []).each do |event| %>
+          <div class="calendar-event-pill"><%= event.title %></div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

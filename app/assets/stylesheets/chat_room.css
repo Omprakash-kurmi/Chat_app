@@ -414,3 +414,12 @@
   width: 20px;
   height: 20px;
 }*/
+
+.events-link {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.events-link:hover { color: var(--signal); }

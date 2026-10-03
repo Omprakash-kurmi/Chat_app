@@ -1,0 +1,62 @@
+<div class="events-page">
+  <div class="events-top">
+    <div>
+      <h1>Events in <%= @room.name %></h1>
+      <p><%= link_to "← Back to room", room_path(@room) %></p>
+    </div>
+    <%= link_to "New event", new_room_event_path(@room), class: "new-event-btn" %>
+    <%= link_to "Calendar view", calendar_room_events_path(@room), class: "new-event-btn" %>
+  </div>
+
+  <div class="section-label">Upcoming</div>
+
+  <% if @upcoming_events.any? %>
+    <% @upcoming_events.each do |event| %>
+      <div class="event-card">
+        <div class="event-date-badge">
+          <span class="month"><%= event.starts_at.strftime("%b") %></span>
+          <span class="day"><%= event.starts_at.strftime("%-d") %></span>
+        </div>
+        <div class="event-body">
+          <p class="event-title"><%= event.title %></p>
+          <p class="event-meta">
+            <%= event.starts_at.strftime("%A, %-d %b · %-I:%M %p") %> · by <%= event.user.display_name %>
+          </p>
+          <% if event.description.present? %>
+            <p class="event-description"><%= event.description %></p>
+          <% end %>
+
+          <div class="rsvp-row">
+            <% current_status = event.rsvp_for(current_user)&.status %>
+            <%= button_to "Going", room_event_rsvps_path(@room, event), params: { status: "going" }, class: "rsvp-btn #{'active going' if current_status == 'going'}" %>
+            <%= button_to "Maybe", room_event_rsvps_path(@room, event), params: { status: "maybe" }, class: "rsvp-btn #{'active maybe' if current_status == 'maybe'}" %>
+            <%= button_to "Can't go", room_event_rsvps_path(@room, event), params: { status: "not_going" }, class: "rsvp-btn #{'active not_going' if current_status == 'not_going'}" %>
+            <span class="going-count"><%= pluralize(event.going_count, "going") %></span>
+          </div>
+
+          <% if event.user == current_user || current_user.admin? %>
+            <%= link_to "Remove", room_event_path(@room, event), data: { turbo_method: :delete, turbo_confirm: "Remove this event?" }, class: "delete-event" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="empty-events">No upcoming events yet.</div>
+  <% end %>
+
+  <% if @past_events.any? %>
+    <div class="section-label">Past</div>
+    <% @past_events.each do |event| %>
+      <div class="event-card" style="opacity: 0.6;">
+        <div class="event-date-badge">
+          <span class="month"><%= event.starts_at.strftime("%b") %></span>
+          <span class="day"><%= event.starts_at.strftime("%-d") %></span>
+        </div>
+        <div class="event-body">
+          <p class="event-title"><%= event.title %></p>
+          <p class="event-meta"><%= event.starts_at.strftime("%A, %-d %b · %-I:%M %p") %></p>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,5 +1,6 @@
 class Room < ApplicationRecord
   has_many :messages, dependent: :destroy
+  has_many :events, dependent: :destroy
   validates :name, presence: true
 
   after_create_commit :notify_all_users
@@ -9,7 +10,7 @@ class Room < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["messages"]
+    ["messages", "events"]
   end
 
   private
