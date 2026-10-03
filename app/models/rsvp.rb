@@ -6,10 +6,10 @@ class Rsvp < ApplicationRecord
   validates :user_id, uniqueness: { scope: :event_id }
 
   def self.ransackable_attributes(auth_object = nil)
-    ["status", "created_at", "updated_at", "id", "event_id", "user_id"]
+    [ "status", "created_at", "updated_at", "id", "event_id", "user_id" ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["event", "user"]
+    [ "event", "user" ]
   end
 end

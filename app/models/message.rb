@@ -7,11 +7,11 @@ class Message < ApplicationRecord
   validates :content, presence: true, unless: -> { image.attached? }
 
   def self.ransackable_attributes(auth_object = nil)
-    ["content", "created_at", "updated_at", "id", "room_id", "user_id"]
+    [ "content", "created_at", "updated_at", "id", "room_id", "user_id" ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["room", "user"]
+    [ "room", "user" ]
   end
 
   after_create_commit :broadcast_message

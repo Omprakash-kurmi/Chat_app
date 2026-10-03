@@ -1,6 +1,6 @@
 class RoomsController < ApplicationController
   before_action :authenticate_user!
-  before_action :require_admin, only: [:new, :create]
+  before_action :require_admin, only: [ :new, :create ]
 
   def index
     @rooms = Room.all.order(:name)

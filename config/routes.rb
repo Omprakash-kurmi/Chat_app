@@ -12,11 +12,11 @@ Rails.application.routes.draw do
 
   # root to: "devise/registrations#new"
   root to: "pages#home"
-  resource :profile, only: [:show, :edit, :update]
-  resources :rooms, only: [:index, :show, :new, :create] do
-    resources :messages, only: [:create]
-    resources :events, only: [:index, :new, :create, :destroy] do
-      resources :rsvps, only: [:create, :update]
+  resource :profile, only: [ :show, :edit, :update ]
+  resources :rooms, only: [ :index, :show, :new, :create ] do
+    resources :messages, only: [ :create ]
+    resources :events, only: [ :index, :new, :create, :destroy ] do
+      resources :rsvps, only: [ :create, :update ]
       collection do
         get :calendar
       end
