@@ -8,7 +8,7 @@ ActiveAdmin.register Message do
     column :user
     column :content
     column :image do |message|
-      image_tag(rails_storage_proxy_url(message.image.variant(resize_to_limit: [60, 60]))) if message.image.attached?
+      image_tag(rails_storage_proxy_url(message.image.variant(resize_to_limit: [ 60, 60 ]))) if message.image.attached?
     end
     column :created_at
     actions
@@ -27,7 +27,7 @@ ActiveAdmin.register Message do
       row :content
       row :image do |message|
         if message.image.attached?
-          image_tag(rails_storage_proxy_url(message.image.variant(resize_to_limit: [400, 400])))
+          image_tag(rails_storage_proxy_url(message.image.variant(resize_to_limit: [ 400, 400 ])))
         else
           status_tag("No image", class: "no")
         end
