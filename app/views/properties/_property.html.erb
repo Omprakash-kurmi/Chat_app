@@ -1,0 +1,20 @@
+<%= link_to property_path(property), class: "property-card" do %>
+  <span class="badge <%= property.listing_type %>"><%= property.rent? ? "For rent" : "For sale" %></span>
+  <% if property.photos.attached? %>
+    <%= image_tag property.photos.first.variant(resize_to_fill: [400, 260]), alt: property.title %>
+  <% else %>
+    <div class="no-photo">No photo</div>
+  <% end %>
+  <div class="property-card-body">
+    <strong class="price">
+      <%= number_to_currency(property.price, unit: "₹", precision: 0) %><%= "/month" if property.rent? %>
+    </strong>
+    <h3><%= property.title %></h3>
+    <p><%= property.city %> · <%= property.property_type.humanize %></p>
+    <p class="meta">
+      <% if property.bedrooms %><%= property.bedrooms %> bed · <% end %>
+      <% if property.bathrooms %><%= property.bathrooms %> bath · <% end %>
+      <% if property.area_sqft %><%= property.area_sqft %> sq ft<% end %>
+    </p>
+  </div>
+<% end %>

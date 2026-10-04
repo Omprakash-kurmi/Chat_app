@@ -1,0 +1,2 @@
+module Vendor::PropertiesHelper
+end

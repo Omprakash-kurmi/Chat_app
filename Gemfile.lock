@@ -133,6 +133,8 @@ GEM
     brakeman (8.1.0)
       racc
     builder (3.3.0)
+    byebug (13.0.0)
+      reline (>= 0.6.0)
     cancancan (3.6.1)
     capybara (3.40.0)
       addressable
@@ -463,6 +465,7 @@ DEPENDENCIES
   aws-sdk-s3
   bootsnap
   brakeman (~> 8.1)
+  byebug
   capybara
   debug
   devise

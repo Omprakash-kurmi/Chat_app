@@ -1,0 +1,112 @@
+<div class="pf-page">
+  <header class="pf-head">
+    <%= link_to "← My listings", vendor_properties_path, class: "pf-back" %>
+    <h1><%= heading %></h1>
+    <p><%= subtitle %></p>
+  </header>
+
+  <%= form_with model: [:vendor, property], class: "pf-card" do |f| %>
+    <% if property.errors.any? %>
+      <div class="pf-errors">
+        <strong>Please fix the following:</strong>
+        <ul><% property.errors.full_messages.each do |m| %><li><%= m %></li><% end %></ul>
+      </div>
+    <% end %>
+
+    <section class="pf-section">
+      <h2>Basics</h2>
+      <div class="pf-grid">
+        <div class="field span-2">
+          <%= f.label :title, "Title" %>
+          <%= f.text_field :title, placeholder: "e.g. Bright 2BHK near the park" %>
+        </div>
+
+        <div class="field span-2">
+          <span class="field-label">I want to</span>
+          <div class="seg">
+            <%= f.radio_button :listing_type, "rent", class: "sr" %>
+            <%= f.label :listing_type, "🔑 Rent it out", value: "rent" %>
+            <%= f.radio_button :listing_type, "buy", class: "sr" %>
+            <%= f.label :listing_type, "🏡 Sell it", value: "buy" %>
+          </div>
+        </div>
+
+        <div class="field">
+          <%= f.label :property_type, "Property type" %>
+          <%= f.select :property_type, Property.property_types.keys.map { |k| [k.humanize, k] } %>
+        </div>
+        <div class="field">
+          <%= f.label :price, "Price (monthly rent or sale price)" %>
+          <div class="input-prefix">
+            <span>₹</span><%= f.number_field :price, step: "any", placeholder: "0" %>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf-section">
+      <h2>Details</h2>
+      <div class="pf-grid cols-3">
+        <div class="field"><%= f.label :bedrooms, "Bedrooms" %><%= f.number_field :bedrooms, min: 0 %></div>
+        <div class="field"><%= f.label :bathrooms, "Bathrooms" %><%= f.number_field :bathrooms, min: 0 %></div>
+        <div class="field"><%= f.label :area_sqft, "Area (sq ft)" %><%= f.number_field :area_sqft, min: 0 %></div>
+        <div class="field span-2" style="grid-column: 1 / -1">
+          <%= f.label :description, "Description" %>
+          <%= f.text_area :description, placeholder: "Describe the neighbourhood, amenities, what makes it special…" %>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf-section">
+      <h2>Location &amp; visits</h2>
+      <div class="pf-grid">
+        <div class="field span-2">
+          <%= f.label :address, "Street address" %>
+          <%= f.text_field :address, placeholder: "House no., street, landmark" %>
+        </div>
+        <div class="field"><%= f.label :city, "City" %><%= f.text_field :city %></div>
+        <div class="field"><%= f.label :contact_phone, "Contact phone" %><%= f.telephone_field :contact_phone %></div>
+        <div class="field span-2">
+          <%= f.label :visiting_hours, "Visiting hours" %>
+          <%= f.text_field :visiting_hours, placeholder: "e.g. Mon–Sat, 10am–6pm" %>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf-section">
+      <h2>Photos</h2>
+      <% if property.persisted? && property.photos.attached? %>
+        <div class="photo-tiles">
+          <% property.photos.each do |photo| %>
+            <label class="photo-tile">
+              <%= image_tag photo.variant(resize_to_fill: [240, 180]), alt: "" %>
+              <%= check_box_tag "remove_photo_ids[]", photo.id, false, class: "sr", id: "remove_photo_#{photo.id}" %>
+              <span class="photo-tile-tag">Remove</span>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+
+      <label class="dropzone">
+        <span class="dropzone-icon">📷</span>
+        <strong>Drop photos here or click to browse</strong>
+        <small>Up to 8 photos · JPG or PNG · 5 MB each</small>
+        <%= f.file_field :photos, multiple: true, accept: "image/*", data: { photo_input: true } %>
+      </label>
+      <div id="photo-previews" class="photo-previews"></div>
+    </section>
+
+    <section class="pf-section">
+      <label class="switch">
+        <%= f.check_box :available, class: "sr" %>
+        <span class="track"></span>
+        <span>Still available</span>
+      </label>
+    </section>
+
+    <div class="pf-actions">
+      <%= link_to "Cancel", vendor_properties_path, class: "pf-cancel" %>
+      <%= f.submit property.persisted? ? "Save changes" : "Publish listing", class: "pf-submit" %>
+    </div>
+  <% end %>
+</div>

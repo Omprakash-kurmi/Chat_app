@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_04_045749) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_04_063845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -116,6 +116,26 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_04_045749) do
     t.index ["slug"], name: "index_pages_on_slug", unique: true
   end
 
+  create_table "properties", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.integer "listing_type"
+    t.integer "property_type"
+    t.decimal "price"
+    t.integer "bedrooms"
+    t.integer "bathrooms"
+    t.integer "area_sqft"
+    t.string "address"
+    t.string "city"
+    t.text "description"
+    t.string "contact_phone"
+    t.string "visiting_hours"
+    t.boolean "available"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_properties_on_user_id"
+  end
+
   create_table "rooms", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -160,6 +180,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_04_045749) do
     t.boolean "admin", default: false
     t.string "name"
     t.text "bio"
+    t.integer "role"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -171,6 +192,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_04_045749) do
   add_foreign_key "footer_links", "footer_columns"
   add_foreign_key "messages", "rooms"
   add_foreign_key "messages", "users"
+  add_foreign_key "properties", "users"
   add_foreign_key "rsvps", "events"
   add_foreign_key "rsvps", "users"
 end

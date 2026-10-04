@@ -1,0 +1,48 @@
+<% active = ->(*prefixes) { prefixes.any? { |p| request.path.start_with?(p) } ? "active" : "" } %>
+
+<header class="sn">
+  <div class="sn-inner">
+    <%= link_to root_path, class: "sn-brand" do %>
+      <span class="sn-logo">💬</span>
+      <span>Chat_App</span>
+    <% end %>
+
+    <input type="checkbox" id="sn-toggle" class="sn-toggle" aria-hidden="true">
+    <label for="sn-toggle" class="sn-burger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </label>
+
+    <nav class="sn-links">
+      <% if user_signed_in? %>
+        <%= link_to "ChAt Rooms", rooms_path, class: "sn-link #{active.call('/rooms')}" %>
+      <% end %>
+
+      <%= link_to "Search Home", search_home_path,
+            class: "sn-link #{active.call('/search_home', '/homes', '/properties')}" %>
+
+      <% if user_signed_in? && current_user.vendor? %>
+        <%= link_to "My listings", vendor_properties_path,
+              class: "sn-link #{active.call('/vendor')}" %>
+      <% end %>
+
+      <% if user_signed_in? %>
+        <%= link_to "Profile", profile_path,
+              class: "sn-link #{active.call('/profile')}" %>
+      <% end %>
+
+      <div class="sn-actions">
+        <% if user_signed_in? %>
+          <span class="sn-user">
+            <span class="sn-avatar"><%= (current_user.display_name.presence || current_user.email).first.upcase %></span>
+            <span class="sn-name"><%= current_user.display_name.presence || current_user.email %></span>
+          </span>
+          <%= button_to "Sign out", destroy_user_session_path, method: :delete,
+                class: "sn-signout", form: { class: "sn-form" } %>
+        <% else %>
+          <%= link_to "Sign in", new_user_session_path, class: "sn-link" %>
+          <%= link_to "Create account", new_user_registration_path, class: "sn-signout" %>
+        <% end %>
+      </div>
+    </nav>
+  </div>
+</header>
