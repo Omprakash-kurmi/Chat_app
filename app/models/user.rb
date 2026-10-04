@@ -3,6 +3,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_one_attached :avatar
+  has_many :properties, dependent: :destroy
+  enum :role, { customer: 0, vendor: 1 }, validate: true
 
   validates :name, length: { maximum: 50 }
   validates :bio, length: { maximum: 280 }

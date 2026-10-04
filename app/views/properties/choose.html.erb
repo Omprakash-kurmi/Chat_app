@@ -1,0 +1,16 @@
+<section class="home-search">
+  <h1>Search Home</h1>
+  <p>What are you looking for?</p>
+  <div class="choice-cards">
+    <%= link_to homes_path(listing_type: "rent"), class: "choice-card" do %>
+      <span class="choice-icon">🔑</span>
+      <h2>Rent a home</h2>
+      <p>Apartments and houses available monthly.</p>
+    <% end %>
+    <%= link_to homes_path(listing_type: "buy"), class: "choice-card" do %>
+      <span class="choice-icon">🏡</span>
+      <h2>Buy a home</h2>
+      <p>Homes, villas and plots for sale.</p>
+    <% end %>
+  </div>
+</section>

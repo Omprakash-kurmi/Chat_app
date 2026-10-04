@@ -1,0 +1,24 @@
+<section class="listings">
+  <%= link_to "← Search Home", search_home_path, class: "back-link" %>
+  <p class="result-count"><%= pluralize(@properties.size, "home") %> found</p>
+
+  <%= form_with url: homes_path(listing_type: @listing_type), method: :get, class: "filters" do |f| %>
+    <%= f.text_field :city, value: params[:city], placeholder: "City" %>
+    <%= f.select :property_type,
+          Property.property_types.keys.map { |k| [k.humanize, k] },
+          { include_blank: "Any type", selected: params[:property_type] } %>
+    <%= f.select :bedrooms, (1..4).map { |n| ["#{n}+ beds", n] },
+          { include_blank: "Any beds", selected: params[:bedrooms] } %>
+    <%= f.number_field :min_price, value: params[:min_price], placeholder: "Min price" %>
+    <%= f.number_field :max_price, value: params[:max_price], placeholder: "Max price" %>
+    <%= f.submit "Search", name: nil %>
+  <% end %>
+
+  <% if @properties.any? %>
+    <div class="property-grid">
+      <%= render partial: "properties/property", collection: @properties %>
+    </div>
+  <% else %>
+    <p class="empty">No homes match your search yet.</p>
+  <% end %>
+</section>

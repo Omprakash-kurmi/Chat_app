@@ -23,4 +23,13 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  get "search_home", to: "properties#choose", as: :search_home
+  get "homes/:listing_type", to: "properties#index", as: :homes,
+      constraints: { listing_type: /rent|buy/ }
+  resources :properties, only: :show
+
+  namespace :vendor do
+    resources :properties, except: :show
+  end
 end

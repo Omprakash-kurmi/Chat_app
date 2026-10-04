@@ -1,0 +1,17 @@
+<section class="listings">
+  <h1>My listings</h1>
+  <%= link_to "+ Add property", new_vendor_property_path, class: "btn" %>
+
+  <div class="property-grid">
+    <% @properties.each do |property| %>
+      <div class="property-card">
+        <%= render "properties/property", property: property %>
+        <div class="vendor-actions">
+          <%= link_to "Edit", edit_vendor_property_path(property) %>
+          <%= button_to "Delete", vendor_property_path(property), method: :delete,
+                form: { data: { turbo_confirm: "Delete this listing?" } } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>

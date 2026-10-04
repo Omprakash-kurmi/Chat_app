@@ -24,6 +24,7 @@
         <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
       </div>
 
+      <%= f.select :role, [["I'm looking for a home (customer)", "customer"], ["I want to list properties (vendor)", "vendor"]] %>
       <%= f.submit "Sign up", class: "auth-submit" %>
     <% end %>
 
