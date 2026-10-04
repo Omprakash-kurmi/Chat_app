@@ -24,7 +24,28 @@
         <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
       </div>
 
-      <%= f.select :role, [["I'm looking for a home (customer)", "customer"], ["I want to list properties (vendor)", "vendor"]] %>
+      <div class="role-picker">
+        <span class="role-picker-label">I am a…</span>
+        <div class="role-options">
+          <label class="role-option">
+            <%= f.radio_button :role, "customer" %>
+            <span class="role-card">
+              <span class="role-icon">🏠</span>
+              <strong>Customer</strong>
+              <small>I want to rent or buy a home</small>
+            </span>
+          </label>
+
+          <label class="role-option">
+            <%= f.radio_button :role, "vendor" %>
+            <span class="role-card">
+              <span class="role-icon">🔑</span>
+              <strong>Vendor</strong>
+              <small>I want to list properties</small>
+            </span>
+          </label>
+        </div>
+      </div>
       <%= f.submit "Sign up", class: "auth-submit" %>
     <% end %>
 
