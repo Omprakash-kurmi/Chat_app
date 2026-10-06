@@ -91,7 +91,7 @@ class Property < ApplicationRecord
 
   def maps_query
     return "#{latitude},#{longitude}" if latitude && longitude
-    [address, locality, city, pincode].compact_blank.join(", ")
+    [ address, locality, city, pincode ].compact_blank.join(", ")
   end
 
   private
@@ -155,6 +155,6 @@ class Property < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["user"]
+    [ "user" ]
   end
 end

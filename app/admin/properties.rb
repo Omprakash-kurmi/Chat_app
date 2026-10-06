@@ -10,16 +10,16 @@ ActiveAdmin.register Property do
   filter :locality
   filter :pincode
   filter :listing_type, as: :select,
-         collection: Property.listing_types.keys.map { |key| [key.humanize, key] }
+         collection: Property.listing_types.keys.map { |key| [ key.humanize, key ] }
 
   filter :property_type, as: :select,
-         collection: Property.property_types.keys.map { |key| [key.humanize, key] }
+         collection: Property.property_types.keys.map { |key| [ key.humanize, key ] }
 
   filter :furnishing, as: :select,
-         collection: Property.furnishings.keys.map { |key| [key.humanize, key] }
+         collection: Property.furnishings.keys.map { |key| [ key.humanize, key ] }
 
   filter :poster_type, as: :select,
-         collection: Property.poster_types.keys.map { |key| [key.humanize, key] }
+         collection: Property.poster_types.keys.map { |key| [ key.humanize, key ] }
 
   filter :price
   filter :bedrooms
@@ -40,7 +40,7 @@ ActiveAdmin.register Property do
     column :photos do |property|
       if property.photos.attached?
         image_tag(
-          property.photos.first.variant(resize_to_limit: [80, 60]),
+          property.photos.first.variant(resize_to_limit: [ 80, 60 ]),
           width: 80,
           height: 60
         )
@@ -174,7 +174,7 @@ ActiveAdmin.register Property do
             property.photos.each do |photo|
               span do
                 image_tag(
-                  photo.variant(resize_to_limit: [180, 130]),
+                  photo.variant(resize_to_limit: [ 180, 130 ]),
                   style: "margin: 5px; border-radius: 6px;"
                 )
               end
@@ -225,19 +225,19 @@ ActiveAdmin.register Property do
 
       f.input :listing_type,
               as: :select,
-              collection: Property.listing_types.keys.map { |key| [key.humanize, key] }
+              collection: Property.listing_types.keys.map { |key| [ key.humanize, key ] }
 
       f.input :property_type,
               as: :select,
-              collection: Property.property_types.keys.map { |key| [key.humanize, key] }
+              collection: Property.property_types.keys.map { |key| [ key.humanize, key ] }
 
       f.input :furnishing,
               as: :select,
-              collection: Property.furnishings.keys.map { |key| [key.humanize, key] }
+              collection: Property.furnishings.keys.map { |key| [ key.humanize, key ] }
 
       f.input :poster_type,
               as: :select,
-              collection: Property.poster_types.keys.map { |key| [key.humanize, key] }
+              collection: Property.poster_types.keys.map { |key| [ key.humanize, key ] }
     end
 
     f.inputs "Pricing" do
@@ -270,7 +270,6 @@ ActiveAdmin.register Property do
 
       f.input :available_from,
               as: :datepicker
-
     end
 
     f.inputs "Amenities" do
@@ -292,7 +291,7 @@ ActiveAdmin.register Property do
           f.object.photos.each do |photo|
             li do
               image_tag(
-                photo.variant(resize_to_limit: [150, 100]),
+                photo.variant(resize_to_limit: [ 150, 100 ]),
                 style: "margin: 5px;"
               )
             end
@@ -403,4 +402,3 @@ ActiveAdmin.register Property do
     end
   end
 end
-

@@ -14,7 +14,7 @@ namespace :demo do
         furnishing: home.plot? ? 0 : rand(0..2),
         parking_spaces: home.plot? ? 0 : (home.villa? || home.house? ? rand(1..3) : rand(0..2)),
         amenities: Property::AMENITIES.sample(home.plot? ? rand(0..3) : rand(3..9)),
-        available_from: [nil, nil, nil, Date.current + rand(1..45)].sample,
+        available_from: [ nil, nil, nil, Date.current + rand(1..45) ].sample,
         floor_number: flat ? rand(0..total) : nil,
         total_floors: total,
         age_years: home.plot? ? nil : rand(0..20),

@@ -118,7 +118,7 @@ ActiveAdmin.register User do
       f.input :email
       f.input :role,
               as: :select,
-              collection: User.roles.keys.map { |role| [role.humanize, role] }
+              collection: User.roles.keys.map { |role| [ role.humanize, role ] }
 
       f.input :bio
       f.input :admin
@@ -238,4 +238,3 @@ ActiveAdmin.register User do
     end
   end
 end
-
