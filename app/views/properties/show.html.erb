@@ -35,4 +35,10 @@
             target: "_blank", rel: "noopener", class: "btn btn-light" %>
     </aside>
   </div>
+
+  <% if @property.buy? %>
+    <%= render "properties/emi_calculator",
+          amount: [(@property.price * 0.8 / 50_000).round * 50_000, 100_000].max,
+          note: "Estimated for a #{number_to_currency(@property.price, unit: '₹', precision: 0)} home with a 20% down payment. Adjust any value." %>
+  <% end %>
 </article>

@@ -1,0 +1,89 @@
+<%
+  cfg = SiteSetting.where("key LIKE ?", "emi\\_%").pluck(:key, :value).to_h
+  setting = ->(key, default) { cfg["emi_#{key}"].presence || default }
+
+  amount      = (local_assigns[:amount] || 2_500_000).to_i
+  amount_step = setting.call("amount_step", 50_000).to_i
+  min_amount  = [setting.call("min_amount", 100_000).to_i, amount].min
+  max_amount  = [setting.call("max_amount", 100_000_000).to_i, amount].max
+  min_years   = setting.call("min_years", 1).to_i
+  max_years   = setting.call("max_years", 30).to_i
+  years       = setting.call("default_years", 20).to_i.clamp(min_years, max_years)
+  min_rate    = setting.call("min_rate", 0.5).to_f
+  max_rate    = setting.call("max_rate", 15).to_f
+  rate        = setting.call("default_rate", 8.5).to_f.clamp(min_rate, max_rate)
+
+  short = lambda do |n|
+    if n >= 10_000_000 then "₹#{(n / 10_000_000.0).round(2).to_s.sub(/\.0$/, '')} Cr"
+    elsif n >= 100_000 then "₹#{(n / 100_000.0).round(2).to_s.sub(/\.0$/, '')} Lac"
+    else "₹#{n}"
+    end
+  end
+
+  fields = [
+    { key: "amount", label: "Loan Amount", prefix: "₹", min: min_amount, max: max_amount, step: amount_step,
+      value: amount, lo: short.call(min_amount), hi: short.call(max_amount), wide: true },
+    { key: "years", label: "Tenure (Years)", min: min_years, max: max_years, step: 1,
+      value: years, lo: min_years, hi: max_years },
+    { key: "rate", label: "Interest Rate (% P.A.)", suffix: "%", min: min_rate, max: max_rate, step: 0.05,
+      value: rate, lo: min_rate, hi: max_rate }
+  ]
+  uid = SecureRandom.hex(3)
+%>
+
+<section class="emi" data-emi>
+  <h2 class="emi-title">Home Loan EMI Calculator</h2>
+  <% if local_assigns[:note].present? %><p class="emi-note"><%= local_assigns[:note] %></p><% end %>
+
+  <div class="emi-grid">
+    <div class="emi-inputs">
+      <% fields.each do |f| %>
+        <div class="emi-field">
+          <div class="emi-field-head">
+            <label for="emi-<%= f[:key] %>-<%= uid %>"><%= f[:label] %></label>
+            <div class="emi-number">
+              <% if f[:prefix] %><span><%= f[:prefix] %></span><% end %>
+              <input type="number" id="emi-<%= f[:key] %>-<%= uid %>" class="<%= 'wide' if f[:wide] %>"
+                     data-emi-number="<%= f[:key] %>" min="<%= f[:min] %>" max="<%= f[:max] %>"
+                     step="<%= f[:step] %>" value="<%= f[:value] %>" inputmode="decimal">
+              <% if f[:suffix] %><span><%= f[:suffix] %></span><% end %>
+            </div>
+          </div>
+          <input type="range" class="emi-range" data-emi-range="<%= f[:key] %>" aria-label="<%= f[:label] %>"
+                 min="<%= f[:min] %>" max="<%= f[:max] %>" step="<%= f[:step] %>" value="<%= f[:value] %>">
+          <div class="emi-scale"><span><%= f[:lo] %></span><span><%= f[:hi] %></span></div>
+          <% if f[:key] == "amount" %><p class="emi-words" data-emi-out="amount-words"></p><% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <aside class="emi-result">
+      <p class="emi-label">Monthly Home Loan EMI</p>
+      <p class="emi-big" data-emi-out="monthly">—</p>
+
+      <div class="emi-split" aria-hidden="true">
+        <span class="emi-split-principal" data-emi-bar="principal"></span>
+        <span class="emi-split-interest"></span>
+      </div>
+      <p class="emi-legend"><i class="dot principal"></i>Principal <i class="dot interest"></i>Interest</p>
+
+      <dl>
+        <dt>Principal Amount</dt><dd data-emi-out="principal">—</dd>
+        <dt>Interest Amount</dt><dd data-emi-out="interest">—</dd>
+        <dt>Total Amount Payable</dt><dd data-emi-out="total">—</dd>
+      </dl>
+
+      <details class="emi-details">
+        <summary>View Details (year by year)</summary>
+        <div class="emi-table-wrap">
+          <table>
+            <thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+            <tbody data-emi-out="schedule"></tbody>
+          </table>
+        </div>
+      </details>
+    </aside>
+  </div>
+
+  <p class="emi-disclaimer">Indicative estimate only. Your lender's actual EMI may differ.</p>
+</section>
