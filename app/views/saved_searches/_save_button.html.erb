@@ -1,0 +1,11 @@
+<%# Put this in the search toolbar (properties/index). local: listing_type %>
+<% if !user_signed_in? %>
+  <%= link_to "🔔 Save this search", new_user_session_path, class: "ss-save", title: "Sign in to save searches" %>
+<% elsif search_applied? %>
+  <%= form_with url: saved_searches_path, method: :post, class: "ss-save-form", data: { turbo: true } do %>
+    <%= search_hidden_fields(listing_type) %>
+    <%= submit_tag "🔔 Save this search", name: nil, class: "ss-save" %>
+  <% end %>
+<% else %>
+  <span class="ss-save disabled" title="Add a filter first (location, budget, bedrooms…)">🔔 Save this search</span>
+<% end %>

@@ -13,6 +13,10 @@ module PropertyWorkflow
 
     has_many :inquiries, dependent: :destroy
     has_many :visits, dependent: :destroy
+    has_many :favorites, dependent: :destroy
+
+    # also fires when an admin flips the status in the edit form
+    after_commit :alert_saved_searches, on: :update, if: -> { saved_change_to_status? && published? }
 
     # what customers can search: verified, and still available
     scope :listed, -> { published.available }
@@ -38,6 +42,7 @@ module PropertyWorkflow
     return false unless pending? || rejected?
     update_columns(status: self.class.statuses[:published], rejection_reason: nil,
                    verified_at: Time.current, updated_at: Time.current)
+    alert_saved_searches
     true
   end
 
@@ -53,6 +58,12 @@ module PropertyWorkflow
   def reopen!
     return false unless closed?
     update_columns(status: self.class.statuses[:published], available: true, updated_at: Time.current)
+    alert_saved_searches
     true
+  end
+
+  # tell customers whose saved searches match this listing (runs in the background)
+  def alert_saved_searches
+    SavedSearchAlertJob.perform_later(id)
   end
 end

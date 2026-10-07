@@ -7,6 +7,9 @@ class User < ApplicationRecord
   has_many :inquiries, dependent: :destroy
   has_many :inquiry_messages, dependent: :destroy
   has_many :proposed_visits, class_name: "Visit", foreign_key: :proposed_by_id, dependent: :destroy
+  has_many :notifications, dependent: :destroy
+  has_many :favorites, dependent: :destroy
+  has_many :saved_searchs, dependent: :destroy
 
   enum :role, { customer: 0, vendor: 1 }, validate: true
 

@@ -1,0 +1,89 @@
+:root { --fv-accent: #5b21f0; --fv-soft: #f0eaff; --fv-ink: #1b1f3b; --fv-muted: #6b7280; --fv-line: #e3e5ef;
+        --fv-shadow: 0 1px 2px rgba(27,31,59,.05), 0 12px 32px rgba(27,31,59,.08); }
+
+/* ---------- card wrapper: the heart sits on top of the photo ---------- */
+.pc-wrap { position: relative; display: flex; min-width: 0; }
+.pc-wrap > .property-card { flex: 1; min-width: 0; }
+.pc-wrap > .fav-wrap { position: absolute; top: 12px; right: 12px; z-index: 5; }
+
+/* ---------- heart button (beats the global red full-width button rules) ---------- */
+.fav-wrap { display: inline-block; line-height: 1; }
+.fav-wrap form.fav-form { margin: 0; padding: 0; display: inline-block; width: auto; }
+.fav-wrap .fav-btn, .fav-wrap form.fav-form button.fav-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  width: 40px; height: 40px; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 999px;
+  background: rgba(255,255,255,.95); color: #6b7280; font: 400 22px/1 system-ui, sans-serif; text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0,0,0,.22); cursor: pointer; transition: transform .15s, color .15s, background .15s;
+}
+.fav-wrap .fav-btn:hover { transform: scale(1.1); color: #e11d48; }
+.fav-wrap .fav-btn.on, .fav-wrap form.fav-form button.fav-btn.on { color: #e11d48; }
+.fav-wrap .fav-btn em { display: none; font-style: normal; }
+/* big version for the property page */
+.fav-wrap .fav-btn.lg, .fav-wrap form.fav-form button.fav-btn.lg {
+  width: auto; height: 44px; padding: 0 20px; border: 1.5px solid var(--fv-line); background: #fff; box-shadow: none;
+  font-size: 20px; color: var(--fv-ink);
+}
+.fav-wrap .fav-btn.lg em { display: inline; font-size: 14px; font-weight: 700; }
+.fav-wrap .fav-btn.lg.on { border-color: #fecdd3; background: #fff1f3; color: #e11d48; }
+
+/* ---------- page headers ---------- */
+.sh .fv-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 10px 0 24px; }
+.sh .fv-head h1 { margin: 0; font-family: "Fraunces", Georgia, serif; font-size: clamp(26px, 4vw, 36px); font-weight: 600; color: var(--fv-ink); }
+.sh .fv-sub { margin: 4px 0 0; color: var(--fv-muted); }
+.sh a.fv-link { padding: 10px 18px; border: 1.5px solid var(--fv-line); border-radius: 12px; background: #fff; color: var(--fv-accent); font-weight: 700; font-size: 14px; text-decoration: none; }
+.sh a.fv-link:hover { border-color: var(--fv-accent); }
+.sh a.fv-cta { display: inline-block; width: auto; padding: 10px 20px; border: 1.5px solid transparent; border-radius: 12px;
+  background: linear-gradient(135deg, #7c4dff, #5b21f0); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none;
+  box-shadow: 0 6px 14px rgba(91,33,240,.28); }
+.sh a.fv-cta.ghost { background: #fff; color: var(--fv-accent); border-color: var(--fv-line); box-shadow: none; }
+.sh .empty p { margin: 16px 0 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+
+/* ---------- "Save this search" in the toolbar ---------- */
+.sh-toolbar .ss-save-form { margin: 0; }
+.sh a.ss-save, .sh input[type=submit].ss-save, .sh span.ss-save {
+  display: inline-block; width: auto; margin: 0; padding: 9px 16px; border: 1.5px solid var(--fv-accent); border-radius: 12px;
+  background: var(--fv-soft); color: var(--fv-accent); font: 700 14px/1.2 inherit; text-decoration: none; cursor: pointer; box-shadow: none;
+}
+.sh a.ss-save:hover, .sh input[type=submit].ss-save:hover { background: var(--fv-accent); color: #fff; }
+.sh span.ss-save.disabled { border-color: var(--fv-line); background: #f6f7fb; color: #9ca3af; cursor: not-allowed; }
+
+/* ---------- saved searches list ---------- */
+.ss-list { display: grid; gap: 14px; }
+.ss-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 22px;
+  background: #fff; border: 1px solid var(--fv-line); border-radius: 18px; box-shadow: var(--fv-shadow); }
+.ss-card.paused { opacity: .75; }
+.ss-card h3 { margin: 0 0 8px; font-size: 18px; color: var(--fv-ink); }
+.ss-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+.ss-chips span { padding: 4px 11px; border-radius: 999px; background: var(--fv-soft); color: var(--fv-accent); font-size: 13px; font-weight: 600; }
+.ss-meta { margin: 0; color: var(--fv-muted); font-size: 13px; }
+.ss-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ss-actions form.ss-form, .fv-head form.ss-form { margin: 0; display: inline-block; width: auto; }
+.ss-actions button, .fv-head form.ss-form button {
+  width: auto; margin: 0; padding: 9px 16px; border: 1.5px solid var(--fv-line); border-radius: 12px; background: #fff;
+  color: var(--fv-muted); font: 600 14px/1.2 inherit; cursor: pointer; box-shadow: none; }
+.ss-actions button.ss-toggle.on { border-color: #bbf7d0; background: #f0fdf6; color: #0f9d6e; }
+.ss-actions button.ss-delete { color: #e11d48; border-color: #fecdd3; }
+.ss-actions button.ss-delete:hover { background: #fff1f3; }
+.fv-head form.ss-form button:hover, .ss-actions button.ss-toggle:hover { border-color: var(--fv-accent); }
+
+/* ---------- notifications ---------- */
+.nf-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.nf-list li { background: #fff; border: 1px solid var(--fv-line); border-radius: 16px; box-shadow: var(--fv-shadow); overflow: hidden; }
+.nf-list li.unread { border-color: #c9b8ff; background: #faf7ff; }
+.nf-list form.nf-form { margin: 0; width: 100%; }
+.nf-list button.nf-item { display: flex; align-items: flex-start; gap: 14px; width: 100%; margin: 0; padding: 16px 18px; border: 0; border-radius: 0;
+  background: transparent; color: var(--fv-ink); text-align: left; font: inherit; cursor: pointer; box-shadow: none; }
+.nf-dot { flex: 0 0 10px; height: 10px; margin-top: 6px; border-radius: 50%; background: transparent; }
+.nf-list li.unread .nf-dot { background: var(--fv-accent); }
+.nf-text { display: grid; gap: 3px; }
+.nf-text strong { font-size: 15px; }
+.nf-text span { color: var(--fv-muted); font-size: 14px; }
+.nf-text small { color: #9ca3af; font-size: 12px; }
+
+/* ---------- navbar bell (uses .sn-badge from inquiries.css) ---------- */
+.nav-bell { position: relative; text-decoration: none; }
+
+@media (max-width: 640px) {
+  .ss-card { padding: 16px; }
+  .ss-actions { width: 100%; }
+}

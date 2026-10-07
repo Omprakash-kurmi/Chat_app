@@ -1,0 +1,5 @@
+<% if @remove_card %>
+  <%= turbo_stream.remove "pc_#{@property.id}" %>
+<% else %>
+  <%= turbo_stream.replace dom_id(@property, :favorite), partial: "favorites/button", locals: { property: @property } %>
+<% end %>

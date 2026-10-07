@@ -1,0 +1,84 @@
+/* =====================================================================
+   Landing page (app/views/home/index.html.erb)
+   File: app/assets/stylesheets/landing.css
+   Everything is scoped under .home-wrap so it can't leak into other pages.
+   ===================================================================== */
+.home-wrap {
+  --lp-accent: #5b21f0; --lp-accent-2: #7c4dff; --lp-ink: #1b1f3b; --lp-muted: #5f667a; --lp-line: #e3e5ef; --lp-soft: #f0eaff;
+  max-width: 1180px; margin: 0 auto; padding: 8px 20px 72px; color: var(--lp-ink);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5; box-sizing: border-box;
+}
+.home-wrap *, .home-wrap *::before, .home-wrap *::after { box-sizing: border-box; }
+.home-wrap h1, .home-wrap h2, .home-wrap h3 { color: var(--lp-ink); font-family: "Fraunces", Georgia, serif; font-weight: 600; letter-spacing: -.01em; margin: 0; }
+.home-wrap p { margin: 0; font-size: 17px; color: var(--lp-muted); }
+.home-wrap a { text-decoration: none; }
+
+/* ---------- buttons ---------- */
+.home-wrap a.btn { display: inline-flex; align-items: center; justify-content: center; width: auto; height: auto; margin: 0; padding: 14px 26px;
+  border: 1.5px solid transparent; border-radius: 14px; font: 700 16px/1.2 "Inter", system-ui, sans-serif; text-decoration: none; cursor: pointer;
+  transition: transform .15s, box-shadow .15s, border-color .15s; }
+.home-wrap a.btn:hover { transform: translateY(-2px); text-decoration: none; }
+.home-wrap a.btn.btn-primary { background: linear-gradient(135deg, var(--lp-accent-2), var(--lp-accent)); color: #fff; box-shadow: 0 10px 22px rgba(91,33,240,.32); }
+.home-wrap a.btn.btn-primary:hover { box-shadow: 0 14px 28px rgba(91,33,240,.42); color: #fff; }
+.home-wrap a.btn.btn-ghost { background: #fff; color: var(--lp-accent); border-color: var(--lp-line); }
+.home-wrap a.btn.btn-ghost:hover { border-color: var(--lp-accent); color: var(--lp-accent); }
+
+/* ---------- hero ---------- */
+.home-wrap .hero { position: relative; overflow: hidden; border-radius: 32px; color: #fff;
+  background:
+    radial-gradient(700px 320px at 92% -10%, rgba(255,138,92,.35), transparent 62%),
+    radial-gradient(520px 300px at 0% 115%, rgba(124,77,255,.6), transparent 60%),
+    linear-gradient(135deg, #25106a 0%, #5b21f0 58%, #7c4dff 100%); }
+.home-wrap .hero-inner { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; align-items: center; padding: 64px 56px; }
+.home-wrap .hero h1 { color: #fff; font-size: clamp(32px, 4.6vw, 52px); line-height: 1.08; }
+.home-wrap .hero p { max-width: 46ch; margin-top: 18px; color: rgba(255,255,255,.86); font-size: 18px; line-height: 1.55; }
+.home-wrap .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.home-wrap .hero a.btn.btn-primary { background: #fff; color: var(--lp-accent); box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+.home-wrap .hero a.btn.btn-primary:hover { color: var(--lp-accent); }
+.home-wrap .hero a.btn.btn-ghost { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.4); }
+.home-wrap .hero a.btn.btn-ghost:hover { background: rgba(255,255,255,.2); border-color: #fff; color: #fff; }
+
+/* ---------- chat mock ---------- */
+.home-wrap .chat-mock { width: 100%; max-width: 440px; justify-self: end; padding: 18px; border-radius: 24px; background: #fff;
+  box-shadow: 0 30px 60px rgba(10,6,40,.4); transform: rotate(1.5deg); }
+.home-wrap .chat-mock-header { display: flex; align-items: center; gap: 10px; padding: 4px 6px 14px; margin-bottom: 12px;
+  border-bottom: 1px solid var(--lp-line); color: var(--lp-ink); font-size: 14px; font-weight: 600; }
+.home-wrap .chat-mock-header .dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 4px rgba(34,197,94,.2); }
+.home-wrap .bubble-row { display: flex; margin: 8px 0; }
+.home-wrap .bubble-row.sent { justify-content: flex-end; }
+.home-wrap .bubble { max-width: 82%; padding: 10px 14px; border-radius: 18px 18px 18px 5px; background: #f1f2f8; color: var(--lp-ink); font-size: 15px; line-height: 1.4; }
+.home-wrap .bubble-row.sent .bubble { border-radius: 18px 18px 5px 18px; background: linear-gradient(135deg, var(--lp-accent-2), var(--lp-accent)); color: #fff; }
+.home-wrap .bubble time { display: block; margin-top: 3px; font-size: 11px; opacity: .65; text-align: right; }
+
+/* ---------- features ---------- */
+.home-wrap .features { padding: 80px 8px 20px; }
+.home-wrap .features-inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 56px; align-items: start; }
+.home-wrap .features h2 { font-size: clamp(26px, 3.4vw, 38px); line-height: 1.15; }
+.home-wrap .features-inner > div:first-child p { margin-top: 16px; }
+.home-wrap .point-list { display: grid; gap: 16px; }
+.home-wrap .point { padding: 22px 24px 22px 28px; border: 1px solid var(--lp-line); border-left: 4px solid var(--lp-accent); border-radius: 18px; background: #fff;
+  box-shadow: 0 1px 2px rgba(27,31,59,.05), 0 12px 28px rgba(27,31,59,.07); transition: transform .15s; }
+.home-wrap .point:hover { transform: translateX(4px); }
+.home-wrap .point h3 { font-size: 20px; }
+.home-wrap .point p { margin-top: 8px; font-size: 16px; }
+
+/* ---------- closing call-to-action ---------- */
+.home-wrap .closing { display: grid; justify-items: center; gap: 14px; margin-top: 72px; padding: 56px 24px; text-align: center; border-radius: 28px;
+  background: var(--lp-soft); border: 1px solid #ddd0ff; }
+.home-wrap .closing h2 { font-size: clamp(26px, 3.6vw, 38px); }
+.home-wrap .closing p { margin-bottom: 8px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .home-wrap .hero-inner { grid-template-columns: 1fr; padding: 40px 28px; gap: 36px; }
+  .home-wrap .chat-mock { justify-self: stretch; max-width: none; transform: none; }
+  .home-wrap .features-inner { grid-template-columns: 1fr; gap: 28px; }
+}
+@media (max-width: 560px) {
+  .home-wrap { padding: 4px 14px 56px; }
+  .home-wrap .hero { border-radius: 24px; }
+  .home-wrap .hero-inner { padding: 32px 20px; }
+  .home-wrap .hero p, .home-wrap p { font-size: 16px; }
+  .home-wrap .features { padding-top: 56px; }
+  .home-wrap .closing { margin-top: 48px; padding: 40px 18px; }
+}

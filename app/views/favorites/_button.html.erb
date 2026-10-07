@@ -1,0 +1,24 @@
+<%# locals: property, size (nil|"lg"), remove (true on the My Favorites page: drops the card when un-hearted) %>
+<% size   = local_assigns[:size] %>
+<% remove = local_assigns[:remove] %>
+<% own = user_signed_in? && property.user_id == current_user.id %>
+<% unless own %>
+<span id="<%= dom_id(property, :favorite) %>" class="fav-wrap <%= size %>">
+  <% if !user_signed_in? %>
+    <%= link_to new_user_session_path, class: "fav-btn #{size}", title: "Sign in to save this home", "aria-label": "Sign in to save this home" do %>
+      <span aria-hidden="true">♡</span><% if size == "lg" %><em>Save</em><% end %>
+    <% end %>
+  <% elsif favorited?(property) %>
+    <%= button_to property_favorite_path(property), method: :delete, form_class: "fav-form",
+          params: (remove ? { remove_card: 1 } : {}), class: "fav-btn on #{size}",
+          title: "Remove from favorites", "aria-label": "Remove from favorites", "aria-pressed": "true" do %>
+      <span aria-hidden="true">♥</span><% if size == "lg" %><em>Saved</em><% end %>
+    <% end %>
+  <% else %>
+    <%= button_to property_favorite_path(property), method: :post, form_class: "fav-form",
+          class: "fav-btn #{size}", title: "Save to favorites", "aria-label": "Save to favorites", "aria-pressed": "false" do %>
+      <span aria-hidden="true">♡</span><% if size == "lg" %><em>Save</em><% end %>
+    <% end %>
+  <% end %>
+</span>
+<% end %>

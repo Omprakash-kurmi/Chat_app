@@ -1,0 +1,31 @@
+<div class="sh">
+  <header class="fv-head">
+    <div>
+      <h1>Notifications</h1>
+      <p class="fv-sub">New homes that match your saved searches show up here.</p>
+    </div>
+    <% if current_user.notifications.unread.exists? %>
+      <%= button_to "Mark all as read", read_all_notifications_path, method: :patch, form_class: "ss-form", class: "ss-toggle" %>
+    <% end %>
+  </header>
+
+  <% if @notifications.any? %>
+    <ul class="nf-list">
+      <% @notifications.each do |note| %>
+        <li class="<%= 'unread' if note.unread? %>">
+          <%= button_to read_notification_path(note), method: :patch, form_class: "nf-form", class: "nf-item" do %>
+            <span class="nf-dot" aria-hidden="true"></span>
+            <span class="nf-text">
+              <strong><%= note.title %></strong>
+              <span><%= note.body %></span>
+              <small><%= time_ago_in_words(note.created_at) %> ago</small>
+            </span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <%= paginate @notifications %>
+  <% else %>
+    <div class="empty"><strong>🔔 Nothing yet</strong>Save a search and we'll tell you when a match is listed.</div>
+  <% end %>
+</div>

@@ -13,10 +13,8 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= yield :head %>
-    <%= stylesheet_link_tag "footer", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "properties", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "navbar", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "search", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "navbar", "footer", "properties", "home", "landing", "data-turbo-track": "reload" %>
   </head>
   <body>
     <%= render "devise/shared/navbar" %>

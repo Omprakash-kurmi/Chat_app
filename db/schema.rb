@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_07_052056) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_07_063052) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,6 +80,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_07_052056) do
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "property_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["property_id"], name: "index_favorites_on_property_id"
+    t.index ["user_id", "property_id"], name: "index_favorites_on_user_id_and_property_id", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
+
   create_table "footer_columns", force: :cascade do |t|
     t.string "title"
     t.integer "position"
@@ -132,6 +142,21 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_07_052056) do
     t.bigint "user_id", null: false
     t.index ["room_id"], name: "index_messages_on_room_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "kind", default: "general", null: false
+    t.string "title", null: false
+    t.text "body"
+    t.string "path"
+    t.string "dedupe_key"
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "dedupe_key"], name: "index_notifications_on_user_and_dedupe_key", unique: true, where: "(dedupe_key IS NOT NULL)"
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
   create_table "pages", force: :cascade do |t|
@@ -199,6 +224,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_07_052056) do
     t.index ["event_id", "user_id"], name: "index_rsvps_on_event_id_and_user_id", unique: true
     t.index ["event_id"], name: "index_rsvps_on_event_id"
     t.index ["user_id"], name: "index_rsvps_on_user_id"
+  end
+
+  create_table "saved_searches", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "listing_type", null: false
+    t.jsonb "filters", default: {}, null: false
+    t.boolean "notify", default: true, null: false
+    t.datetime "last_notified_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["listing_type", "notify"], name: "index_saved_searches_on_listing_type_and_notify"
+    t.index ["user_id"], name: "index_saved_searches_on_user_id"
   end
 
   create_table "site_settings", force: :cascade do |t|
