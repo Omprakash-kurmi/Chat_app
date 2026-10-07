@@ -3,13 +3,31 @@ class PropertiesController < ApplicationController
 
   def choose; end
 
+  # def index
+  #   @listing_type = params[:listing_type]
+  #   @properties = Property.available.with_attached_photos
+  #                         .where(listing_type: @listing_type)
+  #                         .matching(params)
+  #                         .sorted(params[:sort])
+  #                         .page(params[:page]).per(12)
+  # end
   def index
     @listing_type = params[:listing_type]
-    @properties = Property.available.with_attached_photos
+
+    @properties = Property.with_attached_photos
                           .where(listing_type: @listing_type)
-                          .matching(params)
-                          .sorted(params[:sort])
-                          .page(params[:page]).per(12)
+
+    if current_user.vendor?
+      @properties = @properties.where(user: current_user)
+    else
+      @properties = @properties.available
+    end
+
+    @properties = @properties
+                    .matching(params)
+                    .sorted(params[:sort])
+                    .page(params[:page])
+                    .per(12)
   end
 
   # def show

@@ -126,6 +126,7 @@
       <% end %>
     </p>
     <div class="sh-sort">
+      <%= render "saved_searches/save_button", listing_type: @listing_type %>
       <label for="sort">Sort by</label>
       <%= select_tag :sort,
             options_for_select([["Newest first", "newest"], ["Price: low to high", "price_asc"],
