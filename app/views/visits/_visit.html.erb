@@ -1,0 +1,22 @@
+<li class="visit">
+  <div class="visit-main">
+    <strong>📅 <%= l(visit.scheduled_at, format: "%a, %d %b · %I:%M %p") %></strong>
+    <%= status_pill(visit.status, visit.status.humanize) %>
+    <% if visit.note.present? %><p class="visit-note"><%= visit.note %></p><% end %>
+    <small>Proposed by <%= visit.proposed_by_id == current_user.id ? "you" : visit.proposed_by.display_name %></small>
+  </div>
+
+  <div class="visit-actions">
+    <% if visit.requested? && visit.responder?(current_user) %>
+      <%= button_to "Confirm", confirm_visit_path(visit), method: :patch, class: "iq-btn green sm" %>
+      <%= button_to "Decline", decline_visit_path(visit), method: :patch, class: "iq-btn ghost sm" %>
+    <% end %>
+    <% if visit.confirmed? && owner_view %>
+      <%= button_to "Mark done", complete_visit_path(visit), method: :patch, class: "iq-btn ghost sm" %>
+    <% end %>
+    <% if visit.requested? || visit.confirmed? %>
+      <%= button_to "Cancel", cancel_visit_path(visit), method: :patch, class: "iq-btn danger sm",
+            form: { data: { turbo_confirm: "Cancel this visit?" } } %>
+    <% end %>
+  </div>
+</li>

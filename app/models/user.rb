@@ -4,6 +4,10 @@ class User < ApplicationRecord
 
   has_one_attached :avatar
   has_many :properties, dependent: :destroy
+  has_many :inquiries, dependent: :destroy
+  has_many :inquiry_messages, dependent: :destroy
+  has_many :proposed_visits, class_name: "Visit", foreign_key: :proposed_by_id, dependent: :destroy
+
   enum :role, { customer: 0, vendor: 1 }, validate: true
 
   validates :name, length: { maximum: 50 }

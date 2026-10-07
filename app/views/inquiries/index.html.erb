@@ -1,0 +1,80 @@
+<%
+  show_tabs = current_user.vendor? || current_user.properties.exists?
+  received  = @box == "received"
+  total     = @counts.values.sum
+  chips     = [[nil, "All", total]] + Inquiry.statuses.keys.map { |s| [s, Inquiry::STATUS_LABELS[s], @counts[s].to_i] }
+%>
+<div class="iq">
+  <h1><%= received ? "Interested users" : "My inquiries" %></h1>
+  <p class="iq-sub">
+    <%= received ? "People who contacted you about your listings. Accept, chat and schedule visits here." :
+                   "Homes you've contacted the owner about." %>
+  </p>
+
+  <% if show_tabs %>
+    <nav class="iq-tabs">
+      <%= link_to "Received", inquiries_path(box: "received"), class: ("on" if received) %>
+      <%= link_to "Sent by me", inquiries_path(box: "sent"), class: ("on" unless received) %>
+    </nav>
+  <% end %>
+
+  <% if @property_filter %>
+    <p class="iq-filter">Showing inquiries for <strong><%= @property_filter.title %></strong>
+      · <%= link_to "Show all", inquiries_path(box: "received") %></p>
+  <% end %>
+
+  <div class="iq-chips">
+    <% chips.each do |status, label, count| %>
+      <% next if status && count.zero? %>
+      <%= link_to inquiries_path(box: @box, status: status, property_id: params[:property_id].presence),
+            class: ("on" if params[:status].presence == status) do %>
+        <%= label %> <b><%= count %></b>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if @inquiries.empty? %>
+    <div class="iq-empty">
+      <strong><%= received ? "📭 No inquiries yet" : "💬 You haven't contacted any owners yet" %></strong>
+      <%= received ? "When someone is interested in one of your published listings, they'll show up here." :
+                      "Open a home you like and send the owner an inquiry." %>
+      <% unless received %><%= link_to "Search homes", search_home_path, class: "iq-btn" %><% end %>
+    </div>
+  <% else %>
+    <div class="iq-list">
+      <% @inquiries.each do |inquiry| %>
+        <% property = inquiry.property %>
+        <% next_visit = @upcoming_visits[inquiry.id]&.first %>
+        <article class="iq-card">
+          <%= link_to inquiry_path(inquiry), class: "iq-main" do %>
+            <% if property.photos.attached? %>
+              <%= image_tag property.photos.first.variant(resize_to_fill: [200, 160]), class: "iq-thumb", alt: "" %>
+            <% else %>
+              <div class="iq-thumb"></div>
+            <% end %>
+            <div class="iq-text">
+              <h3><%= property.title %></h3>
+              <p class="iq-line">
+                <%= received ? "From #{inquiry.user.display_name}" : "Owner: #{property.user.display_name}" %>
+                · <%= inr(property.price) %><%= "/month" if property.rent? %>
+              </p>
+              <p class="iq-snippet">“<%= truncate(inquiry.message, length: 110) %>”</p>
+              <% if next_visit %>
+                <p class="iq-visit">📅 <%= l(next_visit.scheduled_at, format: "%a, %d %b · %I:%M %p") %>
+                  (<%= next_visit.status %>)</p>
+              <% end %>
+            </div>
+          <% end %>
+
+          <div class="iq-side">
+            <%= inquiry_status_pill(inquiry) %>
+            <small><%= time_ago_in_words(inquiry.updated_at) %> ago</small>
+            <% if received && inquiry.pending? %>
+              <%= button_to "Accept", accept_inquiry_path(inquiry), method: :patch, class: "iq-btn green sm" %>
+            <% end %>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  <% end %>
+</div>

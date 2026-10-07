@@ -1,4 +1,5 @@
 class Property < ApplicationRecord
+  include PropertyWorkflow
   AMENITIES = [
     "Lift", "Power backup", "24x7 security", "CCTV", "Gym", "Swimming pool", "Clubhouse", "Garden",
     "Children's play area", "24x7 water supply", "Gas pipeline", "Intercom", "Visitor parking",
@@ -8,6 +9,9 @@ class Property < ApplicationRecord
   belongs_to :user
   has_many_attached :photos
   has_many_attached :videos
+  has_many :inquiries, dependent: :destroy
+  has_many :inquiry_messages, dependent: :destroy
+  has_many :proposed_visits, class_name: "Visit", foreign_key: :proposed_by_id, dependent: :destroy
 
   enum :listing_type,  { rent: 0, buy: 1 }
   enum :property_type, { apartment: 0, house: 1, villa: 2, plot: 3, studio: 4, penthouse: 5, commercial: 6 }

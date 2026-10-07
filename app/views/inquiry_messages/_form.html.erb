@@ -1,0 +1,4 @@
+<%= form_with url: inquiry_messages_path(inquiry), scope: :inquiry_message, id: "message_form", class: "im-form" do |f| %>
+  <%= f.text_field :body, placeholder: "Type a message…", autocomplete: "off", required: true, maxlength: 2000 %>
+  <%= f.button "Send ➤", class: "im-send" %>
+<% end %>

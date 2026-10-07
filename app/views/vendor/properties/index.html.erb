@@ -1,17 +1,58 @@
 <section class="listings">
-  <h1>My listings</h1>
-  <%= link_to "+ Add property", new_vendor_property_path, class: "btn" %>
-
-  <div class="property-grid">
-    <% @properties.each do |property| %>
-      <div class="property-card">
-        <%= render "properties/property", property: property %>
-        <div class="vendor-actions">
-          <%= link_to "Edit", edit_vendor_property_path(property) %>
-          <%= button_to "Delete", vendor_property_path(property), method: :delete,
-                form: { data: { turbo_confirm: "Delete this listing?" } } %>
-        </div>
-      </div>
-    <% end %>
+  <div class="dash-head">
+    <div>
+      <h1>My listings</h1>
+      <p class="iq-sub">New listings are verified by an admin before they appear in search.</p>
+    </div>
+    <div class="dash-actions">
+      <%= link_to "👥 Interested users", inquiries_path(box: "received"), class: "iq-btn ghost" %>
+      <%= link_to "+ Add property", new_vendor_property_path, class: "iq-btn" %>
+    </div>
   </div>
+
+  <% if @properties.empty? %>
+    <div class="iq-empty">
+      <strong>🏡 No listings yet</strong>
+      Add your first property. It goes live after a quick admin check.
+      <%= link_to "+ Add property", new_vendor_property_path, class: "iq-btn" %>
+    </div>
+  <% else %>
+    <div class="property-grid">
+      <% @properties.each do |property| %>
+        <% total = @total_counts[property.id].to_i %>
+        <% waiting = @pending_counts[property.id].to_i %>
+        <div class="vendor-card">
+          <%= render "properties/property", property: property %>
+
+          <div class="vc-foot">
+            <div class="vc-line">
+              <%= property_status_pill(property) %>
+              <% if total > 0 %>
+                <%= link_to inquiries_path(box: "received", property_id: property.id), class: "vc-inq" do %>
+                  👥 <%= pluralize(total, "interested user") %><% if waiting > 0 %> <b><%= waiting %> new</b><% end %>
+                <% end %>
+              <% else %>
+                <span class="vc-inq muted">No inquiries yet</span>
+              <% end %>
+            </div>
+
+            <% if property.pending? %>
+              <p class="vc-note">Waiting for admin verification.</p>
+            <% elsif property.rejected? %>
+              <p class="vc-reason"><strong>Rejected:</strong> <%= property.rejection_reason %></p>
+            <% end %>
+          </div>
+
+          <div class="vendor-actions">
+            <%= link_to(property.rejected? ? "Edit & resubmit" : "Edit", edit_vendor_property_path(property)) %>
+            <% if property.closed? %>
+              <%= button_to "Reopen", reopen_vendor_property_path(property), method: :patch, class: "vc-reopen" %>
+            <% end %>
+            <%= button_to "Delete", vendor_property_path(property), method: :delete,
+                  form: { data: { turbo_confirm: "Delete this listing and its inquiries?" } } %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </section>

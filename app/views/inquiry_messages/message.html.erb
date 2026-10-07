@@ -1,0 +1,6 @@
+<%# Rendered both on page load and from the live broadcast, so it must not use current_user. %>
+<%= tag.div id: dom_id(message), class: "im #{message.from_owner? ? 'im-owner' : 'im-customer'}" do %>
+  <span class="im-who"><%= message.from_owner? ? "Owner" : "Customer" %> · <%= message.user.display_name %></span>
+  <div class="im-body"><%= simple_format(h(message.body)) %></div>
+  <time><%= l(message.created_at, format: "%d %b, %I:%M %p") %></time>
+<% end %>
