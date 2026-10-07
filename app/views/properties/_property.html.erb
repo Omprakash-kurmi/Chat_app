@@ -1,20 +1,32 @@
 <%= link_to property_path(property), class: "property-card" do %>
-  <span class="badge <%= property.listing_type %>"><%= property.rent? ? "For rent" : "For sale" %></span>
-  <% if property.photos.attached? %>
-    <%= image_tag property.photos.first.variant(resize_to_fill: [400, 260]), alt: property.title %>
-  <% else %>
-    <div class="no-photo">No photo</div>
-  <% end %>
+  <div class="pc-media">
+    <% if property.photos.attached? %>
+      <%= image_tag property.photos.first.variant(resize_to_fill: [640, 480]), alt: property.title, loading: "lazy" %>
+    <% else %>
+      <div class="no-photo">No photo</div>
+    <% end %>
+    <span class="badge <%= property.listing_type %>"><%= property.rent? ? "For rent" : "For sale" %></span>
+    <% if property.photos.size > 1 %><span class="pc-count">📷 <%= property.photos.size %></span><% end %>
+  </div>
+
   <div class="property-card-body">
-    <strong class="price">
-      <%= number_to_currency(property.price, unit: "₹", precision: 0) %><%= "/month" if property.rent? %>
-    </strong>
+    <p class="pc-price">
+      <strong><%= number_to_currency(property.price, unit: "₹", precision: 0, delimiter_pattern: /(\d+?)(?=(\d\d)+(\d)(?!\d))/) %></strong>
+      <% if property.rent? %><small>/month</small><% end %>
+    </p>
     <h3><%= property.title %></h3>
-    <p><%= property.city %> · <%= property.property_type.humanize %></p>
-    <p class="meta">
-      <% if property.bedrooms %><%= property.bedrooms %> bed · <% end %>
-      <% if property.bathrooms %><%= property.bathrooms %> bath · <% end %>
-      <% if property.area_sqft %><%= property.area_sqft %> sq ft<% end %>
+    <p class="pc-loc">📍 <%= [property.locality, property.city].compact_blank.join(", ") %> · <%= property.property_type.humanize %></p>
+
+    <ul class="pc-specs">
+      <% if property.bedrooms %><li>🛏 <%= property.bedrooms %> bed</li><% end %>
+      <% if property.bathrooms %><li>🛁 <%= property.bathrooms %> bath</li><% end %>
+      <% if property.area_sqft %><li>📐 <%= number_with_delimiter(property.area_sqft) %> sq ft</li><% end %>
+    </ul>
+
+    <p class="tags">
+      <span><%= property.furnishing_label %></span>
+      <% if property.parking_spaces.to_i > 0 %><span>🚗 Parking</span><% end %>
+      <% if !property.available_now? && property.available_from %><span class="soon">From <%= l(property.available_from, format: :short) %></span><% end %>
     </p>
   </div>
 <% end %>

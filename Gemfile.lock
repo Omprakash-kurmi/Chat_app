@@ -476,6 +476,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   json (~> 2.9)
+  kaminari
   letter_opener
   oj
   pg (~> 1.1)

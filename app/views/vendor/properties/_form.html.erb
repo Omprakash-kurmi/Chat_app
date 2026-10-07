@@ -20,7 +20,6 @@
           <%= f.label :title, "Title" %>
           <%= f.text_field :title, placeholder: "e.g. Bright 2BHK near the park" %>
         </div>
-
         <div class="field span-2">
           <span class="field-label">I want to</span>
           <div class="seg">
@@ -30,41 +29,73 @@
             <%= f.label :listing_type, "🏡 Sell it", value: "buy" %>
           </div>
         </div>
-
         <div class="field">
           <%= f.label :property_type, "Property type" %>
           <%= f.select :property_type, Property.property_types.keys.map { |k| [k.humanize, k] } %>
         </div>
         <div class="field">
           <%= f.label :price, "Price (monthly rent or sale price)" %>
-          <div class="input-prefix">
-            <span>₹</span><%= f.number_field :price, step: "any", placeholder: "0" %>
-          </div>
+          <div class="input-prefix"><span>₹</span><%= f.number_field :price, step: "any", placeholder: "0" %></div>
+        </div>
+        <div class="field">
+          <%= f.label :security_deposit, "Security deposit (rentals only)" %>
+          <div class="input-prefix"><span>₹</span><%= f.number_field :security_deposit, step: "any", placeholder: "0" %></div>
+        </div>
+        <div class="field">
+          <%= f.label :available_from, "Available from" %>
+          <%= f.date_field :available_from %>
         </div>
       </div>
     </section>
 
     <section class="pf-section">
       <h2>Details</h2>
-      <div class="pf-grid cols-3">
+      <div class="pf-grid cols-4">
         <div class="field"><%= f.label :bedrooms, "Bedrooms" %><%= f.number_field :bedrooms, min: 0 %></div>
         <div class="field"><%= f.label :bathrooms, "Bathrooms" %><%= f.number_field :bathrooms, min: 0 %></div>
         <div class="field"><%= f.label :area_sqft, "Area (sq ft)" %><%= f.number_field :area_sqft, min: 0 %></div>
-        <div class="field span-2" style="grid-column: 1 / -1">
-          <%= f.label :description, "Description" %>
-          <%= f.text_area :description, placeholder: "Describe the neighbourhood, amenities, what makes it special…" %>
+        <div class="field"><%= f.label :parking_spaces, "Parking spaces" %><%= f.number_field :parking_spaces, min: 0 %></div>
+        <div class="field">
+          <%= f.label :furnishing, "Furnishing" %>
+          <%= f.select :furnishing, Property.furnishings.keys.map { |k| [k == "semi_furnished" ? "Semi-furnished" : k.humanize, k] } %>
         </div>
+        <div class="field"><%= f.label :floor_number, "Floor (0 = ground)" %><%= f.number_field :floor_number, min: 0 %></div>
+        <div class="field"><%= f.label :total_floors, "Total floors" %><%= f.number_field :total_floors, min: 0 %></div>
+        <div class="field"><%= f.label :age_years, "Property age (years)" %><%= f.number_field :age_years, min: 0 %></div>
       </div>
     </section>
 
     <section class="pf-section">
-      <h2>Location &amp; visits</h2>
+      <h2>Location</h2>
       <div class="pf-grid">
         <div class="field span-2">
           <%= f.label :address, "Street address" %>
           <%= f.text_field :address, placeholder: "House no., street, landmark" %>
         </div>
+        <div class="field"><%= f.label :locality, "Locality / area" %><%= f.text_field :locality %></div>
         <div class="field"><%= f.label :city, "City" %><%= f.text_field :city %></div>
+      </div>
+      <div class="pf-grid cols-3" style="margin-top:16px">
+        <div class="field"><%= f.label :pincode, "Pincode" %><%= f.text_field :pincode, maxlength: 6, inputmode: "numeric" %></div>
+        <div class="field"><%= f.label :latitude, "Latitude (optional)" %><%= f.number_field :latitude, step: "any" %></div>
+        <div class="field"><%= f.label :longitude, "Longitude (optional)" %><%= f.number_field :longitude, step: "any" %></div>
+      </div>
+      <p class="pf-hint">For an exact map pin, right-click the place in Google Maps and click the coordinates to copy them. Without them, the address is used.</p>
+    </section>
+
+    <section class="pf-section">
+      <h2>Contact &amp; visits</h2>
+      <div class="pf-grid">
+        <div class="field span-2">
+          <span class="field-label">Listed by</span>
+          <div class="seg">
+            <%= f.radio_button :poster_type, "owner", class: "sr" %>
+            <%= f.label :poster_type, "👤 Owner", value: "owner" %>
+            <%= f.radio_button :poster_type, "agent", class: "sr" %>
+            <%= f.label :poster_type, "🏢 Agent", value: "agent" %>
+          </div>
+        </div>
+        <div class="field"><%= f.label :contact_name, "Contact name" %><%= f.text_field :contact_name %></div>
         <div class="field"><%= f.label :contact_phone, "Contact phone" %><%= f.telephone_field :contact_phone %></div>
         <div class="field span-2">
           <%= f.label :visiting_hours, "Visiting hours" %>
@@ -74,7 +105,25 @@
     </section>
 
     <section class="pf-section">
-      <h2>Photos</h2>
+      <h2>Amenities</h2>
+      <%= hidden_field_tag "property[amenities][]", "" %>
+      <div class="sf-pills">
+        <% Property::AMENITIES.each do |amenity| %>
+          <label class="sf-pill">
+            <%= check_box_tag "property[amenities][]", amenity, property.amenities.include?(amenity), id: "amenity_#{amenity.parameterize}" %>
+            <span><%= amenity %></span>
+          </label>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="pf-section">
+      <h2>Description</h2>
+      <%= f.text_area :description, placeholder: "Describe the neighbourhood, what makes it special…" %>
+    </section>
+
+    <section class="pf-section">
+      <h2>Photos &amp; videos</h2>
       <% if property.persisted? && property.photos.attached? %>
         <div class="photo-tiles">
           <% property.photos.each do |photo| %>
@@ -94,6 +143,21 @@
         <%= f.file_field :photos, multiple: true, accept: "image/*", data: { photo_input: true } %>
       </label>
       <div id="photo-previews" class="photo-previews"></div>
+
+      <div class="field" style="margin-top:20px">
+        <%= f.label :videos, "Videos (optional, up to 2 · 50 MB each)" %>
+        <% if property.persisted? && property.videos.attached? %>
+          <div class="sf-pills" style="margin-bottom:10px">
+            <% property.videos.each do |video| %>
+              <label class="sf-pill">
+                <%= check_box_tag "remove_video_ids[]", video.id, false, id: "remove_video_#{video.id}" %>
+                <span>🎬 <%= video.filename %> · remove</span>
+              </label>
+            <% end %>
+          </div>
+        <% end %>
+        <%= f.file_field :videos, multiple: true, accept: "video/*", class: "file-plain" %>
+      </div>
     </section>
 
     <section class="pf-section">

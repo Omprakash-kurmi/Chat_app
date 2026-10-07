@@ -1,37 +1,96 @@
+<%
+  availability =
+    if !@property.available then ["Not available", "no"]
+    elsif @property.available_now? then ["Available now", "yes"]
+    else ["Available from #{l(@property.available_from, format: :long)}", "soon"]
+    end
+  age = @property.age_years.nil? ? nil : (@property.age_years.zero? ? "New construction" : "#{pluralize(@property.age_years, 'year')} old")
+  contact_name = @property.contact_name.presence || @property.user.display_name
+  full_address = [@property.address, @property.locality, @property.city, @property.pincode].compact_blank.join(", ")
+  facts = [
+    ["Type", @property.property_type.humanize],
+    ["Bedrooms", @property.bedrooms],
+    ["Bathrooms", @property.bathrooms],
+    ["Area", (number_with_delimiter(@property.area_sqft) + " sq ft" if @property.area_sqft)],
+    ["Furnishing", @property.furnishing_label],
+    ["Parking", (@property.parking_spaces.to_i > 0 ? pluralize(@property.parking_spaces, "space") : "No parking")],
+    ["Floor", @property.floor_label],
+    ["Property age", age],
+    ["Listed by", @property.poster_type.humanize]
+  ].reject { |_, v| v.blank? }
+%>
 <article class="property-page">
-  <%= link_to "← Back to #{@property.listing_type == 'rent' ? 'rentals' : 'sales'}",
+  <%= link_to "← Back to #{@property.rent? ? 'rentals' : 'sales'}",
         homes_path(listing_type: @property.listing_type), class: "back-link" %>
 
   <div class="gallery">
     <% @property.photos.each do |photo| %>
       <%= link_to url_for(photo), target: "_blank", rel: "noopener" do %>
-        <%= image_tag photo.variant(resize_to_fill: [600, 400]), alt: @property.title %>
+        <%= image_tag photo.variant(resize_to_fill: [900, 600]), alt: @property.title %>
       <% end %>
     <% end %>
   </div>
 
   <div class="property-layout">
     <div>
+      <span class="avail <%= availability[1] %>"><%= availability[0] %></span>
       <h1><%= @property.title %></h1>
       <p class="price">
         <%= number_to_currency(@property.price, unit: "₹", precision: 0) %><%= "/month" if @property.rent? %>
       </p>
-      <p><%= @property.property_type.humanize %> ·
-         <%= @property.bedrooms %> bed · <%= @property.bathrooms %> bath ·
-         <%= @property.area_sqft %> sq ft</p>
-      <%= simple_format h(@property.description) %>
+      <% if @property.rent? && @property.security_deposit %>
+        <p class="deposit">Security deposit: <strong><%= number_to_currency(@property.security_deposit, unit: "₹", precision: 0) %></strong></p>
+      <% end %>
+      <p class="deposit">📍 <%= full_address %></p>
+
+      <div class="facts">
+        <% facts.each do |label, value| %>
+          <div class="fact"><small><%= label %></small><strong><%= value %></strong></div>
+        <% end %>
+      </div>
+
+      <% if @property.description.present? %>
+        <section class="detail-card">
+          <h2>About this home</h2>
+          <%= simple_format h(@property.description) %>
+        </section>
+      <% end %>
+
+      <% if @property.amenities.any? %>
+        <section class="detail-card">
+          <h2>Amenities</h2>
+          <div class="chips"><% @property.amenities.each do |a| %><span><%= a %></span><% end %></div>
+        </section>
+      <% end %>
+
+      <% if @property.videos.attached? %>
+        <section class="detail-card">
+          <h2>Videos</h2>
+          <div class="video-grid">
+            <% @property.videos.each do |video| %>
+              <video controls preload="metadata" playsinline>
+                <source src="<%= url_for(video) %>" type="<%= video.content_type %>">
+              </video>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
     </div>
 
     <aside class="visit-box">
-      <h2>Visit this home</h2>
-      <p><strong>Address</strong><br><%= @property.address %>, <%= @property.city %></p>
+      <h2>Contact <%= @property.poster_type %></h2>
+      <p><strong><%= contact_name %></strong><br><%= @property.poster_type.humanize %></p>
+      <p><strong>Address</strong><br><%= full_address %></p>
       <% if @property.visiting_hours.present? %>
         <p><strong>Visiting hours</strong><br><%= @property.visiting_hours %></p>
       <% end %>
-      <p><strong>Listed by</strong><br><%= @property.user.display_name %></p>
       <%= link_to "📞 Call #{@property.contact_phone}", "tel:#{@property.contact_phone.delete(' ')}", class: "btn" %>
       <%= link_to "📍 Open in Maps",
-            "https://www.google.com/maps/search/?api=1&query=#{CGI.escape("#{@property.address}, #{@property.city}")}",
+            "https://www.google.com/maps/search/?api=1&query=#{CGI.escape(@property.maps_query)}",
+            target: "_blank", rel: "noopener", class: "btn btn-light" %>
+      <%= link_to "🧭 Get directions",
+            "https://www.google.com/maps/dir/?api=1&destination=#{CGI.escape(@property.maps_query)}",
             target: "_blank", rel: "noopener", class: "btn btn-light" %>
     </aside>
   </div>
