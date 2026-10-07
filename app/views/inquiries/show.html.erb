@@ -1,0 +1,119 @@
+<% property = @inquiry.property %>
+<div class="iq">
+  <%= link_to "← All inquiries", inquiries_path(box: (@owner_view ? "received" : "sent")), class: "iq-back" %>
+  <h1><%= @owner_view ? "Inquiry from #{@inquiry.user.display_name}" : "Your inquiry" %></h1>
+  <p class="iq-sub"><%= inquiry_status_pill(@inquiry) %>
+    &nbsp;Sent <%= l(@inquiry.created_at, format: "%d %b %Y") %></p>
+
+  <div class="iq-layout">
+    <%# ---------------- conversation ---------------- %>
+    <section class="iq-panel im-wrap">
+      <div class="im-head">
+        <strong>💬 Conversation</strong>
+        <small><%= @owner_view ? @inquiry.user.display_name : property.user.display_name %></small>
+      </div>
+
+      <%= turbo_stream_from @inquiry, :messages %>
+      <div id="inquiry_<%= @inquiry.id %>_messages" class="im-list">
+        <%= render partial: "inquiry_messages/message", collection: @messages, as: :message %>
+      </div>
+
+      <% if @inquiry.chat_open? %>
+        <%= render "inquiry_messages/form", inquiry: @inquiry %>
+      <% else %>
+        <p class="im-closed">This conversation is closed (<%= @inquiry.status_label.downcase %>).</p>
+      <% end %>
+    </section>
+
+    <%# ---------------- sidebar ---------------- %>
+    <aside>
+      <section class="iq-panel">
+        <h2>Property</h2>
+        <%= link_to property_path(property), class: "iq-prop" do %>
+          <% if property.photos.attached? %>
+            <%= image_tag property.photos.first.variant(resize_to_fill: [200, 160]), alt: "" %>
+          <% end %>
+          <div>
+            <strong><%= property.title %></strong>
+            <span><%= inr(property.price) %><%= "/month" if property.rent? %></span>
+            <small><%= [property.locality, property.city].compact_blank.join(", ") %></small>
+          </div>
+        <% end %>
+      </section>
+
+      <section class="iq-panel">
+        <h2><%= @owner_view ? "Interested user" : "Owner" %></h2>
+        <dl class="iq-dl">
+          <% if @owner_view %>
+            <dt>Name</dt><dd><%= @inquiry.user.display_name %></dd>
+            <% if @inquiry.phone.present? %>
+              <dt>Phone</dt><dd><%= link_to @inquiry.phone, "tel:#{@inquiry.phone.delete(' ')}" %></dd>
+            <% end %>
+          <% else %>
+            <dt>Name</dt><dd><%= property.contact_name.presence || property.user.display_name %></dd>
+            <% if @inquiry.accepted? %>
+              <dt>Phone</dt><dd><%= link_to property.contact_phone, "tel:#{property.contact_phone.delete(' ')}" %></dd>
+              <dt>Address</dt><dd><%= [property.address, property.locality, property.city].compact_blank.join(", ") %></dd>
+            <% end %>
+          <% end %>
+          <% if @inquiry.rejected? && @inquiry.owner_note.present? %>
+            <dt>Reply</dt><dd><%= @inquiry.owner_note %></dd>
+          <% end %>
+        </dl>
+      </section>
+
+      <%# ---------------- actions ---------------- %>
+      <% if @owner_view && @inquiry.pending? %>
+        <section class="iq-panel">
+          <h2>Your reply</h2>
+          <p class="iq-help">Accept to unlock visits and phone/address details for this person, or decline.</p>
+          <%= button_to "✓ Accept inquiry", accept_inquiry_path(@inquiry), method: :patch, class: "iq-btn green block" %>
+          <%= form_with url: reject_inquiry_path(@inquiry), method: :patch, class: "iq-reject" do |f| %>
+            <%= f.text_field :owner_note, placeholder: "Reason (optional, shown to them)", maxlength: 300 %>
+            <%= f.button "Decline", class: "iq-btn danger block" %>
+          <% end %>
+        </section>
+      <% end %>
+
+      <% if @owner_view && @inquiry.accepted? %>
+        <section class="iq-panel">
+          <h2>Close the deal</h2>
+          <p class="iq-help">Agreed with this person? This closes the listing and declines the other open inquiries.</p>
+          <%= button_to "🤝 Mark deal as done", close_deal_inquiry_path(@inquiry), method: :patch,
+                class: "iq-btn block", form: { data: { turbo_confirm: "Close this listing as #{property.rent? ? 'rented' : 'sold'}?" } } %>
+        </section>
+      <% end %>
+
+      <%# ---------------- visits ---------------- %>
+      <% if @inquiry.accepted? || @visits.any? %>
+        <section class="iq-panel">
+          <h2>Property visits</h2>
+          <% if @visits.any? %>
+            <ul class="iq-visits">
+              <%= render partial: "visits/visit", collection: @visits, as: :visit, locals: { owner_view: @owner_view } %>
+            </ul>
+          <% else %>
+            <p class="iq-help">No visits scheduled yet.</p>
+          <% end %>
+
+          <% if @inquiry.accepted? %>
+            <%= form_with model: [@inquiry, Visit.new], class: "visit-form" do |f| %>
+              <label for="visit_scheduled_at">Propose a time</label>
+              <%= f.datetime_local_field :scheduled_at, required: true, min: Time.current.strftime("%Y-%m-%dT%H:%M") %>
+              <%= f.text_field :note, placeholder: "Note (optional)", maxlength: 200 %>
+              <%= f.submit "Propose visit", class: "iq-btn block" %>
+              <% if property.visiting_hours.present? %>
+                <small class="iq-help">Owner's visiting hours: <%= property.visiting_hours %></small>
+              <% end %>
+            <% end %>
+          <% end %>
+        </section>
+      <% end %>
+
+      <% if !@owner_view && @inquiry.active? %>
+        <%= button_to "Withdraw inquiry", withdraw_inquiry_path(@inquiry), method: :patch, class: "iq-btn danger block",
+              form: { class: "iq-withdraw", data: { turbo_confirm: "Withdraw this inquiry?" } } %>
+      <% end %>
+    </aside>
+  </div>
+</div>

@@ -27,9 +27,39 @@ Rails.application.routes.draw do
   get "search_home", to: "properties#choose", as: :search_home
   get "homes/:listing_type", to: "properties#index", as: :homes,
       constraints: { listing_type: /rent|buy/ }
-  resources :properties, only: :show
+  # resources :properties, only: :show
+
+  # namespace :vendor do
+  #   resources :properties, except: :show
+  # end
+
+  resources :properties, only: :show do
+    resources :inquiries, only: :create
+  end
+
+  resources :inquiries, only: %i[index show] do
+    member do
+      patch :accept
+      patch :reject
+      patch :withdraw
+      patch :close_deal
+    end
+    resources :messages, controller: "inquiry_messages", only: :create
+    resources :visits, only: :create
+  end
+
+  resources :visits, only: [] do
+    member do
+      patch :confirm
+      patch :decline
+      patch :cancel
+      patch :complete
+    end
+  end
 
   namespace :vendor do
-    resources :properties, except: :show
+    resources :properties, except: :show do
+      member { patch :reopen }
+    end
   end
 end

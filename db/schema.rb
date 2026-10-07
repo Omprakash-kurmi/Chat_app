@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_06_061133) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_07_052056) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -97,6 +97,33 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_06_061133) do
     t.index ["footer_column_id"], name: "index_footer_links_on_footer_column_id"
   end
 
+  create_table "inquiries", force: :cascade do |t|
+    t.bigint "property_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "status", default: 0, null: false
+    t.text "message", null: false
+    t.string "phone"
+    t.text "owner_note"
+    t.datetime "responded_at"
+    t.datetime "closed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["property_id", "status"], name: "index_inquiries_on_property_id_and_status"
+    t.index ["property_id", "user_id"], name: "index_inquiries_one_open_per_user", unique: true, where: "(status = ANY (ARRAY[0, 1]))"
+    t.index ["property_id"], name: "index_inquiries_on_property_id"
+    t.index ["user_id"], name: "index_inquiries_on_user_id"
+  end
+
+  create_table "inquiry_messages", force: :cascade do |t|
+    t.bigint "inquiry_id", null: false
+    t.bigint "user_id", null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inquiry_id"], name: "index_inquiry_messages_on_inquiry_id"
+    t.index ["user_id"], name: "index_inquiry_messages_on_user_id"
+  end
+
   create_table "messages", force: :cascade do |t|
     t.bigint "room_id", null: false
     t.text "content"
@@ -147,9 +174,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_06_061133) do
     t.integer "poster_type", default: 0, null: false
     t.string "contact_name"
     t.decimal "security_deposit", precision: 12, scale: 2
+    t.integer "status", default: 0, null: false
+    t.text "rejection_reason"
+    t.datetime "verified_at"
     t.index ["amenities"], name: "index_properties_on_amenities", using: :gin
     t.index ["locality"], name: "index_properties_on_locality"
     t.index ["pincode"], name: "index_properties_on_pincode"
+    t.index ["status"], name: "index_properties_on_status"
     t.index ["user_id"], name: "index_properties_on_user_id"
   end
 
@@ -202,14 +233,36 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_06_061133) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "visits", force: :cascade do |t|
+    t.bigint "inquiry_id", null: false
+    t.bigint "property_id", null: false
+    t.bigint "proposed_by_id", null: false
+    t.datetime "scheduled_at", null: false
+    t.integer "status", default: 0, null: false
+    t.string "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inquiry_id"], name: "index_visits_on_inquiry_id"
+    t.index ["property_id", "scheduled_at"], name: "index_visits_on_property_id_and_scheduled_at"
+    t.index ["property_id"], name: "index_visits_on_property_id"
+    t.index ["proposed_by_id"], name: "index_visits_on_proposed_by_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "events", "rooms"
   add_foreign_key "events", "users"
   add_foreign_key "footer_links", "footer_columns"
+  add_foreign_key "inquiries", "properties"
+  add_foreign_key "inquiries", "users"
+  add_foreign_key "inquiry_messages", "inquiries"
+  add_foreign_key "inquiry_messages", "users"
   add_foreign_key "messages", "rooms"
   add_foreign_key "messages", "users"
   add_foreign_key "properties", "users"
   add_foreign_key "rsvps", "events"
   add_foreign_key "rsvps", "users"
+  add_foreign_key "visits", "inquiries"
+  add_foreign_key "visits", "properties"
+  add_foreign_key "visits", "users", column: "proposed_by_id"
 end

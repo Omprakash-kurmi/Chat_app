@@ -1,0 +1,36 @@
+<%# Goes inside the .visit-box <aside> on properties/show %>
+<div class="inq-box">
+  <% if !user_signed_in? %>
+    <h3>Interested in this home?</h3>
+    <p>Sign in to message the owner and book a visit.</p>
+    <%= link_to "Sign in to contact", new_user_session_path, class: "iq-btn block" %>
+
+  <% elsif property.user_id == current_user.id %>
+    <h3>Your listing</h3>
+    <p><%= property_status_pill(property) %></p>
+    <% if property.pending? %>
+      <p>An admin will verify this listing before customers can see it.</p>
+    <% elsif property.rejected? %>
+      <p class="inq-reason"><strong>Reason:</strong> <%= property.rejection_reason %></p>
+      <%= link_to "Edit & resubmit", edit_vendor_property_path(property), class: "iq-btn block" %>
+    <% end %>
+    <%= link_to "👥 Interested users", inquiries_path(box: "received", property_id: property.id), class: "iq-btn ghost block" %>
+
+  <% elsif (existing = property.inquiries.active.find_by(user_id: current_user.id)) %>
+    <h3>You've contacted the owner</h3>
+    <p><%= inquiry_status_pill(existing) %></p>
+    <%= link_to "💬 Open conversation", inquiry_path(existing), class: "iq-btn block" %>
+
+  <% elsif property.published? && property.available? %>
+    <h3>Contact the owner</h3>
+    <%= form_with model: [property, Inquiry.new(message: "Hi, I'm interested in “#{property.title}”. Is it still available?")],
+          class: "inq-form" do |f| %>
+      <%= f.text_area :message, rows: 4, maxlength: 1500, required: true %>
+      <%= f.telephone_field :phone, placeholder: "Your phone number (optional)", maxlength: 20 %>
+      <%= f.submit "Send inquiry", class: "iq-btn block" %>
+    <% end %>
+
+  <% else %>
+    <p class="inq-muted">This listing isn't accepting inquiries right now.</p>
+  <% end %>
+</div>
