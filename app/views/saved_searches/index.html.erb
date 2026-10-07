@@ -1,0 +1,43 @@
+<div class="sh">
+  <header class="fv-head">
+    <div>
+      <h1>Saved searches</h1>
+      <p class="fv-sub">We'll notify you when a new home matching one of these is published.</p>
+    </div>
+    <%= link_to "♥ My favorites", favorites_path, class: "fv-link" %>
+  </header>
+
+  <% if @searches.any? %>
+    <div class="ss-list">
+      <% @searches.each do |search| %>
+        <% count = search.results.count %>
+        <article class="ss-card <%= 'paused' unless search.notify? %>">
+          <div class="ss-main">
+            <h3><%= search.name %></h3>
+            <p class="ss-chips">
+              <% search.summary.each do |chip| %><span><%= chip %></span><% end %>
+            </p>
+            <p class="ss-meta">
+              <%= pluralize(count, "home") %> match right now
+              <% if search.last_notified_at %> · last alert <%= time_ago_in_words(search.last_notified_at) %> ago<% end %>
+            </p>
+          </div>
+          <div class="ss-actions">
+            <%= link_to "View results", homes_path(search.query_params), class: "fv-cta" %>
+            <%= button_to (search.notify? ? "🔔 Alerts on" : "🔕 Alerts off"), saved_search_path(search),
+                  method: :patch, params: { saved_search: { notify: !search.notify? } },
+                  form_class: "ss-form", class: "ss-toggle #{'on' if search.notify?}" %>
+            <%= button_to "Delete", saved_search_path(search), method: :delete, form_class: "ss-form",
+                  class: "ss-delete", form: { data: { turbo_confirm: "Delete this saved search?" } } %>
+          </div>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty">
+      <strong>🔔 No saved searches yet</strong>
+      Search for homes, add a few filters (location, budget, bedrooms) and press “Save this search”.
+      <p><%= link_to "Start searching", search_home_path, class: "fv-cta" %></p>
+    </div>
+  <% end %>
+</div>

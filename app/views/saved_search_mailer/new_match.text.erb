@@ -1,0 +1,8 @@
+A new home matches your saved search "<%= @search.name %>"
+
+<%= @property.title %>
+<%= number_to_currency(@property.price, unit: "₹", precision: 0) %><%= "/month" if @property.rent? %>
+<%= [@property.locality, @property.city].compact_blank.join(", ") %>
+
+View it: <%= property_url(@property) %>
+Manage saved searches: <%= saved_searches_url %>

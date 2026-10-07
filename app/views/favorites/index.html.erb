@@ -1,0 +1,25 @@
+<div class="sh">
+  <header class="fv-head">
+    <div>
+      <h1>My favorites</h1>
+      <p class="fv-sub">Homes you've saved. Tap the heart to remove one.</p>
+    </div>
+    <%= link_to "🔔 Saved searches", saved_searches_path, class: "fv-link" %>
+  </header>
+
+  <% if @favorites.any? %>
+    <div class="property-grid" id="favorites-grid">
+      <% @favorites.each do |favorite| %>
+        <%= render "properties/property", property: favorite.property, removable: true %>
+      <% end %>
+    </div>
+    <%= paginate @favorites %>
+  <% else %>
+    <div class="empty">
+      <strong>♡ No favorites yet</strong>
+      Tap the heart on any home to keep it here.
+      <p><%= link_to "Find a home to rent", homes_path(listing_type: "rent"), class: "fv-cta" %>
+         <%= link_to "Find a home to buy", homes_path(listing_type: "buy"), class: "fv-cta ghost" %></p>
+    </div>
+  <% end %>
+</div>
