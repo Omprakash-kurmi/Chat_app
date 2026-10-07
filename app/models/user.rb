@@ -34,7 +34,7 @@ class User < ApplicationRecord
   end
 
   def display_name
-    [try(:username), try(:name), email.to_s.split("@").first].compact_blank.first
+    [ try(:username), try(:name), email.to_s.split("@").first ].compact_blank.first
   end
 
   private

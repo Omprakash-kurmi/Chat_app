@@ -14,7 +14,7 @@ namespace :demo do
       user.saved_searches.find_or_create_by!(listing_type: sample.listing_type, name: name) { |s| s.filters = filters }
       user.notifications.find_or_create_by!(dedupe_key: "demo:welcome") do |n|
         n.kind = "saved_search_match"; n.title = "New match for “#{name}”"
-        n.body = "#{sample.title} — #{[sample.locality, sample.city].compact_blank.join(', ')}"
+        n.body = "#{sample.title} — #{[ sample.locality, sample.city ].compact_blank.join(', ')}"
         n.path = Rails.application.routes.url_helpers.property_path(sample)
       end
     end

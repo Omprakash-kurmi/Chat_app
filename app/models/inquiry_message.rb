@@ -30,7 +30,7 @@ class InquiryMessage < ApplicationRecord
   # end
   def broadcast_to_conversation
     broadcast_append_to(
-      [inquiry, :messages],
+      [ inquiry, :messages ],
       target: "inquiry_#{inquiry.id}_messages",
       partial: "inquiry_messages/message",
       locals: { message: self }
