@@ -1,24 +1,89 @@
-<div class="sh">
-  <header class="fv-head">
+<% unread_count = current_user.notifications.unread.count %>
+<style>
+  .nt { --sh-accent:#5b21f0; --sh-ink:#1b1f3b; --sh-muted:#6b7280; --sh-line:#e3e5ef;
+        max-width: 860px; margin: 0 auto; padding: 8px 20px 72px; color: var(--sh-ink); font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .nt *, .nt *::before, .nt *::after { box-sizing: border-box; }
+  .nt-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 18px 0 22px; }
+  .nt .nt-eyebrow { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--sh-accent); }
+  .nt h1 { margin: 4px 0 6px; font-family: "Fraunces", Georgia, serif; font-size: clamp(28px, 4vw, 38px); font-weight: 600; color: var(--sh-ink); line-height: 1.1; }
+  .nt .nt-sub { margin: 0; color: var(--sh-muted); font-size: 15px; }
+  .nt-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .nt form.nt-form, .nt-actions form { margin: 0 !important; padding: 0 !important; display: block; }
+
+  .nt a.nt-primary, .nt button.nt-primary { display: inline-flex !important; align-items: center; gap: 8px; width: auto !important; height: auto !important; margin: 0 !important; padding: 11px 20px !important;
+    border: 0 !important; border-radius: 12px !important; background: linear-gradient(135deg, #7c4dff, #5b21f0) !important; color: #fff !important;
+    font-family: inherit !important; font-size: 14px !important; font-weight: 700 !important; line-height: 1.2 !important;
+    box-shadow: 0 8px 18px rgba(91,33,240,.28) !important; cursor: pointer; text-decoration: none !important; }
+  .nt button.nt-primary span { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: rgba(255,255,255,.25); font-size: 12px; }
+  .nt a.nt-ghost { display: inline-flex; align-items: center; padding: 10px 18px; border: 1.5px solid var(--sh-line); border-radius: 12px; background: #fff; color: var(--sh-ink); font-size: 14px; font-weight: 600; text-decoration: none; }
+  .nt a.nt-ghost:hover { border-color: var(--sh-accent); color: var(--sh-accent); }
+
+  .nt ul.nt-list { list-style: none !important; margin: 0 !important; padding: 0 !important; display: grid; gap: 12px; }
+  .nt li.nt-card { margin: 0 !important; padding: 0 !important; list-style: none !important; background: #fff; border: 1px solid var(--sh-line); border-radius: 18px;
+    box-shadow: 0 1px 2px rgba(27,31,59,.04), 0 8px 22px rgba(27,31,59,.06); transition: transform .15s, box-shadow .15s, border-color .15s; overflow: hidden; }
+  .nt li.nt-card:hover { transform: translateY(-2px); border-color: #cfc3fb; box-shadow: 0 14px 30px rgba(91,33,240,.13); }
+  .nt li.nt-card.unread { background: linear-gradient(90deg, #f6f2ff 0, #fff 55%); border-color: #d9ccfd; box-shadow: inset 4px 0 0 var(--sh-accent), 0 8px 22px rgba(27,31,59,.06); }
+
+  .nt button.nt-item { display: flex !important; align-items: center; gap: 16px; width: 100% !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 18px 20px !important;
+    border: 0 !important; border-radius: 0 !important; background: transparent !important; color: var(--sh-ink) !important; text-align: left !important; font: inherit !important;
+    box-shadow: none !important; text-shadow: none !important; cursor: pointer; white-space: normal !important; }
+  .nt .nt-icon { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: #efe9ff; color: var(--sh-accent); }
+  .nt li.nt-card:not(.unread) .nt-icon { background: #f1f2f7; color: #8a8fa6; }
+  .nt .nt-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .nt .nt-text strong { display: block; color: var(--sh-ink); font-size: 16px; font-weight: 700; line-height: 1.35; text-shadow: none; }
+  .nt li.nt-card:not(.unread) .nt-text strong { font-weight: 600; color: #4b5068; }
+  .nt .nt-body { display: block; color: var(--sh-muted); font-size: 14px; line-height: 1.45; text-shadow: none; }
+  .nt .nt-text small { display: block; margin-top: 2px; color: #9aa0b5; font-size: 12.5px; font-weight: 600; text-shadow: none; }
+  .nt .nt-side { flex: none; display: flex; align-items: center; gap: 12px; color: #b3b7c9; }
+  .nt li.nt-card:hover .nt-side { color: var(--sh-accent); }
+  .nt .nt-new { font-style: normal; padding: 4px 10px; border-radius: 999px; background: #ff7a45; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+
+  .nt .nt-empty { margin-top: 10px; padding: 64px 24px; text-align: center; background: #fff; border: 2px dashed var(--sh-line); border-radius: 24px; }
+  .nt .nt-empty-ico { display: inline-grid; place-items: center; width: 68px; height: 68px; margin-bottom: 14px; border-radius: 50%; background: #f0eaff; font-size: 30px; }
+  .nt .nt-empty strong { display: block; margin-bottom: 6px; color: var(--sh-ink); font-size: 20px; }
+  .nt .nt-empty p { margin: 0 auto 20px; max-width: 38ch; color: var(--sh-muted); font-size: 15px; }
+
+  @media (max-width: 560px) {
+    .nt button.nt-item { padding: 14px !important; gap: 12px; }
+    .nt .nt-icon { width: 40px; height: 40px; }
+    .nt .nt-side svg { display: none; }
+    .nt-actions { width: 100%; }
+  }
+</style>
+
+<div class="nt">
+  <header class="nt-head">
     <div>
+      <p class="nt-eyebrow">Alerts</p>
       <h1>Notifications</h1>
-      <p class="fv-sub">New homes that match your saved searches show up here.</p>
+      <p class="nt-sub">New homes that match your saved searches show up here.</p>
     </div>
-    <% if current_user.notifications.unread.exists? %>
-      <%= button_to "Mark all as read", read_all_notifications_path, method: :patch, form_class: "ss-form", class: "ss-toggle" %>
-    <% end %>
+    <div class="nt-actions">
+      <%= link_to "Saved searches", saved_searches_path, class: "nt-ghost" %>
+      <% if unread_count > 0 %>
+        <%= button_to read_all_notifications_path, method: :patch, form_class: "nt-form", class: "nt-primary" do %>
+          Mark all as read <span><%= unread_count %></span>
+        <% end %>
+      <% end %>
+    </div>
   </header>
 
   <% if @notifications.any? %>
-    <ul class="nf-list">
+    <ul class="nt-list">
       <% @notifications.each do |note| %>
-        <li class="<%= 'unread' if note.unread? %>">
-          <%= button_to read_notification_path(note), method: :patch, form_class: "nf-form", class: "nf-item" do %>
-            <span class="nf-dot" aria-hidden="true"></span>
-            <span class="nf-text">
+        <li class="nt-card <%= 'unread' if note.unread? %>">
+          <%= button_to read_notification_path(note), method: :patch, form_class: "nt-form", class: "nt-item" do %>
+            <span class="nt-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10Z"/></svg>
+            </span>
+            <span class="nt-text">
               <strong><%= note.title %></strong>
-              <span><%= note.body %></span>
+              <% if note.body.present? %><span class="nt-body"><%= note.body %></span><% end %>
               <small><%= time_ago_in_words(note.created_at) %> ago</small>
+            </span>
+            <span class="nt-side">
+              <% if note.unread? %><i class="nt-new">New</i><% end %>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
             </span>
           <% end %>
         </li>
@@ -26,6 +91,11 @@
     </ul>
     <%= paginate @notifications %>
   <% else %>
-    <div class="empty"><strong>🔔 Nothing yet</strong>Save a search and we'll tell you when a match is listed.</div>
+    <div class="nt-empty">
+      <span class="nt-empty-ico">🔔</span>
+      <strong>You're all caught up</strong>
+      <p>Save a search and we'll tell you the moment a matching home is listed.</p>
+      <%= link_to "Search homes", search_home_path, class: "nt-primary" %>
+    </div>
   <% end %>
 </div>

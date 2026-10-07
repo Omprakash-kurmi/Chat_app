@@ -92,6 +92,8 @@
       <%= link_to "🧭 Get directions",
             "https://www.google.com/maps/dir/?api=1&destination=#{CGI.escape(@property.maps_query)}",
             target: "_blank", rel: "noopener", class: "btn btn-light" %>
+      <%= render "properties/inquiry_box", property: @property %>
+      <%# <%= render "favorites/button", property: @property, size: "lg" %>
     </aside>
   </div>
 

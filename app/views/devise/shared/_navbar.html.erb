@@ -1,48 +1,83 @@
-<% active = ->(*prefixes) { prefixes.any? { |p| request.path.start_with?(p) } ? "active" : "" } %>
-
-<header class="sn">
-  <div class="sn-inner">
-    <%= link_to root_path, class: "sn-brand" do %>
-      <span class="sn-logo">💬</span>
-      <span>Chat_App</span>
+<%
+  name    = current_user.try(:display_name).presence || current_user.try(:username).presence || current_user.try(:email).to_s.split("@").first if user_signed_in?
+  vendor  = user_signed_in? && current_user.try(:vendor?)
+  on      = ->(*paths) { paths.include?(controller_path) ? "on" : nil }
+  profile = respond_to?(:profile_path) ? profile_path : edit_user_registration_path
+%>
+<header class="tn">
+  <div class="tn-inner">
+    <%= link_to root_path, class: "tn-brand", "aria-label": "Chat_App home" do %>
+      <span class="tn-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+      </span>
+      <span class="tn-name">Chat_App</span>
     <% end %>
 
-    <input type="checkbox" id="sn-toggle" class="sn-toggle" aria-hidden="true">
-    <label for="sn-toggle" class="sn-burger" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </label>
-
-    <nav class="sn-links">
-      <% if user_signed_in? %>
-        <%= link_to "ChAt Rooms", rooms_path, class: "sn-link #{active.call('/rooms')}" %>
-      <% end %>
-
-      <%= link_to "Search Home", search_home_path,
-            class: "sn-link #{active.call('/search_home', '/homes', '/properties')}" %>
-
-      <% if user_signed_in? && current_user.vendor? %>
-        <%= link_to "My listings", vendor_properties_path,
-              class: "sn-link #{active.call('/vendor')}" %>
-      <% end %>
-
-      <% if user_signed_in? %>
-        <%= link_to "Profile", profile_path,
-              class: "sn-link #{active.call('/profile')}" %>
-      <% end %>
-
-      <div class="sn-actions">
-        <% if user_signed_in? %>
-          <span class="sn-user">
-            <span class="sn-avatar"><%= (current_user.display_name.presence || current_user.email).first.upcase %></span>
-            <span class="sn-name"><%= current_user.display_name.presence || current_user.email %></span>
-          </span>
-          <%= button_to "Sign out", destroy_user_session_path, method: :delete,
-                class: "sn-signout", form: { class: "sn-form" } %>
+    <% if user_signed_in? %>
+      <nav class="tn-links" aria-label="Main">
+        <%= link_to "Chat Rooms", rooms_path, class: ["tn-link", on.call("rooms")] %>
+        <% if vendor %>
+          <%= link_to "My listings", vendor_properties_path, class: ["tn-link", on.call("vendor/properties")] %>
         <% else %>
-          <%= link_to "Sign in", new_user_session_path, class: "sn-link" %>
-          <%= link_to "Create account", new_user_registration_path, class: "sn-signout" %>
+          <%= link_to "Search Home", search_home_path, class: ["tn-link", on.call("properties")] %>
         <% end %>
+        <%= link_to inquiries_path, class: ["tn-link", on.call("inquiries", "inquiry_messages", "visits")] do %>
+          Inquiries<% if (n = pending_inquiries_count) > 0 %><span class="tn-badge"><%= n %></span><% end %>
+        <% end %>
+      </nav>
+
+      <div class="tn-right">
+        <% unless vendor %>
+          <%= link_to favorites_path, class: ["tn-icon", on.call("favorites")], title: "My favorites", "aria-label": "My favorites" do %>
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+          <% end %>
+          <%= link_to saved_searches_path, class: ["tn-icon", on.call("saved_searches")], title: "Saved searches", "aria-label": "Saved searches" do %>
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <% end %>
+          <%= link_to notifications_path, class: ["tn-icon", on.call("notifications")], title: "Notifications", "aria-label": "Notifications" do %>
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+            <% if (c = unread_notifications_count) > 0 %><span class="tn-dot"><%= c > 9 ? "9+" : c %></span><% end %>
+          <% end %>
+        <% end %>
+
+        <details class="tn-user">
+          <summary>
+            <span class="tn-avatar"><%= name.to_s[0].to_s.upcase %></span>
+            <span class="tn-uname"><%= name %></span>
+            <svg class="tn-caret" viewBox="0 0 12 8" width="10" height="7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m1 1 5 5 5-5"/></svg>
+          </summary>
+          <div class="tn-menu">
+            <%= link_to "Profile", profile %>
+            <% if vendor %>
+              <%= link_to "My listings", vendor_properties_path %>
+            <% else %>
+              <%= link_to "My favorites", favorites_path %>
+              <%= link_to "Saved searches", saved_searches_path %>
+            <% end %>
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, form_class: "tn-signout" %>
+          </div>
+        </details>
       </div>
-    </nav>
+    <% else %>
+      <nav class="tn-links" aria-label="Main">
+        <%= link_to "Search Home", search_home_path, class: ["tn-link", on.call("properties")] %>
+      </nav>
+      <div class="tn-right">
+        <%= link_to "Sign in", new_user_session_path, class: "tn-btn ghost" %>
+        <%= link_to "Create account", new_user_registration_path, class: "tn-btn" %>
+      </div>
+    <% end %>
   </div>
 </header>
+<script>
+  // close the account menu when clicking elsewhere
+  if (!window.__tnMenu) {
+    window.__tnMenu = true
+    document.addEventListener("click", function (e) {
+      document.querySelectorAll("details.tn-user[open]").forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute("open") })
+    })
+    document.addEventListener("turbo:before-cache", function () {
+      document.querySelectorAll("details.tn-user[open]").forEach(function (d) { d.removeAttribute("open") })
+    })
+  }
+</script>

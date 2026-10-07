@@ -22,10 +22,18 @@ class InquiryMessage < ApplicationRecord
     errors.add(:base, "You can't post in this conversation.") unless inquiry && inquiry.participant?(user)
   end
 
+  # def broadcast_to_conversation
+  #   broadcast_append_to [ inquiry, :messages ],
+  #                       target: "inquiry_#{inquiry_id}_messages",
+  #                       partial: "inquiry_messages/message",
+  #                       locals: { message: self }
+  # end
   def broadcast_to_conversation
-    broadcast_append_to [ inquiry, :messages ],
-                        target: "inquiry_#{inquiry_id}_messages",
-                        partial: "inquiry_messages/message",
-                        locals: { message: self }
+    broadcast_append_to(
+      [inquiry, :messages],
+      target: "inquiry_#{inquiry.id}_messages",
+      partial: "inquiry_messages/message",
+      locals: { message: self }
+    )
   end
 end

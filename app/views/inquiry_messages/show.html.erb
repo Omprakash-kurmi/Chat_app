@@ -1,0 +1,11 @@
+<%= turbo_stream_from @inquiry, :messages %>
+
+<div id="inquiry_<%= @inquiry.id %>_messages" class="im-list">
+  <%= render partial: "inquiry_messages/message",
+             collection: @messages,
+             as: :message %>
+</div>
+
+<% if @inquiry.chat_open? %>
+  <!-- your message form -->
+<% end %>
