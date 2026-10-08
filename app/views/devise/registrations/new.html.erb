@@ -46,8 +46,11 @@
           </label>
         </div>
       </div>
+
       <%= f.submit "Sign up", class: "auth-submit" %>
     <% end %>
+
+    <%= render "devise/shared/google_button" %>
 
     <div class="auth-links">
       <%= link_to "Already have an account? Log in", new_session_path(resource_name) %>

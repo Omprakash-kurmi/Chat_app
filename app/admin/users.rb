@@ -12,11 +12,14 @@ ActiveAdmin.register User do
   scope("Customers") { |users| users.where(role: User.roles[:customer]) }
   scope("Vendors")   { |users| users.where(role: User.roles[:vendor]) }
   scope("Admins")    { |users| users.where(admin: true) }
+  scope("Google users") { |users| users.where(provider: "google_oauth2") }
 
   filter :id
   filter :name
   filter :email
   # filter :role, as: :select, collection: User.roles.keys.map { |role| [role.humanize, role] }
+  filter :provider, label: "Signed up with", as: :select,
+                    collection: { "Google" => "google_oauth2" }
   filter :admin
   filter :created_at
   filter :updated_at
@@ -27,12 +30,14 @@ ActiveAdmin.register User do
     id_column
 
     column :avatar do |user|
-      if user.avatar.attached?
+      src = user.avatar.attached? ? url_for(user.avatar) : user.avatar_url.presence
+      if src
         image_tag(
-          url_for(user.avatar),
+          src,
           width: 50,
           height: 50,
-          style: "border-radius: 50%; object-fit: cover;"
+          style: "border-radius: 50%; object-fit: cover;",
+          referrerpolicy: "no-referrer"
         )
       else
         status_tag "No Avatar"
@@ -44,6 +49,10 @@ ActiveAdmin.register User do
     end
 
     column :email
+
+    column "Signed up with" do |user|
+      user.provider.present? ? status_tag("Google", class: "ok") : status_tag("Email")
+    end
 
     column :role do |user|
       status_tag user.role&.humanize
@@ -70,12 +79,14 @@ ActiveAdmin.register User do
       row :id
 
       row :avatar do |user|
-        if user.avatar.attached?
+        src = user.avatar.attached? ? url_for(user.avatar) : user.avatar_url.presence
+        if src
           image_tag(
-            url_for(user.avatar),
+            src,
             width: 120,
             height: 120,
-            style: "border-radius: 50%; object-fit: cover;"
+            style: "border-radius: 50%; object-fit: cover;",
+            referrerpolicy: "no-referrer"
           )
         else
           status_tag "No Avatar"
@@ -85,6 +96,11 @@ ActiveAdmin.register User do
       row :name
       row :display_name
       row :email
+
+      row "Signed up with" do |user|
+        user.provider.present? ? status_tag("Google", class: "ok") : status_tag("Email")
+      end
+
       row :role
 
       row :admin do |user|

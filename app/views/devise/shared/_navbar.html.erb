@@ -18,6 +18,7 @@
         <%= link_to "Chat Rooms", rooms_path, class: ["tn-link", on.call("rooms")] %>
         <% if vendor %>
           <%= link_to "My listings", vendor_properties_path, class: ["tn-link", on.call("vendor/properties")] %>
+          <%= link_to "Search Home", search_home_path, class: ["tn-link", on.call("properties")] %>
         <% else %>
           <%= link_to "Search Home", search_home_path, class: ["tn-link", on.call("properties")] %>
         <% end %>

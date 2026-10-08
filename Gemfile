@@ -74,3 +74,5 @@ gem "active_admin_flat_skin"
 gem "font-awesome-rails"
 gem "aws-sdk-s3", require: false
 gem "kaminari"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
