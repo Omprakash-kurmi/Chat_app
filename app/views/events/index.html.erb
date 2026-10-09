@@ -1,61 +1,70 @@
-<div class="events-page">
-  <div class="events-top">
+<% content_for :head do %>
+  <%= stylesheet_link_tag "ev_events", "data-turbo-track": "reload" %>
+<% end %>
+
+<div class="evx">
+  <header class="evx-head">
     <div>
+      <%= link_to "← Back to room", room_path(@room), class: "evx-back" %>
+      <p class="evx-eyebrow">Events</p>
       <h1>Events in <%= @room.name %></h1>
-      <p><%= link_to "← Back to room", room_path(@room) %></p>
     </div>
-    <%= link_to "New event", new_room_event_path(@room), class: "new-event-btn" %>
-    <%= link_to "Calendar view", calendar_room_events_path(@room), class: "new-event-btn" %>
-  </div>
+    <div class="evx-top">
+      <%= link_to "Calendar view", calendar_room_events_path(@room), class: "evx-ghost" %>
+      <%= link_to "+ New event", new_room_event_path(@room), class: "evx-primary" %>
+    </div>
+  </header>
 
-  <div class="section-label">Upcoming</div>
-
-  <% if @upcoming_events.any? %>
-    <% @upcoming_events.each do |event| %>
-      <div class="event-card">
-        <div class="event-date-badge">
-          <span class="month"><%= event.starts_at.strftime("%b") %></span>
-          <span class="day"><%= event.starts_at.strftime("%-d") %></span>
-        </div>
-        <div class="event-body">
-          <p class="event-title"><%= event.title %></p>
-          <p class="event-meta">
-            <%= event.starts_at.strftime("%A, %-d %b · %-I:%M %p") %> · by <%= event.user.display_name %>
-          </p>
-          <% if event.description.present? %>
-            <p class="event-description"><%= event.description %></p>
-          <% end %>
-
-          <div class="rsvp-row">
-            <% current_status = event.rsvp_for(current_user)&.status %>
-            <%= button_to "Going", room_event_rsvps_path(@room, event), params: { status: "going" }, class: "rsvp-btn #{'active going' if current_status == 'going'}" %>
-            <%= button_to "Maybe", room_event_rsvps_path(@room, event), params: { status: "maybe" }, class: "rsvp-btn #{'active maybe' if current_status == 'maybe'}" %>
-            <%= button_to "Can't go", room_event_rsvps_path(@room, event), params: { status: "not_going" }, class: "rsvp-btn #{'active not_going' if current_status == 'not_going'}" %>
-            <span class="going-count"><%= pluralize(event.going_count, "going") %></span>
-          </div>
-
-          <% if event.user == current_user || current_user.admin? %>
-            <%= link_to "Remove", room_event_path(@room, event), data: { turbo_method: :delete, turbo_confirm: "Remove this event?" }, class: "delete-event" %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
+  <% if @upcoming_events.empty? && @past_events.empty? %>
+    <div class="evx-empty">
+      <span class="big">📅</span>
+      <strong>No events yet</strong>
+      <p>Plan a meetup for this room and let everyone RSVP.</p>
+      <%= link_to "+ New event", new_room_event_path(@room), class: "evx-primary" %>
+    </div>
   <% else %>
-    <div class="empty-events">No upcoming events yet.</div>
-  <% end %>
+    <% [["Upcoming", @upcoming_events, false], ["Past", @past_events, true]].each do |label, list, is_past| %>
+      <% next if list.empty? %>
+      <h2 class="evx-section"><%= label %></h2>
+      <div class="evx-list">
+        <% list.each do |event| %>
+          <% going = event.rsvps.count { |r| r.status.to_s == "going" } %>
+          <% mine  = event.rsvps.find { |r| r.user_id == current_user.id }&.status.to_s %>
+          <article class="evx-card <%= 'past' if is_past %>">
+            <div class="evx-date">
+              <small><%= event.starts_at.strftime("%b") %></small>
+              <b><%= event.starts_at.day %></b>
+            </div>
+            <div class="evx-main">
+              <h3 class="evx-title"><%= event.title %></h3>
+              <p class="evx-when">
+                <%= event.starts_at.strftime("%A, %-d %b · %-l:%M %p") %>
+                · by <%= event.user.try(:display_name) || "someone" %>
+              </p>
+              <% if event.description.present? %>
+                <p class="evx-desc"><%= event.description %></p>
+              <% end %>
 
-  <% if @past_events.any? %>
-    <div class="section-label">Past</div>
-    <% @past_events.each do |event| %>
-      <div class="event-card" style="opacity: 0.6;">
-        <div class="event-date-badge">
-          <span class="month"><%= event.starts_at.strftime("%b") %></span>
-          <span class="day"><%= event.starts_at.strftime("%-d") %></span>
-        </div>
-        <div class="event-body">
-          <p class="event-title"><%= event.title %></p>
-          <p class="event-meta"><%= event.starts_at.strftime("%A, %-d %b · %-I:%M %p") %></p>
-        </div>
+              <div class="evx-foot">
+                <% unless is_past %>
+                  <% [["going", "Going"], ["maybe", "Maybe"], ["not_going", "Can't go"]].each do |status, text| %>
+                  
+                  <%= button_to text, room_event_rsvps_path(@room, event), method: :post,
+                          params: { status: status }, form_class: "evx-form",
+                          class: "evx-btn #{'on' if mine == status}" %>
+                  <% end %>
+                <% end %>
+                <span class="evx-spacer"></span>
+                <span class="evx-going <%= 'zero' if going.zero? %>"><%= pluralize(going, "going") %></span>
+                <% if event.user == current_user || current_user.try(:admin?) %>
+                  <%= button_to "Remove", room_event_path(@room, event), method: :delete,
+                        form_class: "evx-form", class: "evx-del",
+                        form: { data: { turbo_confirm: "Remove this event?" } } %>
+                <% end %>
+              </div>
+            </div>
+          </article>
+        <% end %>
       </div>
     <% end %>
   <% end %>

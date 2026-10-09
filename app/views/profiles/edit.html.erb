@@ -1,45 +1,58 @@
-<div class="profile-wrap">
-  <div class="profile-header">
-    <% if @user.avatar.attached? %>
-      <%= image_tag rails_storage_proxy_url(@user.avatar.variant(resize_to_fill: [72, 72])), class: "profile-avatar" %>
-    <% else %>
-      <span class="profile-avatar-fallback"><%= @user.display_name.first.upcase %></span>
-    <% end %>
-    <div>
-      <h1>Edit profile</h1>
-      <p><%= @user.email %></p>
-    </div>
-  </div>
+<%
+  src    = @user.avatar.attached? ? url_for(@user.avatar) : @user.avatar_url.presence
+  google = @user.provider.present?
+%>
+<% content_for :head do %>
+  <%= stylesheet_link_tag "pf_profile", "data-turbo-track": "reload" %>
+<% end %>
 
-  <% if @user.errors.any? %>
-    <div class="errors-box">
-      <ul>
-        <% @user.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
+<div class="pf">
+  <%= link_to "← Back to profile", profile_path, class: "pf-back" %>
+  <h1>Edit profile</h1>
+  <p class="pf-sub">Update how you appear to owners and other members.</p>
+
+  <%= form_with model: @user, url: profile_path, method: :patch, local: true do |f| %>
+    <div class="pf-card">
+      <% if @user.errors.any? %>
+        <div class="pf-err">
+          Please fix the following:
+          <ul><% @user.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+        </div>
+      <% end %>
+
+      <div class="pf-top">
+        <span id="pf_av" class="pf-av" <%= tag.attributes(style: "background-image:url('#{src}')") if src %>><%= @user.display_name.to_s[0].to_s.upcase unless src %></span>
+        <div class="pf-who">
+          <strong><%= @user.display_name %></strong>
+          <span class="pf-mail"><%= @user.email %></span>
+          <div class="pf-tags">
+            <span class="pf-tag"><%= @user.role.to_s.humanize %></span>
+            <% if google %><span class="pf-tag g">Google</span><% end %>
+          </div>
+        </div>
+        <label class="pf-photo" for="pf_avatar">Change photo</label>
+        <%= f.file_field :avatar, id: "pf_avatar", class: "pf-file", accept: "image/png,image/jpeg,image/webp",
+              onchange: "var f=this.files[0]; if(f){var a=document.getElementById('pf_av'); a.style.backgroundImage='url('+URL.createObjectURL(f)+')'; a.textContent='';}" %>
+      </div>
+
+      <div class="pf-grid">
+        <label class="pf-field"><span>Name</span><%= f.text_field :name, maxlength: 50, placeholder: "Your name" %></label>
+        <label class="pf-field"><span>Email</span>
+          <%= f.email_field :email, readonly: google %>
+          <% if google %><small class="pf-hint">Managed by your Google account.</small><% end %>
+        </label>
+      </div>
+
+      <label class="pf-field"><span>Bio</span>
+        <%= f.text_area :bio, maxlength: 280, placeholder: "Tell owners a little about yourself",
+              oninput: "document.getElementById('pf_count').textContent=this.value.length" %>
+        <small class="pf-hint"><span id="pf_count"><%= @user.bio.to_s.length %></span> / 280</small>
+      </label>
+
+      <div class="pf-actions">
+        <%= link_to "Cancel", profile_path, class: "pf-ghost" %>
+        <%= f.submit "Save changes", class: "pf-save" %>
+      </div>
     </div>
   <% end %>
-
-  <div class="profile-card">
-    <%= form_with model: @user, url: profile_path, method: :patch, local: true do |f| %>
-      <div class="profile-field">
-        <%= f.label :name %>
-        <%= f.text_field :name, placeholder: @user.email.split("@").first %>
-      </div>
-
-      <div class="profile-field">
-        <%= f.label :bio %>
-        <%= f.text_area :bio, placeholder: "A short line about you" %>
-      </div>
-
-      <div class="profile-field">
-        <%= f.label :avatar, "Profile photo" %>
-        <%= f.file_field :avatar, accept: "image/*" %>
-      </div>
-
-      <%= f.submit "Save changes", class: "btn" %>
-      <%= link_to "Cancel", profile_path, class: "btn btn-ghost" %>
-    <% end %>
-  </div>
 </div>
