@@ -13,10 +13,10 @@ class Review < ApplicationRecord
 
   def self.sorted(by)
     case by
-      when "latest"   then order(created_at: :desc)
-      when "positive" then order(rating: :desc, helpful_count: :desc)
-      when "negative" then order(rating: :asc,  helpful_count: :desc)
-      else                 order(helpful_count: :desc, created_at: :desc)
+    when "latest"   then order(created_at: :desc)
+    when "positive" then order(rating: :desc, helpful_count: :desc)
+    when "negative" then order(rating: :asc,  helpful_count: :desc)
+    else                 order(helpful_count: :desc, created_at: :desc)
     end
   end
 
