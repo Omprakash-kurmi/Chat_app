@@ -1,7 +1,7 @@
 namespace :demo do
   desc "Give customer1@demo.example some favorites, saved searches and a notification"
   task favorites: :environment do
-    user = User.find_by(email: "customer1@demo.example") || User.first
+    user = User.find_by(email: "omgour0509@gmail.com") || User.first
     abort "No user found. Run `bin/rails demo:inquiries` first or sign up a user." unless user
 
     homes = Property.listed.where.not(user_id: user.id).limit(4)

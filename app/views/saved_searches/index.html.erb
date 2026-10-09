@@ -1,43 +1,64 @@
-<div class="sh">
-  <header class="fv-head">
+<% content_for :head do %>
+  <%= stylesheet_link_tag "ss_searches", "data-turbo-track": "reload" %>
+<% end %>
+
+<div class="ssx">
+  <header class="ssx-head">
     <div>
+      <p class="ssx-eyebrow">Alerts</p>
       <h1>Saved searches</h1>
-      <p class="fv-sub">We'll notify you when a new home matching one of these is published.</p>
+      <p class="ssx-sub">We'll notify you when a new home matching one of these is published.</p>
     </div>
-    <%= link_to "♥ My favorites", favorites_path, class: "fv-link" %>
+    <div class="ssx-top">
+      <%= link_to "♥ My favorites", favorites_path, class: "ssx-ghost" %>
+      <%= link_to "Notifications", notifications_path, class: "ssx-ghost" %>
+      <%= link_to "New search", search_home_path, class: "ssx-primary" %>
+    </div>
   </header>
 
   <% if @searches.any? %>
-    <div class="ss-list">
+    <div class="ssx-list">
       <% @searches.each do |search| %>
         <% count = search.results.count %>
-        <article class="ss-card <%= 'paused' unless search.notify? %>">
-          <div class="ss-main">
-            <h3><%= search.name %></h3>
-            <p class="ss-chips">
-              <% search.summary.each do |chip| %><span><%= chip %></span><% end %>
-            </p>
-            <p class="ss-meta">
-              <%= pluralize(count, "home") %> match right now
-              <% if search.last_notified_at %> · last alert <%= time_ago_in_words(search.last_notified_at) %> ago<% end %>
-            </p>
+        <% chips = search.summary %>
+        <article class="ssx-card <%= 'paused' unless search.notify? %>">
+          <div class="ssx-body">
+            <span class="ssx-ico" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <div class="ssx-main">
+              <h3 class="ssx-title"><%= search.name %></h3>
+              <p class="ssx-chips">
+                <% chips.first(6).each do |chip| %><span><%= chip %></span><% end %>
+                <% if chips.size > 6 %><span class="more">+<%= chips.size - 6 %> more</span><% end %>
+              </p>
+              <p class="ssx-meta">
+                <span class="ssx-count <%= 'zero' if count.zero? %>"><%= pluralize(count, "home") %> match<%= count == 1 ? "es" : "" %> now</span>
+                <% if search.last_notified_at %><span>Last alert <%= time_ago_in_words(search.last_notified_at) %> ago</span><% end %>
+              </p>
+            </div>
+            <span class="ssx-status"><%= search.notify? ? "Alerts on" : "Alerts off" %></span>
           </div>
-          <div class="ss-actions">
-            <%= link_to "View results", homes_path(search.query_params), class: "fv-cta" %>
-            <%= button_to (search.notify? ? "🔔 Alerts on" : "🔕 Alerts off"), saved_search_path(search),
-                  method: :patch, params: { saved_search: { notify: !search.notify? } },
-                  form_class: "ss-form", class: "ss-toggle #{'on' if search.notify?}" %>
-            <%= button_to "Delete", saved_search_path(search), method: :delete, form_class: "ss-form",
-                  class: "ss-delete", form: { data: { turbo_confirm: "Delete this saved search?" } } %>
+
+          <div class="ssx-actions">
+            <%= link_to "View results", homes_path(search.query_params), class: "ssx-view" %>
+            <%= button_to saved_search_path(search), method: :patch, params: { saved_search: { notify: !search.notify? } },
+                  form_class: "ssx-form", class: "ssx-btn ssx-toggle" do %>
+              <%= search.notify? ? "🔔 Turn alerts off" : "🔕 Turn alerts on" %>
+            <% end %>
+            <span class="ssx-spacer"></span>
+            <%= button_to "Delete", saved_search_path(search), method: :delete, form_class: "ssx-form",
+                  class: "ssx-btn ssx-del", form: { data: { turbo_confirm: "Delete this saved search?" } } %>
           </div>
         </article>
       <% end %>
     </div>
   <% else %>
-    <div class="empty">
-      <strong>🔔 No saved searches yet</strong>
-      Search for homes, add a few filters (location, budget, bedrooms) and press “Save this search”.
-      <p><%= link_to "Start searching", search_home_path, class: "fv-cta" %></p>
+    <div class="ssx-empty">
+      <span class="big">🔔</span>
+      <strong>No saved searches yet</strong>
+      <p>Search for homes, add a few filters (location, budget, bedrooms) and press “Save this search”.</p>
+      <%= link_to "Start searching", search_home_path, class: "ssx-primary" %>
     </div>
   <% end %>
 </div>
