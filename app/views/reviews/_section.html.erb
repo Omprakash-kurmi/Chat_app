@@ -1,0 +1,59 @@
+<% all      = property.reviews.to_a %>
+<% sort     = %w[helpful latest positive negative].include?(params[:sort]) ? params[:sort] : "helpful" %>
+<% reviews  = property.reviews.includes(:user).sorted(sort) %>
+<% mine     = all.find { |r| r.user_id == current_user&.id } %>
+<% verified = property.verified_reviewer_ids %>
+<% total    = all.size %>
+<% written  = all.count { |r| r.comment.present? || r.title.present? } %>
+<% avg      = property.average_rating %>
+
+<section class="rvx" id="reviews">
+  <h2 class="rvx-title-h">Ratings &amp; reviews</h2>
+
+  <% if total > 0 %>
+    <div class="rvx-top">
+      <div class="rvx-sum">
+        <div class="rvx-big"><%= avg %></div>
+        <%= rating_stars(avg, size: 22) %>
+        <p class="rvx-sub"><%= number_with_delimiter(total) %> <%= "rating".pluralize(total) %> and<br>
+          <%= number_with_delimiter(written) %> <%= "review".pluralize(written) %></p>
+      </div>
+      <div class="rvx-div"></div>
+      <div class="rvx-bars">
+        <% 5.downto(1) do |n| %>
+          <% c = all.count { |r| r.rating == n } %>
+          <div class="rvx-bar"><b><%= n %> ★</b>
+            <i><em style="width:<%= (c * 100.0 / total).round %>%"></em></i>
+            <span><%= number_with_delimiter(c) %></span></div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="rvx-sorthead"><h3>User reviews sorted by</h3></div>
+    <div class="rvx-pills">
+      <% { "helpful" => "Most Helpful", "latest" => "Latest", "positive" => "Positive", "negative" => "Negative" }.each do |key, label| %>
+        <%= link_to label, url_for(sort: key, anchor: "reviews"), class: "rvx-pill #{'on' if sort == key}" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if user_signed_in? && property.reviewable_by?(current_user) %>
+    <details class="rvx-write" <%= "open" if mine && params[:edit] %>>
+      <summary><%= mine ? "✎ Edit your review" : "★ Write a review" %></summary>
+      <%= render "reviews/form", property: property, review: (mine || property.reviews.build) %>
+    </details>
+    <div style="height:14px"></div>
+  <% elsif !user_signed_in? %>
+    <p class="rvx-note"><%= link_to "Log in", new_user_session_path %> to rate this home and leave feedback.</p>
+  <% end %>
+
+  <% if total.zero? %>
+    <p class="rvx-empty">No reviews yet. Be the first to share how it was.</p>
+  <% else %>
+    <ul class="rvx-list">
+      <% reviews.each do |r| %>
+        <%= render "reviews/review", review: r, property: property, verified: verified.include?(r.user_id) %>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

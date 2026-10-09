@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_08_053318) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_09_114803) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -209,6 +209,32 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_08_053318) do
     t.index ["user_id"], name: "index_properties_on_user_id"
   end
 
+  create_table "review_votes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "review_id", null: false
+    t.boolean "helpful", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["review_id"], name: "index_review_votes_on_review_id"
+    t.index ["user_id", "review_id"], name: "index_review_votes_on_user_id_and_review_id", unique: true
+    t.index ["user_id"], name: "index_review_votes_on_user_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "property_id", null: false
+    t.integer "rating", null: false
+    t.string "title"
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "helpful_count", default: 0, null: false
+    t.integer "not_helpful_count", default: 0, null: false
+    t.index ["property_id"], name: "index_reviews_on_property_id"
+    t.index ["user_id", "property_id"], name: "index_reviews_on_user_id_and_property_id", unique: true
+    t.index ["user_id"], name: "index_reviews_on_user_id"
+  end
+
   create_table "rooms", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -302,6 +328,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_08_053318) do
   add_foreign_key "messages", "rooms"
   add_foreign_key "messages", "users"
   add_foreign_key "properties", "users"
+  add_foreign_key "review_votes", "reviews"
+  add_foreign_key "review_votes", "users"
+  add_foreign_key "reviews", "properties"
+  add_foreign_key "reviews", "users"
   add_foreign_key "rsvps", "events"
   add_foreign_key "rsvps", "users"
   add_foreign_key "visits", "inquiries"

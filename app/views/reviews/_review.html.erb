@@ -1,0 +1,47 @@
+<% thumb = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11v9H4v-9h3zM7 11l4-8a2 2 0 0 1 2 2v4h6a2 2 0 0 1 2 2l-1.5 7a2 2 0 0 1-2 1.6H7"/></svg>'.html_safe %>
+<% my_vote = user_signed_in? ? review.review_votes.find { |v| v.user_id == current_user.id } : nil %>
+<% kind    = property.rent? ? "For rent" : "For sale" %>
+<% place   = review.user.try(:city).presence %>
+
+<li class="rvx-item">
+  <div class="rvx-line">
+    <%= rating_stars(review.rating, size: 17) %>
+    <b class="rvx-num"><%= number_with_precision(review.rating, precision: 1) %></b>
+    <% if review.title.present? %><span class="rvx-dot">•</span><span class="rvx-rtitle"><%= review.title %></span><% end %>
+  </div>
+  <p class="rvx-for">Review for: <%= property.property_type.to_s.humanize %> • <%= kind %><%= " • #{property.city}" if property.city.present? %></p>
+
+  <% if review.comment.present? %><div class="rvx-text"><%= simple_format(h(review.comment)) %></div><% end %>
+  <p class="rvx-by"><%= [review.user.display_name, place].compact.join(", ") %></p>
+
+  <div class="rvx-foot">
+    <% if user_signed_in? && review.user_id != current_user.id %>
+      <%= button_to vote_property_review_path(property, review, helpful: true), method: :post,
+            form_class: "rvx-vote-form", class: "rvx-vote #{'on' if my_vote&.helpful}" do %>
+        <%= thumb %> Helpful for <%= review.helpful_count %>
+      <% end %>
+      <%= button_to vote_property_review_path(property, review, helpful: false), method: :post,
+            form_class: "rvx-vote-form", class: "rvx-vote down #{'on' if my_vote && !my_vote.helpful}" do %>
+        <%= thumb %> <%= review.not_helpful_count %>
+      <% end %>
+    <% else %>
+      <span class="rvx-vote" style="cursor:default"><%= thumb %> Helpful for <%= review.helpful_count %></span>
+      <span class="rvx-vote down" style="cursor:default"><%= thumb %> <%= review.not_helpful_count %></span>
+    <% end %>
+  </div>
+
+  <p class="rvx-ver">
+    <% if verified %><span class="rvx-tick">✓</span> Verified <%= property.rent? ? "Renter" : "Buyer" %> · <% end %>
+    <%= review.created_at.strftime("%b, %Y") %>
+  </p>
+
+  <% if user_signed_in? && (review.user_id == current_user.id || current_user.try(:admin?)) %>
+    <details class="rvx-menu">
+      <summary>⋮</summary>
+      <div class="rvx-menu-box">
+        <%= button_to "Delete", property_review_path(property, review), method: :delete, class: "rvx-del",
+              form: { data: { turbo_confirm: "Delete this review?" } } %>
+      </div>
+    </details>
+  <% end %>
+</li>

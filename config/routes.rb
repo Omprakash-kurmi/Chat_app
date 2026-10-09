@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  get "reviews/create"
+  get "reviews/update"
+  get "reviews/destroy"
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
   # devise_for :users
@@ -32,6 +35,9 @@ Rails.application.routes.draw do
   resources :properties, only: :show do
     resources :inquiries, only: :create                    # send an inquiry
     resource  :favorite,  only: %i[create destroy]         # ♥ save / unsave
+    resources :reviews, only: %i[create update destroy] do
+      post :vote, on: :member
+    end
   end
 
   resources :inquiries, only: %i[index show] do
