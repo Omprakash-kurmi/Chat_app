@@ -1,0 +1,15 @@
+<% url = review.persisted? ? property_review_path(property, review) : property_reviews_path(property) %>
+<%= form_with model: review, url: url, method: (review.persisted? ? :patch : :post), class: "rvx-form" do |f| %>
+  <h3><%= review.persisted? ? "Edit your review" : "Rate your stay" %></h3>
+  <div class="rvx-pick">
+    <% 5.downto(1) do |n| %>
+      <%= f.radio_button :rating, n, id: "rvx-r#{n}", checked: review.rating == n %>
+      <label for="rvx-r<%= n %>" title="<%= n %> stars">★</label>
+    <% end %>
+  </div>
+  <%= f.text_field :title, placeholder: "Headline (optional)", maxlength: 80, class: "rvx-in" %>
+  <%= f.text_area :comment, rows: 4, maxlength: 1000, placeholder: "What did you like? Anything to improve?", class: "rvx-in" %>
+  <div class="rvx-actions">
+    <%= f.submit (review.persisted? ? "Update review" : "Post review"), class: "rvx-submit" %>
+  </div>
+<% end %>

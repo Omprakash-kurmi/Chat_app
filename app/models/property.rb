@@ -12,6 +12,7 @@ class Property < ApplicationRecord
   has_many :inquiries, dependent: :destroy
   has_many :inquiry_messages, dependent: :destroy
   has_many :proposed_visits, class_name: "Visit", foreign_key: :proposed_by_id, dependent: :destroy
+  has_many :reviews, dependent: :destroy
 
   enum :listing_type,  { rent: 0, buy: 1 }
   enum :property_type, { apartment: 0, house: 1, villa: 2, plot: 3, studio: 4, penthouse: 5, commercial: 6 }
@@ -19,6 +20,7 @@ class Property < ApplicationRecord
   enum :poster_type,   { owner: 0, agent: 1 }
 
   before_validation :tidy
+  before_save :restore_availability, if: -> { status_changed? && published? }
 
   validates :title, :address, :city, :contact_phone, presence: true
   validates :price, numericality: { greater_than: 0 }
@@ -29,6 +31,23 @@ class Property < ApplicationRecord
   validate :photos_valid, :videos_valid
 
   scope :available, -> { where(available: true) }
+
+
+  def average_rating
+    reviews.average(:rating).to_f.round(1)
+  end
+
+  def reviewable_by?(user)
+    return false unless user&.customer?
+    return false if user_id == user.id            # owner can't review own home
+    inquiries.where(user_id: user.id, status: %w[accepted closed]).exists?
+  end
+
+  def verified_reviewer_ids
+      inquiries.where(status: %w[accepted closed]).pluck(:user_id)
+    rescue ActiveRecord::StatementInvalid, NoMethodError
+      []
+  end
 
   # ---------- search ----------
   def self.matching(params)
@@ -99,6 +118,10 @@ class Property < ApplicationRecord
   end
 
   private
+
+  def restore_availability
+    self.available = true
+  end
 
   def tidy
     self.amenities = Array(amenities).reject(&:blank?) & AMENITIES
