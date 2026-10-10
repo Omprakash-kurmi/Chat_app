@@ -1,5 +1,5 @@
 module PropertyGalleryHelper
-  # All photos of a property: the new gallery plus any older image attachments.
+    # All photos of a property: the new gallery plus any older image attachments.
     PG_USE_VARIANTS = false
 
   def property_slides(property)
@@ -8,7 +8,7 @@ module PropertyGalleryHelper
       next unless property.respond_to?(name)
       att = property.public_send(name)
       next unless att.respond_to?(:attached?) && att.attached?
-      list.concat(att.respond_to?(:attachments) ? att.attachments.to_a : [att.attachment])
+      list.concat(att.respond_to?(:attachments) ? att.attachments.to_a : [ att.attachment ])
     end
     list.compact.uniq { |a| a.blob_id }
   end
@@ -34,7 +34,7 @@ module PropertyGalleryHelper
     return false unless user_signed_in?
     u = current_user
     return u.vendor? if u.respond_to?(:vendor?)
-    return u.vendor if u.respond_to?(:vendor) && [true, false].include?(u.vendor)
+    return u.vendor if u.respond_to?(:vendor) && [ true, false ].include?(u.vendor)
     %i[account_type user_type kind role].any? { |f| u.respond_to?(f) && u.public_send(f).to_s == "vendor" }
   end
 
@@ -42,5 +42,4 @@ module PropertyGalleryHelper
   def show_property_slider?
     !vendor_user?
   end
-
 end

@@ -3,7 +3,7 @@ tag_class = { "pending" => "warning", "published" => "ok", "rejected" => "error"
 ActiveAdmin.register Property do
   menu priority: 3, label: "Listings"
   actions :index, :show, :edit, :update, :destroy
-  permit_params :status, :rejection_reason, gallery: [] 
+  permit_params :status, :rejection_reason, gallery: []
 
   scope :all
   scope :pending, default: true
@@ -62,7 +62,7 @@ ActiveAdmin.register Property do
         if resource.gallery.attached?
           div style: "display:flex;flex-wrap:wrap;gap:12px" do
             resource.gallery.attachments.each do |img|
-              text_node image_tag(img.variant(resize_to_fill: [180, 120]), style: "border-radius:12px")
+              text_node image_tag(img.variant(resize_to_fill: [ 180, 120 ]), style: "border-radius:12px")
             end
           end
         else
@@ -90,7 +90,7 @@ ActiveAdmin.register Property do
           div style: "display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 0 25%" do
             f.object.gallery.attachments.each do |img|
               div style: "width:130px;text-align:center" do
-                text_node image_tag(img.variant(resize_to_fill: [130, 90]), style: "border-radius:10px;display:block")
+                text_node image_tag(img.variant(resize_to_fill: [ 130, 90 ]), style: "border-radius:10px;display:block")
                 a "Remove", href: remove_image_admin_property_path(f.object, image_id: img.id),
                   "data-method": "delete", "data-confirm": "Remove this photo?",
                   style: "color:#d6336c;font-size:12px;font-weight:700"
