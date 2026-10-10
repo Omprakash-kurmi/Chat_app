@@ -76,3 +76,4 @@ gem "aws-sdk-s3", require: false
 gem "kaminari"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
+gem "minitest", "~> 5.25"
