@@ -5,9 +5,10 @@ class RoomsController < ApplicationController
   def index
     @rooms = Room.all.order(:name)
     @last_messages = Message.where(room_id: @rooms.ids)
-                             .order(created_at: :desc)
-                             .group_by(&:room_id)
-                             .transform_values(&:first)
+                        .select("DISTINCT ON (messages.room_id) messages.*")
+                        .order("messages.room_id, messages.created_at DESC")
+                        .index_by(&:room_id)
+                                                
     @message_counts = Message.where(room_id: @rooms.ids).group(:room_id).count
     @messages_today = Message.where("created_at >= ?", Time.zone.now.beginning_of_day).count
   end
