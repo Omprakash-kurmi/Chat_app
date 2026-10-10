@@ -9,6 +9,8 @@ class Property < ApplicationRecord
   belongs_to :user
   has_many_attached :photos
   has_many_attached :videos
+  has_many_attached :gallery
+
   has_many :inquiries, dependent: :destroy
   has_many :inquiry_messages, dependent: :destroy
   has_many :proposed_visits, class_name: "Visit", foreign_key: :proposed_by_id, dependent: :destroy
@@ -29,6 +31,7 @@ class Property < ApplicationRecord
   validates :latitude, numericality: { in: -90..90 }, allow_nil: true
   validates :longitude, numericality: { in: -180..180 }, allow_nil: true
   validate :photos_valid, :videos_valid
+  validate :gallery_ok
 
   scope :available, -> { where(available: true) }
 
@@ -121,6 +124,14 @@ class Property < ApplicationRecord
 
   def restore_availability
     self.available = true
+  end
+
+  def gallery_ok
+    return unless gallery.attached?
+    gallery.each do |img|
+      errors.add(:gallery, "can only contain images") unless img.content_type.to_s.start_with?("image/")
+      errors.add(:gallery, "images must be under 8 MB each") if img.byte_size > 8.megabytes
+    end
   end
 
   def tidy

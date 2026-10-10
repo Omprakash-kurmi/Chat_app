@@ -3,7 +3,7 @@ tag_class = { "pending" => "warning", "published" => "ok", "rejected" => "error"
 ActiveAdmin.register Property do
   menu priority: 3, label: "Listings"
   actions :index, :show, :edit, :update, :destroy
-  permit_params :status, :rejection_reason
+  permit_params :status, :rejection_reason, gallery: []
 
   scope :all
   scope :pending, default: true
@@ -57,6 +57,19 @@ ActiveAdmin.register Property do
       row :contact_name
       row :contact_phone
       row :description
+
+      panel "Photo gallery" do
+        if resource.gallery.attached?
+          div style: "display:flex;flex-wrap:wrap;gap:12px" do
+            resource.gallery.attachments.each do |img|
+              text_node image_tag(img.variant(resize_to_fill: [ 180, 120 ]), style: "border-radius:12px")
+            end
+          end
+        else
+          para "No photos yet."
+        end
+      end
+
       row("Photos") do |p|
         safe_join(p.photos.map { |ph| link_to(image_tag(ph.variant(resize_to_fill: [ 160, 120 ]), style: "margin:4px"), url_for(ph), target: "_blank") })
       end
@@ -68,6 +81,24 @@ ActiveAdmin.register Property do
     f.inputs "Moderation" do
       f.input :status, as: :select, collection: Property.statuses.keys, include_blank: false
       f.input :rejection_reason, hint: "Shown to the owner when a listing is rejected."
+      f.inputs "Photo gallery" do
+        f.input :gallery, as: :file,
+                input_html: { multiple: true, accept: "image/*" },
+                hint: "Select many photos at once (hold Ctrl or Shift). New photos are added to the existing ones."
+
+        if f.object.persisted? && f.object.gallery.attached?
+          div style: "display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 0 25%" do
+            f.object.gallery.attachments.each do |img|
+              div style: "width:130px;text-align:center" do
+                text_node image_tag(img.variant(resize_to_fill: [ 130, 90 ]), style: "border-radius:10px;display:block")
+                a "Remove", href: remove_image_admin_property_path(f.object, image_id: img.id),
+                  "data-method": "delete", "data-confirm": "Remove this photo?",
+                  style: "color:#d6336c;font-size:12px;font-weight:700"
+              end
+            end
+          end
+        end
+      end
     end
     f.actions
   end
@@ -79,6 +110,11 @@ ActiveAdmin.register Property do
     else
       redirect_to resource_path, alert: "This listing can't be approved from its current status."
     end
+  end
+
+  member_action :remove_image, method: :delete do
+    resource.gallery.attachments.find(params[:image_id]).purge
+    redirect_back fallback_location: edit_admin_property_path(resource), notice: "Photo removed."
   end
 
   action_item :approve, only: :show, if: proc { resource.pending? || resource.rejected? } do

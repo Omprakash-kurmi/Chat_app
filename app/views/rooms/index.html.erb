@@ -2,76 +2,117 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <%= stylesheet_link_tag "rm_rooms", "data-turbo-track": "reload" %>
 <% end %>
 
 <%
   avatar_palette = ["#3462f9", "#e8543e", "#1d9a6c", "#c27803", "#7c4fe0"]
+  total_messages = @message_counts.values.sum
 %>
 
-<div class="rooms-wrap">
+<div class="rmr">
 
-  <div class="hero-band">
-    <span class="live-pill"><span class="live-dot"></span> Live</span>
-    <h1>Welcome back, <%= current_user.email.split("@").first %></h1>
-    <p>Every room here updates in real time — jump into one and the conversation is already moving.</p>
+  <!-- HERO -->
+  <section class="rmr-hero">
+    <span class="rmr-glow rmr-glow--a"></span>
+    <span class="rmr-glow rmr-glow--b"></span>
 
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <span class="num"><%= @rooms.size %></span>
-        <span class="label"><%= pluralize(@rooms.size, "room") %></span>
+    <span class="rmr-live"><i></i> Live</span>
+
+    <div class="rmr-hero-text">
+      <h1>Welcome back, <span><%= current_user.email.split("@").first %></span> 👋</h1>
+      <p>Every room here updates in real time — jump into one and the conversation is already moving.</p>
+    </div>
+
+    <div class="rmr-stats">
+      <div class="rmr-stat">
+        <span class="rmr-stat-ico">💬</span>
+        <div><b><%= @rooms.size %></b><small><%= @rooms.size == 1 ? "room" : "rooms" %></small></div>
       </div>
-      <div class="hero-stat">
-        <span class="num"><%= @messages_today %></span>
-        <span class="label">messages today</span>
+      <div class="rmr-stat">
+        <span class="rmr-stat-ico">🔥</span>
+        <div><b><%= @messages_today %></b><small>messages today</small></div>
       </div>
-      <div class="hero-stat">
-        <span class="num"><%= @message_counts.values.sum %></span>
-        <span class="label">messages all time</span>
+      <div class="rmr-stat">
+        <span class="rmr-stat-ico">📈</span>
+        <div><b><%= total_messages %></b><small>messages all time</small></div>
       </div>
+    </div>
+  </section>
+
+  <!-- TOOLBAR -->
+  <div class="rmr-top">
+    <h2>Your chat rooms</h2>
+
+    <div class="rmr-tools">
+      <% if @rooms.any? %>
+        <label class="rmr-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="text" id="rmr-search" placeholder="Search rooms..." autocomplete="off">
+        </label>
+      <% end %>
+
+      <% if current_user.admin? %>
+        <%= link_to new_room_path, class: "rmr-new" do %>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>
+          New room
+        <% end %>
+      <% end %>
     </div>
   </div>
 
-  <div class="rooms-top">
-    <h2>Your chat rooms</h2>
-    <% if current_user.admin? %>
-      <%= link_to new_room_path, class: "new-room-btn" do %>
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2v12M2 8h12"/></svg>
-        New room
-      <% end %>
-    <% end %>
-  </div>
-
+  <!-- ROOMS -->
   <% if @rooms.any? %>
-    <ul class="room-grid">
+    <ul class="rmr-grid" id="rmr-grid">
       <% @rooms.each do |room| %>
-        <% last = @last_messages[room.id] %>
-        <li>
-          <%= link_to room_path(room), class: "room-card" do %>
-            <span class="room-avatar" style="background: <%= avatar_palette[room.id % avatar_palette.length] %>">
+        <% last  = @last_messages[room.id] %>
+        <% count = @message_counts[room.id] || 0 %>
+        <li data-name="<%= room.name.downcase %>">
+          <%= link_to room_path(room), class: "rmr-card", style: "--c: #{avatar_palette[room.id % avatar_palette.length]}" do %>
+            <span class="rmr-av">
               <%= room.name.first.upcase %>
+              <i></i>
             </span>
-            <span class="room-info">
-              <span class="room-info-top">
-                <span class="room-name"><%= room.name %></span>
+
+            <span class="rmr-body">
+              <span class="rmr-row">
+                <span class="rmr-name"><%= room.name %></span>
                 <% if last %>
-                  <span class="room-time"><%= last.created_at.strftime("%b %-d") %></span>
+                  <span class="rmr-time">
+                    <%= last.created_at.to_date == Date.current ? last.created_at.strftime("%H:%M") : last.created_at.strftime("%b %-d") %>
+                  </span>
                 <% end %>
               </span>
-              <p class="room-preview">
-                <%= last ? truncate(last.content, length: 48) : "No messages yet" %>
-              </p>
-              <span class="room-count"><%= pluralize(@message_counts[room.id] || 0, "message") %></span>
+
+              <span class="rmr-preview">
+                <% if last %>
+                  <%= truncate(last.content.presence || "📷 Photo", length: 46) %>
+                <% else %>
+                  <em>No messages yet</em>
+                <% end %>
+              </span>
+
+              <span class="rmr-foot">
+                <span class="rmr-badge"><%= pluralize(count, "message") %></span>
+                <span class="rmr-open">Open room →</span>
+              </span>
             </span>
           <% end %>
         </li>
       <% end %>
     </ul>
+
+    <div class="rmr-none hidden" id="rmr-none">
+      <div>🔍</div>
+      <p>No rooms match your search.</p>
+    </div>
   <% else %>
-    <div class="empty-state">
+    <div class="rmr-empty">
+      <div>💬</div>
       <h2>No rooms yet</h2>
       <% if current_user.admin? %>
         <p>Create the first one to get conversations started.</p>
-        <%= link_to "New room", new_room_path, class: "new-room-btn" %>
+        <%= link_to "New room", new_room_path, class: "rmr-new" %>
       <% else %>
         <p>An admin needs to create a room before you can start chatting.</p>
       <% end %>
@@ -79,3 +120,20 @@
   <% end %>
 
 </div>
+
+<script>
+  (function () {
+    var input = document.getElementById("rmr-search");
+    if (!input) return;
+    input.addEventListener("input", function () {
+      var q = input.value.trim().toLowerCase();
+      var shown = 0;
+      document.querySelectorAll("#rmr-grid li").forEach(function (li) {
+        var match = li.dataset.name.indexOf(q) !== -1;
+        li.style.display = match ? "" : "none";
+        if (match) shown++;
+      });
+      document.getElementById("rmr-none").classList.toggle("hidden", shown > 0);
+    });
+  })();
+</script>
