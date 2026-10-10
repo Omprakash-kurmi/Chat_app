@@ -1,3 +1,5 @@
+<% content_for :head do %><%= stylesheet_link_tag "ic_chat", "data-turbo-track": "reload" %><% end %>
+
 <% property = @inquiry.property %>
 <div class="iq">
   <%= link_to "← All inquiries", inquiries_path(box: (@owner_view ? "received" : "sent")), class: "iq-back" %>
@@ -7,23 +9,7 @@
 
   <div class="iq-layout">
     <%# ---------------- conversation ---------------- %>
-    <section class="iq-panel im-wrap">
-      <div class="im-head">
-        <strong>💬 Conversation</strong>
-        <small><%= @owner_view ? @inquiry.user.display_name : property.user.display_name %></small>
-      </div>
-
-      <%= turbo_stream_from @inquiry, :messages %>
-      <div id="inquiry_<%= @inquiry.id %>_messages" class="im-list">
-        <%= render partial: "inquiry_messages/message", collection: @messages, as: :message %>
-      </div>
-
-      <% if @inquiry.chat_open? %>
-        <%= render "inquiry_messages/form", inquiry: @inquiry %>
-      <% else %>
-        <p class="im-closed">This conversation is closed (<%= @inquiry.status_label.downcase %>).</p>
-      <% end %>
-    </section>
+    <%= render "inquiries/chat", inquiry: @inquiry, messages: @messages, owner_view: @owner_view %>
 
     <%# ---------------- sidebar ---------------- %>
     <aside>
