@@ -1,5 +1,23 @@
-<%= tag.div id: dom_id(message), class: "im #{message.from_owner? ? 'im-owner' : 'im-customer'}" do %>
-  <span class="im-who"><%= message.from_owner? ? "Owner" : "Customer" %> · <%= message.user.display_name %></span>
-  <div class="im-body"><%= simple_format(h(message.body)) %></div>
-  <time><%= l(message.created_at, format: "%d %b, %I:%M %p") %></time>
+<% if message.kind == "call" %>
+  <% bad  = message.body.start_with?("Missed", "Cancelled") || message.body.include?("declined") %>
+  <% video = message.body.downcase.include?("video") %>
+  <div class="icx-callnote <%= 'bad' if bad %>" id="<%= dom_id(message) %>">
+    <%= video ? "🎥" : "📞" %> <%= message.body %>
+    <time><%= message.created_at.strftime("%I:%M %p") %></time>
+  </div>
+<% else %>
+  <% owner = message.user_id == message.inquiry.property.user_id %>
+  <div class="icx-msg" id="<%= dom_id(message) %>" data-sender-id="<%= message.user_id %>">
+    <p class="icx-who-l"><%= owner ? "Owner" : "Customer" %> · <%= message.user.display_name %></p>
+    
+    <% if message.image.attached? %>
+      <%= link_to rails_blob_path(message.image, only_path: true), target: "_blank", rel: "noopener", class: "icx-img-link" do %>
+        <%= image_tag rails_representation_path(message.image.variant(resize_to_limit: [640, 640]), only_path: true),
+                      class: "icx-img", alt: "Photo" %>
+      <% end %>
+    <% end %>
+
+    <% if message.body.present? %><p class="icx-text"><%= message.body %></p><% end %>
+    <time class="icx-time"><%= message.created_at.strftime("%d %b, %I:%M %p") %></time>
+  </div>
 <% end %>

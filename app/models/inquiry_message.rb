@@ -2,14 +2,20 @@ class InquiryMessage < ApplicationRecord
   belongs_to :inquiry, touch: true
   belongs_to :user
 
-  validates :body, presence: true, length: { maximum: 2000 }
-  validate :conversation_open, :sender_belongs, on: :create
+  has_one_attached :image
 
-  # live update for everyone who has the conversation open (Turbo Streams over Action Cable)
+  validate :conversation_open, :sender_belongs, on: :create
+  validates :body, presence: true, unless: -> { image.attached? }
+
   after_create_commit :broadcast_to_conversation
 
   def from_owner?
     user_id == inquiry.property.user_id
+  end
+
+  def image_ok
+    errors.add(:image, "must be a JPG, PNG, WEBP or GIF") unless image.content_type.in?(%w[image/jpeg image/png image/webp image/gif])
+    errors.add(:image, "must be under 5 MB") if image.byte_size > 5.megabytes
   end
 
   private
@@ -22,12 +28,6 @@ class InquiryMessage < ApplicationRecord
     errors.add(:base, "You can't post in this conversation.") unless inquiry && inquiry.participant?(user)
   end
 
-  # def broadcast_to_conversation
-  #   broadcast_append_to [ inquiry, :messages ],
-  #                       target: "inquiry_#{inquiry_id}_messages",
-  #                       partial: "inquiry_messages/message",
-  #                       locals: { message: self }
-  # end
   def broadcast_to_conversation
     broadcast_append_to(
       [ inquiry, :messages ],

@@ -1,4 +1,13 @@
-<%= form_with url: inquiry_messages_path(inquiry), scope: :inquiry_message, id: "message_form", class: "im-form" do |f| %>
-  <%= f.text_field :body, placeholder: "Type a message…", autocomplete: "off", required: true, maxlength: 2000 %>
-  <%= f.button "Send ➤", class: "im-send" %>
+<%= form_with model: InquiryMessage.new, url: inquiry_messages_path(inquiry), class: "icx-bar", autocomplete: "off" do |f| %>
+  <button type="button" class="icx-ib" data-emoji-btn title="Emoji" aria-label="Emoji">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+  </button>
+  <label class="icx-ib" for="icx-file" title="Share a photo" aria-label="Share a photo" style="cursor:pointer">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
+  </label>
+  <%= f.file_field :image, accept: "image/*", id: "icx-file", class: "icx-file" %>
+  <%= f.text_field :body, placeholder: "Type a message…", class: "icx-input", autocomplete: "off" %>
+  <button type="submit" class="icx-send" aria-label="Send">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/></svg>
+  </button>
 <% end %>
