@@ -1,0 +1,39 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "pg_gallery", "data-turbo-track": "reload" %>
+<% end %>
+
+<% slides = property_slides(property) %>
+
+<% if show_property_slider? && slides.any? %>
+  <section class="pgx" data-slider>
+    <div class="pgx-stage">
+      <div class="pgx-track" data-track tabindex="0">
+        <% slides.each_with_index do |img, i| %>
+          <figure class="pgx-slide">
+            <%= image_tag pg_src(img, [160, 110]), alt: "", loading: "lazy" %>
+          </figure>
+        <% end %>
+      </div>
+
+      <% if slides.size > 1 %>
+        <button type="button" class="pgx-nav pgx-nav--prev" data-prev aria-label="Previous photo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="pgx-nav pgx-nav--next" data-next aria-label="Next photo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <span class="pgx-counter" data-counter>1 / <%= slides.size %></span>
+      <% end %>
+    </div>
+
+    <% if slides.size > 1 %>
+      <div class="pgx-thumbs">
+        <% slides.each_with_index do |img, i| %>
+          <button type="button" class="pgx-thumb <%= 'is-active' if i.zero? %>" data-thumb aria-label="Show photo <%= i + 1 %>">
+            <%= image_tag img.variant(resize_to_fill: [160, 110]), alt: "", loading: "lazy" %>
+          </button>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+<% end %>

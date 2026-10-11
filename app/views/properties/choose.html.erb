@@ -1,16 +1,94 @@
-<section class="home-search">
-  <h1>Search Home</h1>
-  <p>What are you looking for?</p>
-  <div class="choice-cards">
-    <%= link_to homes_path(listing_type: "rent"), class: "choice-card" do %>
-      <span class="choice-icon">🔑</span>
-      <h2>Rent a home</h2>
-      <p>Apartments and houses available monthly.</p>
+<% content_for :head do %>
+  <%= stylesheet_link_tag "pg_gallery", "sh_search", "data-turbo-track": "reload" %>
+<% end %>
+
+<%
+  rent_href = homes_path(listing_type: "rent")
+  buy_href  = homes_path(listing_type: "buy")
+
+  featured = Property.where(status: "published", available: true)
+                     .with_attached_gallery.order(created_at: :desc).limit(8)
+                     .select { |p| property_slides(p).any? }
+%>
+
+<div class="shx">
+
+  <header class="shx-head">
+    <span class="shx-eyebrow">🏡 Find your next place</span>
+    <h1>Search <span>Home</span></h1>
+    <p>What are you looking for?</p>
+  </header>
+
+  <div class="shx-choices">
+    <%= link_to rent_href, class: "shx-choice shx-choice--rent" do %>
+      <span class="shx-ico">🔑</span>
+      <span class="shx-text">
+        <b>Rent a home</b>
+        <small>Apartments and houses available monthly.</small>
+      </span>
+      <span class="shx-go">→</span>
     <% end %>
-    <%= link_to homes_path(listing_type: "buy"), class: "choice-card" do %>
-      <span class="choice-icon">🏡</span>
-      <h2>Buy a home</h2>
-      <p>Homes, villas and plots for sale.</p>
+
+    <%= link_to buy_href, class: "shx-choice shx-choice--buy" do %>
+      <span class="shx-ico">🏠</span>
+      <span class="shx-text">
+        <b>Buy a home</b>
+        <small>Homes, villas and plots for sale.</small>
+      </span>
+      <span class="shx-go">→</span>
     <% end %>
   </div>
-</section>
+
+ <% if show_property_slider? && featured.any? %>
+    <section class="shx-featured">
+      <div class="shx-featured-top">
+        <h2>Featured properties</h2>
+        <span>Swipe or use the arrows</span>
+      </div>
+
+      <div class="pgx shx-feat" data-slider data-autoplay="4500">
+        <div class="pgx-stage">
+          <div class="pgx-track" data-track tabindex="0">
+            <% featured.each do |property| %>
+              <% cover = property_slides(property).first %>
+              <%= link_to property_path(property), class: "pgx-slide shx-slide" do %>
+                <%= image_tag pg_src(cover, [1400, 800]), alt: pg_title(property), class: "pgx-img shx-img" %>
+                <span class="shx-shade"></span>
+                <span class="shx-caption">
+                  <span class="shx-photos">📷 <%= property_slides(property).size %> photos</span>
+                  <strong><%= pg_title(property) %></strong>
+                  <span class="shx-meta">
+                    <% if pg_place(property) %><em>📍 <%= pg_place(property) %></em><% end %>
+                    <% if pg_price(property) %><em class="shx-price"><%= pg_price(property) %></em><% end %>
+                  </span>
+                  <span class="shx-view">View property →</span>
+                </span>
+              <% end %>
+            <% end %>
+          </div>
+
+          <% if featured.size > 1 %>
+            <button type="button" class="pgx-nav pgx-nav--prev" data-prev aria-label="Previous">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="pgx-nav pgx-nav--next" data-next aria-label="Next">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="pgx-dots">
+              <% featured.each_with_index do |_, i| %>
+                <button type="button" class="pgx-dot <%= 'is-active' if i.zero? %>" data-dot aria-label="Slide <%= i + 1 %>"></button>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+
+  <ul class="shx-perks">
+    <li><span>✅</span><div><b>Verified listings</b><small>Every property is reviewed by an admin before it goes live.</small></div></li>
+    <li><span>💬</span><div><b>Chat with the owner</b><small>Send an inquiry and talk, share photos or call, all in one place.</small></div></li>
+    <li><span>⭐</span><div><b>Real reviews</b><small>Read honest ratings from people who have been there.</small></div></li>
+  </ul>
+
+</div>

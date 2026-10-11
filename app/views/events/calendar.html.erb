@@ -1,32 +1,87 @@
-<div class="events-page">
-  <div class="events-top">
+<% content_for :head do %>
+  <%= stylesheet_link_tag "ev_calendar", "data-turbo-track": "reload" %>
+<% end %>
+
+<%
+  month      = (Date.strptime(params[:month].to_s, "%Y-%m") rescue Date.current).beginning_of_month
+  grid_start = month.beginning_of_week(:sunday)
+  grid_end   = month.end_of_month.end_of_week(:sunday)
+  by_day     = @room.events.to_a.group_by { |e| evc_date(e) }
+  in_month   = by_day.select { |d, _| d && d.year == month.year && d.month == month.month }
+                     .values.flatten.sort_by { |e| evc_time(e).to_s }
+  colors     = %w[violet pink amber teal blue]
+%>
+
+<div class="evc">
+  <header class="evc-hero">
     <div>
-      <h1><%= @current_date.strftime("%B %Y") %></h1>
-      <p><%= link_to "← Back to room", room_path(@room) %></p>
+      <%= link_to "← Back to room", room_path(@room), class: "evc-back" %>
+      <h1 class="evc-title"><%= month.strftime("%B") %> <span><%= month.year %></span></h1>
+      <p class="evc-sub"><%= pluralize(in_month.size, "event") %> this month</p>
     </div>
-    <%= link_to "List view", room_events_path(@room), class: "new-event-btn" %>
-  </div>
+    <div class="evc-hero-actions">
+      <%= link_to "☰ List view", room_events_path(@room), class: "evc-btn evc-btn--light" %>
+    </div>
+  </header>
 
-  <div class="calendar-nav">
-    <%= link_to "‹ Prev", calendar_room_events_path(@room, month: @first_day.prev_month.strftime("%Y-%m")), class: "cal-nav-link" %>
-    <%= link_to "Today", calendar_room_events_path(@room), class: "cal-nav-link" %>
-    <%= link_to "Next ›", calendar_room_events_path(@room, month: @first_day.next_month.strftime("%Y-%m")), class: "cal-nav-link" %>
-  </div>
+  <nav class="evc-nav">
+    <%= link_to "‹", request.path + "?month=#{month.prev_month.strftime('%Y-%m')}", class: "evc-nav-btn", "aria-label": "Previous month" %>
+    <%= link_to "Today", request.path, class: "evc-today-btn" %>
+    <%= link_to "›", request.path + "?month=#{month.next_month.strftime('%Y-%m')}", class: "evc-nav-btn", "aria-label": "Next month" %>
+  </nav>
 
+  <div class="evc-layout">
+    <section class="evc-card">
+      <div class="evc-weekdays">
+        <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |d| %><span><%= d %></span><% end %>
+      </div>
 
-  <div class="calendar-grid">
-    <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day| %>
-      <div class="calendar-weekday"><%= day %></div>
-    <% end %>
+      <div class="evc-grid">
+        <% (grid_start..grid_end).each do |day| %>
+          <% events = (by_day[day] || []).sort_by { |e| evc_time(e).to_s } %>
+          <div class="evc-day <%= 'evc-day--out' if day.month != month.month %> <%= 'evc-day--today' if day == Date.current %>">
+            <span class="evc-num"><%= day.day %></span>
 
-    <% ((@first_day.beginning_of_week(:sunday))..(@last_day.end_of_week(:sunday))).each do |date| %>
-      <div class="calendar-cell <%= 'outside-month' unless date.month == @current_date.month %> <%= 'is-today' if date == Date.today %>">
-        <span class="calendar-date-num"><%= date.day %></span>
+            <% events.first(2).each_with_index do |e, i| %>
+              <%= link_to room_event_path(@room, e), class: "evc-chip evc-chip--#{colors[(day.day + i) % colors.size]}", title: evc_title(e) do %>
+                <% if evc_clock(e) %><b><%= evc_clock(e) %></b><% end %>
+                <span><%= evc_title(e) %></span>
+              <% end %>
+            <% end %>
 
-        <% (@events_by_day[date] || []).each do |event| %>
-          <div class="calendar-event-pill"><%= event.title %></div>
+            <% if events.size > 2 %>
+              <span class="evc-more">+<%= events.size - 2 %> more</span>
+            <% end %>
+          </div>
         <% end %>
       </div>
-    <% end %>
+    </section>
+
+    <aside class="evc-side">
+      <h2>This month</h2>
+      <% if in_month.empty? %>
+        <div class="evc-empty">
+          <div>🗓️</div>
+          <p>No events this month.</p>
+        </div>
+      <% else %>
+        <ul class="evc-agenda">
+          <% in_month.each_with_index do |e, i| %>
+            <li>
+              <%= link_to room_event_path(@room, e), class: "evc-agenda-item" do %>
+                <span class="evc-date evc-date--<%= colors[i % colors.size] %>">
+                  <small><%= evc_date(e).strftime("%b") %></small>
+                  <strong><%= evc_date(e).day %></strong>
+                </span>
+                <span class="evc-agenda-text">
+                  <b><%= evc_title(e) %></b>
+                  <em><%= evc_clock(e) || evc_date(e).strftime("%A") %></em>
+                </span>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </aside>
   </div>
 </div>

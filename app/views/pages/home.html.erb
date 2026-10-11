@@ -1,78 +1,101 @@
 <% content_for :head do %>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <%= stylesheet_link_tag "hm_home", "data-turbo-track": "reload" %>
 <% end %>
 
-<div class="home-wrap">
+<div class="hmx">
 
-  <section class="hero">
-    <div class="hero-inner">
-      <div>
-        <h1>Say it once. Everyone in the room sees it the moment you do.</h1>
-        <p>Chat_App keeps conversations in dedicated rooms and delivers every message instantly — no refresh, no delay.</p>
-        <div class="hero-actions">
-          <% if user_signed_in? %>
-            <%= link_to "Go to your rooms", rooms_path, class: "btn btn-primary" %>
-          <% else %>
-            <%= link_to "Create an account", new_user_registration_path, class: "btn btn-primary" %>
-            <%= link_to "Sign in", new_user_session_path, class: "btn btn-ghost" %>
-          <% end %>
-        </div>
+  <!-- HERO -->
+  <section class="hmx-hero">
+    <span class="hmx-blob hmx-blob--a"></span>
+    <span class="hmx-blob hmx-blob--b"></span>
+
+    <div class="hmx-hero-text">
+      <span class="hmx-pill"><i></i> Live chat · Rooms · Properties</span>
+      <h1>Say it once. Everyone in the room sees it <em>the moment you do.</em></h1>
+      <p>Chat_App keeps conversations in dedicated rooms and delivers every message instantly — no refresh, no delay.</p>
+
+      <div class="hmx-cta">
+        <% if user_signed_in? %>
+          <%= link_to "Go to your rooms →", rooms_path, class: "hmx-btn hmx-btn--white" %>
+          <%= link_to "My inquiries", inquiries_path, class: "hmx-btn hmx-btn--ghost" %>
+        <% else %>
+          <%= link_to "Get started free", new_user_registration_path, class: "hmx-btn hmx-btn--white" %>
+          <%= link_to "Sign in", new_user_session_path, class: "hmx-btn hmx-btn--ghost" %>
+        <% end %>
       </div>
 
-      <div class="chat-mock" aria-hidden="true">
-        <div class="chat-mock-header">
-          <span class="dot"></span> Weekend Plans — 3 online
+      <ul class="hmx-trust">
+        <li>⚡ Instant delivery</li>
+        <li>📷 Photo sharing</li>
+        <li>🎥 Voice &amp; video calls</li>
+      </ul>
+    </div>
+
+    <div class="hmx-mock">
+      <div class="hmx-mock-card">
+        <div class="hmx-mock-head">
+          <span class="hmx-mock-av">W</span>
+          <div><b>Weekend Plans</b><small><i></i> 3 online</small></div>
         </div>
-        <div class="bubble-row received">
-          <div class="bubble">Are we still on for Saturday?<time>10:02</time></div>
+        <div class="hmx-mock-body">
+          <div class="hmx-b hmx-b--them" style="--d:.3s">Are we still on for Saturday?<small>10:02</small></div>
+          <div class="hmx-b hmx-b--me" style="--d:1.1s">Yep, I'll bring the tent. ⛺<small>10:03</small></div>
+          <div class="hmx-b hmx-b--them" style="--d:1.9s">Perfect, see you both there.<small>10:03</small></div>
+          <div class="hmx-b hmx-b--me hmx-b--emoji" style="--d:2.6s">🧡<small>10:04</small></div>
+          <div class="hmx-typing" style="--d:3.2s"><span></span><span></span><span></span></div>
         </div>
-        <div class="bubble-row sent">
-          <div class="bubble">Yep, I'll bring the tent.<time>10:03</time></div>
-        </div>
-        <div class="bubble-row received">
-          <div class="bubble">Perfect, see you both there.<time>10:03</time></div>
-        </div>
-        <div class="bubble-row sent">
-          <div class="bubble">🎒<time>10:04</time></div>
-        </div>
+        <div class="hmx-mock-bar"><span>Type a message...</span><b>➤</b></div>
       </div>
     </div>
   </section>
 
-  <section class="features">
-    <div class="features-inner">
-      <div>
-        <h2>Built around real conversations</h2>
-        <p>Nothing about this app tries to be everything. It does one job — getting a message from one screen to another without you noticing the trip.</p>
-      </div>
+  <!-- FEATURES -->
+  <section class="hmx-section">
+    <div class="hmx-head">
+      <span class="hmx-eyebrow">Why Chat_App</span>
+      <h2>Built around real conversations</h2>
+      <p>Nothing about this app tries to be everything. It does one job — getting a message from one screen to another without you noticing the trip.</p>
+    </div>
 
-      <div class="point-list">
-        <div class="point">
-          <h3>Delivered as you type it</h3>
-          <p>Messages travel over a live connection, so the person on the other end sees your words while you're still in the room.</p>
-        </div>
-        <div class="point">
-          <h3>Organized into rooms</h3>
-          <p>Every conversation has its own space, so a chat about the weekend never gets tangled up with one about work.</p>
-        </div>
-        <div class="point">
-          <h3>Nothing lost on refresh</h3>
-          <p>Reload the page, come back tomorrow — the last fifty messages are always right where you left them.</p>
-        </div>
-      </div>
+    <div class="hmx-grid">
+      <article class="hmx-card">
+        <span class="hmx-ico hmx-ico--violet">⚡</span>
+        <h3>Delivered as you type it</h3>
+        <p>Messages travel over a live connection, so the person on the other end sees your words while you're still in the room.</p>
+      </article>
+      <article class="hmx-card">
+        <span class="hmx-ico hmx-ico--pink">💬</span>
+        <h3>Organized into rooms</h3>
+        <p>Every conversation has its own space, so a chat about the weekend never gets tangled up with one about work.</p>
+      </article>
+      <article class="hmx-card">
+        <span class="hmx-ico hmx-ico--teal">💾</span>
+        <h3>Nothing lost on refresh</h3>
+        <p>Your history is saved. Come back tomorrow, on any device, and the whole conversation is waiting for you.</p>
+      </article>
+      <article class="hmx-card">
+        <span class="hmx-ico hmx-ico--amber">📷</span>
+        <h3>Photos &amp; emoji</h3>
+        <p>Share pictures that appear instantly for everyone, and add a little life with the built-in emoji picker.</p>
+      </article>
+      <article class="hmx-card">
+        <span class="hmx-ico hmx-ico--blue">🎥</span>
+        <h3>Voice &amp; video calls</h3>
+        <p>Switch from typing to talking in one tap. Calls start right inside the chat, with no extra app.</p>
+      </article>
+      <article class="hmx-card">
+        <span class="hmx-ico hmx-ico--green">📅</span>
+        <h3>Events &amp; RSVPs</h3>
+        <p>Plan get-togethers on a shared calendar and see who is going, maybe, or can't make it.</p>
+      </article>
     </div>
   </section>
 
-  <section class="closing">
-    <h2>Pick a room, start talking.</h2>
-    <p>It takes about ten seconds to get set up.</p>
-    <% if user_signed_in? %>
-      <%= link_to "Go to your rooms", rooms_path, class: "btn btn-primary" %>
-    <% else %>
-      <%= link_to "Create an account", new_user_registration_path, class: "btn btn-primary" %>
-    <% end %>
-  </section>
-
-</div>
+  <!-- HOW IT WORKS -->
+  <section class="hmx-section hmx-steps-wrap">
+    <div class="hmx-head hmx-head--center">
+      <span class="hmx-eyebrow">How it works</span>
+      <h2>Up and chatting in three steps</h2>
+    </div>
+    <ol class="hmx-steps">
+      <li><span>1</span><h3>Join a room</h3><p>Pick a room from the list or

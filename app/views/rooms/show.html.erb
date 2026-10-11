@@ -1,25 +1,29 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "rm_chat", "data-turbo-track": "reload" %>
+<% end %>
+
 <%
   avatar_palette = ["#3462f9", "#e8543e", "#1d9a6c", "#c27803", "#7c4fe0"]
 %>
 
-<div class="room-page">
-  <%= link_to "← Back to rooms", rooms_path, class: "back-link" %>
-  <%= link_to "📅 Events", room_events_path(@room), class: "events-link" %>
-  <div class="room-page-heading">
+<div class="room-page rm">
+  <div class="rm-links">
+    <%= link_to "← Back to rooms", rooms_path, class: "back-link" %>
+    <%= link_to "📅 Events", room_events_path(@room), class: "events-link" %>
+  </div>
+
+  <header class="room-page-heading">
     <span class="room-page-avatar" style="background: <%= avatar_palette[@room.id % avatar_palette.length] %>">
       <%= @room.name.first.upcase %>
+      <i class="rm-online"></i>
     </span>
-    <div>
+    <div class="rm-titles">
       <h1><%= @room.name %></h1>
-      <p>Live room</p>
+      <p><span class="rm-pulse"></span>Live room</p>
     </div>
-    <%# <div class="call-buttons"> %>
-      <%# <button id="voice-call-btn" class="call-btn" title="Start a voice call">🎤</button> %>
-      <%# <button id="video-call-btn" class="call-btn" title="Start a video call">📹</button> %>
-    <%# </div> %>
 
     <div class="call-buttons">
-      <button id="voice-call-btn" class="call-btn" title="Start a voice call">
+      <button id="voice-call-btn" class="call-btn" type="button" title="Start a voice call">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
           <path d="M19 10v1a7 7 0 0 1-14 0v-1"/>
@@ -27,52 +31,40 @@
           <line x1="8" y1="22" x2="16" y2="22"/>
         </svg>
       </button>
-
-      <button id="video-call-btn" class="call-btn" title="Start a video call">
+      <button id="video-call-btn" class="call-btn" type="button" title="Start a video call">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="6" width="14" height="12" rx="2.5"/>
           <path d="M16 10.5 21.5 7v10L16 13.5"/>
         </svg>
       </button>
     </div>
-  </div>
+  </header>
 
   <div id="chat-container" data-current-user-id="<%= current_user.id %>" data-room-id="<%= @room.id %>" data-current-user-name="<%= current_user.display_name %>">
     <div id="messages" data-room-id="<%= @room.id %>">
       <%= render @messages %>
     </div>
 
-      <div id="typing-indicator"></div>
-        <form id="message-form">
-          <label for="image-input" class="attach-btn">📎</label>
-          <input type="file" id="image-input" accept="image/*" hidden>
-          <button type="button" id="emoji-btn" class="emoji-btn" aria-label="Emoji">😊</button>
-          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
-          <button type="submit">➤</button>
-        </form>
-        <div id="emoji-picker" class="emoji-picker hidden"></div>
-
-      <div id="image-preview"></div>
-
-      <%# app/views/rooms/show.html.erb %>
-    <%# <div id="typing-indicator"></div>
+    <div id="typing-indicator"></div>
+    <div id="image-preview"></div>
 
     <form id="message-form">
-      <label for="image-input" class="attach-btn">
+      <label for="image-input" class="attach-btn" title="Send a photo">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3.33 3.33 0 1 1 4.71 4.71l-9.2 9.19a1.67 1.67 0 0 1-2.36-2.36l8.49-8.48"/>
         </svg>
       </label>
       <input type="file" id="image-input" accept="image/*" hidden>
+      <button type="button" id="emoji-btn" class="emoji-btn" aria-label="Emoji">😊</button>
       <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
-      <button type="submit" id="send-btn">
+      <button type="submit" id="send-btn" aria-label="Send">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M3 11.5 21 3l-7.5 18-3-7.5L3 11.5Z"/>
         </svg>
       </button>
     </form>
 
-    <div id="image-preview"></div> %>
+    <div id="emoji-picker" class="emoji-picker hidden"></div>
   </div>
 
   <!-- Call modal -->
@@ -90,8 +82,8 @@
       </div>
 
       <div class="call-controls">
-        <button id="answer-call-btn" class="call-action accept hidden">Answer</button>
-        <button id="decline-call-btn" class="call-action decline">Hang up</button>
+        <button id="answer-call-btn" class="call-action accept hidden" type="button">Answer</button>
+        <button id="decline-call-btn" class="call-action decline" type="button">Hang up</button>
       </div>
     </div>
   </div>
