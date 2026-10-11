@@ -1,0 +1,14 @@
+<% unless content_for?(:cmp_css) %>
+  <% content_for :cmp_css, "1" %>
+  <% content_for :head do %>
+    <%= stylesheet_link_tag "cmp_compare", "data-turbo-track": "reload" %>
+  <% end %>
+<% end %>
+
+<% unless vendor_user? %>
+  <% if compare_ids.include?(property.id) %>
+    <%= button_to remove_compare_path(property), method: :delete, class: "cmpx-add is-on", form_class: "cmpx-form" do %>✓ Added · Remove<% end %>
+  <% else %>
+    <%= button_to add_compare_path(property), class: "cmpx-add", form_class: "cmpx-form" do %>＋ Compare<% end %>
+  <% end %>
+<% end %>

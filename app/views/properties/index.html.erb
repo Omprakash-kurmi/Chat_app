@@ -138,6 +138,7 @@
   <% if @properties.any? %>
     <div class="property-grid">
       <%= render partial: "properties/property", collection: @properties %>
+      <%= render "comparisons/tray" %>
     </div>
     <%= render "properties/pagination", collection: @properties %>
   <% else %>
