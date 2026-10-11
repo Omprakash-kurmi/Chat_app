@@ -27,13 +27,18 @@
   <%= link_to "← Back to #{@property.rent? ? 'rentals' : 'sales'}",
         homes_path(listing_type: @property.listing_type), class: "back-link" %>
 
-  <div class="gallery">
-    <% @property.photos.each do |photo| %>
-      <%= link_to url_for(photo), target: "_blank", rel: "noopener" do %>
-        <%= image_tag photo.variant(resize_to_fill: [900, 600]), alt: @property.title %>
+  <% if show_property_slider? && property_slides(@property).any? %>
+    <%= render "properties/gallery", property: @property %>
+  <% else %>
+    <%# vendors, and homes with no photos, keep the original photo grid %>
+    <div class="gallery">
+      <% @property.photos.each do |photo| %>
+        <%= link_to url_for(photo), target: "_blank", rel: "noopener" do %>
+          <%= image_tag photo.variant(resize_to_fill: [900, 600]), alt: @property.title %>
+        <% end %>
       <% end %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 
   <div class="property-layout">
     <div>
@@ -46,6 +51,7 @@
         <p class="deposit">Security deposit: <strong><%= number_to_currency(@property.security_deposit, unit: "₹", precision: 0) %></strong></p>
       <% end %>
       <p class="deposit">📍 <%= full_address %></p>
+      <div class="compare-row"><%= render "comparisons/button", property: @property %></div>
 
       <div class="facts">
         <% facts.each do |label, value| %>
@@ -107,4 +113,5 @@
           note: "Estimated for a #{number_to_currency(@property.price, unit: '₹', precision: 0)} home with a 20% down payment. Adjust any value." %>
   <% end %>
   <%= render "reviews/section", property: @property %>
+  <%= render "comparisons/tray" %>
 </article>

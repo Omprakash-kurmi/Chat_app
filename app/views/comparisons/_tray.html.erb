@@ -1,0 +1,19 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "cmp_compare", "data-turbo-track": "reload" %>
+<% end %>
+
+<% if !vendor_user? && compare_properties.any? %>
+  <div class="cmpx-tray">
+    <div class="cmpx-tray-thumbs">
+      <% compare_properties.each do |p| %>
+        <% img = property_slides(p).first %>
+        <span class="cmpx-thumb" title="<%= pg_title(p) %>">
+          <% if img %><%= image_tag pg_src(img, [120, 120]), alt: "" %><% else %>🏠<% end %>
+        </span>
+      <% end %>
+    </div>
+    <span class="cmpx-tray-text"><b><%= compare_properties.size %></b> / <%= ComparisonsHelper::CMP_MAX %> selected</span>
+    <%= button_to "Clear", clear_compare_path, method: :delete, class: "cmpx-tray-clear", form_class: "cmpx-form" %>
+    <%= link_to "Compare now →", compare_path, class: "cmpx-tray-go" %>
+  </div>
+<% end %>

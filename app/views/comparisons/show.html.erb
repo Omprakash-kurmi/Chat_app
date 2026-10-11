@@ -1,0 +1,141 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "pg_gallery", "cmp_compare", "data-turbo-track": "reload" %>
+<% end %>
+
+<%
+  props    = @properties
+  rows     = cmp_rows(props)
+  slots    = ComparisonsHelper::CMP_MAX - props.size
+  list_for = (props.first&.try(:listing_type).presence || "rent").to_s
+%>
+
+<div class="cmpx">
+  <nav class="cmpx-crumbs">
+    <%= link_to "Search Home", search_home_path %> <span>›</span> Compare
+  </nav>
+
+  <header class="cmpx-top">
+    <div>
+      <h1>Compare Properties</h1>
+      <p>Selected: <b><%= props.size %></b> / <%= ComparisonsHelper::CMP_MAX %></p>
+    </div>
+    <div class="cmpx-top-actions">
+      <% if props.any? %>
+        <%= button_to "Clear all", clear_compare_path, method: :delete, class: "cmpx-btn cmpx-btn--ghost", form_class: "cmpx-form" %>
+      <% end %>
+      <% if props.size >= 2 %>
+        <a href="#cmpx-table" class="cmpx-btn cmpx-btn--solid">Compare now</a>
+      <% end %>
+    </div>
+  </header>
+
+  <% if props.empty? %>
+    <div class="cmpx-empty">
+      <div>⚖️</div>
+      <h2>Nothing to compare yet</h2>
+      <p>Tap <b>＋ Compare</b> on any home to add it here. You can compare up to <%= ComparisonsHelper::CMP_MAX %> at a time.</p>
+      <%= link_to "Browse homes to rent", homes_path(listing_type: "rent"), class: "cmpx-btn cmpx-btn--solid" %>
+      <%= link_to "Browse homes to buy", homes_path(listing_type: "buy"), class: "cmpx-btn cmpx-btn--ghost" %>
+    </div>
+  <% else %>
+
+    <!-- CARDS -->
+    <div class="cmpx-cards">
+      <% props.each do |p| %>
+        <% slides = property_slides(p) %>
+        <article class="cmpx-card">
+          <div class="pgx cmpx-media" data-slider>
+            <% if slides.any? %>
+              <div class="pgx-track" data-track>
+                <% slides.each do |img| %>
+                  <div class="pgx-slide cmpx-slide"><%= image_tag pg_src(img, [800, 600]), class: "pgx-img", alt: pg_title(p) %></div>
+                <% end %>
+              </div>
+              <% if slides.size > 1 %>
+                <button type="button" class="pgx-nav pgx-nav--prev" data-prev aria-label="Previous photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <button type="button" class="pgx-nav pgx-nav--next" data-next aria-label="Next photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              <% end %>
+            <% else %>
+              <div class="cmpx-noimg">🏠</div>
+            <% end %>
+          </div>
+
+          <div class="cmpx-card-body">
+            <h3><%= pg_title(p) %></h3>
+            <% if cmp_place(p) %><p class="cmpx-place">📍 <%= cmp_place(p) %></p><% end %>
+            <p class="cmpx-price"><%= cmp_price_label(p) || "Price on request" %></p>
+            <div class="cmpx-card-actions">
+              <%= button_to "Remove", remove_compare_path(p), method: :delete, class: "cmpx-btn cmpx-btn--ghost", form_class: "cmpx-form" %>
+              <%= link_to "Open", property_path(p), class: "cmpx-btn cmpx-btn--solid" %>
+            </div>
+          </div>
+        </article>
+      <% end %>
+
+      <% slots.times do %>
+        <%= link_to homes_path(listing_type: list_for), class: "cmpx-card cmpx-card--empty" do %>
+          <span class="cmpx-plus">＋</span>
+          <b>Add Property</b>
+          <small>Add a property to compare</small>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- TABLE -->
+    <% if props.size < 2 %>
+      <p class="cmpx-hint">➕ Add at least one more property to see the side-by-side comparison.</p>
+    <% else %>
+      <input type="checkbox" id="cmpx-diff" class="cmpx-diffbox">
+      <div class="cmpx-tablehead">
+        <h2>Detailed comparison</h2>
+        <label for="cmpx-diff" class="cmpx-toggle"><span></span> Show differences only</label>
+      </div>
+
+      <div class="cmpx-tablewrap" id="cmpx-table">
+        <table class="cmpx-table">
+          <thead>
+            <tr>
+              <th>Specification</th>
+              <% props.each do |p| %><th><%= link_to pg_title(p), property_path(p) %></th><% end %>
+              <% slots.times do |i| %><th class="cmpx-slot">Slot <%= props.size + i + 1 %></th><% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% rows.each do |row| %>
+              <% if row[:section] %>
+                <tr class="cmpx-section"><th colspan="<%= ComparisonsHelper::CMP_MAX + 1 %>"><%= row[:section] %></th></tr>
+              <% else %>
+                <% best = cmp_best_index(row) %>
+                <tr class="<%= 'is-same' if cmp_same?(row) %>">
+                  <th><%= row[:label] %></th>
+                  <% row[:html].each_with_index do |cell, i| %>
+                    <td class="<%= 'is-best' if best == i %>">
+                      <%= cell %>
+                      <% if best == i %><em class="cmpx-best">Best</em><% end %>
+                    </td>
+                  <% end %>
+                  <% slots.times do %><td class="cmpx-slot">—</td><% end %>
+                </tr>
+              <% end %>
+            <% end %>
+
+            <tr class="cmpx-actions-row">
+              <th>Actions</th>
+              <% props.each do |p| %>
+                <td>
+                  <%= link_to "View details", property_path(p), class: "cmpx-btn cmpx-btn--solid cmpx-btn--sm" %>
+                  <%= button_to "Remove", remove_compare_path(p), method: :delete, class: "cmpx-btn cmpx-btn--ghost cmpx-btn--sm", form_class: "cmpx-form" %>
+                </td>
+              <% end %>
+              <% slots.times do %><td class="cmpx-slot">—</td><% end %>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  <% end %>
+</div>

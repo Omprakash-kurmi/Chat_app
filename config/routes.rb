@@ -40,6 +40,11 @@ Rails.application.routes.draw do
     end
   end
 
+  get    "compare",               to: "comparisons#show",   as: :compare
+  post   "compare/:property_id",  to: "comparisons#add",    as: :add_compare
+  delete "compare/:property_id",  to: "comparisons#remove", as: :remove_compare
+  delete "compare",               to: "comparisons#clear",  as: :clear_compare
+
   resources :inquiries, only: %i[index show] do
     member do
       patch :accept
