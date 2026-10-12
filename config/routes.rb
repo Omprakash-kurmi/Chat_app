@@ -30,7 +30,7 @@ Rails.application.routes.draw do
 
   get "search_home", to: "properties#choose", as: :search_home
   get "homes/:listing_type", to: "properties#index", as: :homes,
-      constraints: { listing_type: /rent|buy/ }
+      constraints: { listing_type: /rent|buy|land/ }
 
   resources :properties, only: :show do
     resources :inquiries, only: :create                    # send an inquiry

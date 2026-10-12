@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_10_112315) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_12_074028) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -203,7 +203,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_10_112315) do
     t.integer "status", default: 0, null: false
     t.text "rejection_reason"
     t.datetime "verified_at"
+    t.integer "land_type"
+    t.decimal "land_area", precision: 14, scale: 2
+    t.string "area_unit", default: "sqft", null: false
+    t.decimal "plot_length", precision: 8, scale: 2
+    t.decimal "plot_width", precision: 8, scale: 2
+    t.string "facing"
+    t.integer "road_width_ft"
+    t.boolean "boundary_wall", default: false, null: false
+    t.boolean "corner_plot", default: false, null: false
+    t.string "ownership_type"
+    t.string "approval_authority"
     t.index ["amenities"], name: "index_properties_on_amenities", using: :gin
+    t.index ["land_type"], name: "index_properties_on_land_type"
     t.index ["locality"], name: "index_properties_on_locality"
     t.index ["pincode"], name: "index_properties_on_pincode"
     t.index ["status"], name: "index_properties_on_status"

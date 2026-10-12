@@ -6,6 +6,14 @@ class Property < ApplicationRecord
     "Rainwater harvesting", "Pet friendly", "Wi-Fi ready"
   ].freeze
 
+  # LAND: units are stored as "how many sq ft is one unit"
+  LAND_AREA_UNITS   = { "sqft" => "1", "sqyd" => "9", "sqm" => "10.7639", "acre" => "43560" }.freeze
+  AREA_UNIT_LABELS  = { "sqft" => "sq ft", "sqyd" => "sq yd", "sqm" => "sq m", "acre" => "acres" }.freeze
+  FACINGS     = %w[North East South West North-East North-West South-East South-West].freeze
+  OWNERSHIPS  = [ "Freehold", "Leasehold", "Power of attorney", "Co-operative society" ].freeze
+  APPROVALS   = [ "Municipal / local authority", "DTCP / town planning", "RERA registered",
+                  "Gram panchayat", "Not yet approved" ].freeze
+
   belongs_to :user
   has_many_attached :photos
   has_many_attached :videos
@@ -16,10 +24,11 @@ class Property < ApplicationRecord
   has_many :proposed_visits, class_name: "Visit", foreign_key: :proposed_by_id, dependent: :destroy
   has_many :reviews, dependent: :destroy
 
-  enum :listing_type,  { rent: 0, buy: 1 }
+  enum :listing_type,  { rent: 0, buy: 1, land: 2 }          # LAND: third option
   enum :property_type, { apartment: 0, house: 1, villa: 2, plot: 3, studio: 4, penthouse: 5, commercial: 6 }
   enum :furnishing,    { unfurnished: 0, semi_furnished: 1, furnished: 2 }
   enum :poster_type,   { owner: 0, agent: 1 }
+  enum :land_type,     { residential: 0, agricultural: 1, commercial: 2, industrial: 3 }, prefix: :land  # LAND
 
   before_validation :tidy
   before_save :restore_availability, if: -> { status_changed? && published? }
@@ -33,23 +42,42 @@ class Property < ApplicationRecord
   validate :photos_valid, :videos_valid
   validate :gallery_ok
 
-  scope :available, -> { where(available: true) }
+  # LAND: extra rules only for land listings
+  with_options if: :land? do
+    validates :land_type, presence: { message: "– choose the land type" }
+    validates :land_area, numericality: { greater_than: 0 }
+    validates :area_unit, inclusion: { in: LAND_AREA_UNITS.keys }
+    validates :facing, inclusion: { in: FACINGS }, allow_blank: true
+    validates :road_width_ft, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+    validates :plot_length, :plot_width, numericality: { greater_than: 0 }, allow_nil: true
+  end
 
+  scope :available, -> { where(available: true) }
 
   def average_rating
     reviews.average(:rating).to_f.round(1)
   end
 
+  # def reviewable_by?(user)
+  #   return false unless user&.customer?
+  #   return false if user_id == user.id            # owner can't review own home
+  #   inquiries.where(user_id: user.id, status: %w[accepted closed]).exists?
+  # end
+
+  # def verified_reviewer_ids
+  #     inquiries.where(status: %w[accepted closed]).pluck(:user_id)
+  #   rescue ActiveRecord::StatementInvalid, NoMethodError
+  #     []
+  # end
+
   def reviewable_by?(user)
-    return false unless user&.customer?
-    return false if user_id == user.id            # owner can't review own home
-    inquiries.where(user_id: user.id, status: %w[accepted closed]).exists?
+    return false if user.nil?
+    return false if user_id == user.id                       # vendors can't review their own listing
+    inquiries.where(user_id: user.id, status: :accepted).exists?
   end
 
   def verified_reviewer_ids
-      inquiries.where(status: %w[accepted closed]).pluck(:user_id)
-    rescue ActiveRecord::StatementInvalid, NoMethodError
-      []
+    inquiries.where(status: :accepted).pluck(:user_id)
   end
 
   # ---------- search ----------
@@ -76,9 +104,19 @@ class Property < ApplicationRecord
     wanted_furnishing = Array(f["furnishings"]) & furnishings.keys
     scope = scope.where(furnishing: wanted_furnishing) if wanted_furnishing.any?
 
-    scope = scope.where("area_sqft >= ?", f["min_area"].to_i) if f["min_area"].present?
-    scope = scope.where("area_sqft <= ?", f["max_area"].to_i) if f["max_area"].present?
+    # LAND: area filters understand the chosen unit (sq ft by default)
+    factor = LAND_AREA_UNITS.fetch(f["area_unit"].to_s, "1").to_d
+    scope = scope.where("area_sqft >= ?", (f["min_area"].to_d * factor).round) if f["min_area"].present?
+    scope = scope.where("area_sqft <= ?", (f["max_area"].to_d * factor).round) if f["max_area"].present?
     scope = scope.where("parking_spaces > 0") if f["parking"].to_s == "1"
+
+    # LAND filters
+    kinds = Array(f["land_types"]).reject(&:blank?) & land_types.keys
+    scope = scope.where(land_type: kinds) if kinds.any?
+    scope = scope.where(facing: f["facing"]) if f["facing"].present? && FACINGS.include?(f["facing"])
+    scope = scope.where(boundary_wall: true) if f["boundary_wall"].to_s == "1"
+    scope = scope.where(corner_plot: true) if f["corner_plot"].to_s == "1"
+    scope = scope.where("road_width_ft >= ?", f["min_road"].to_i) if f["min_road"].present?
 
     wanted_amenities = Array(f["amenities"]) & AMENITIES
     scope = scope.where("amenities @> ARRAY[?]::varchar[]", wanted_amenities) if wanted_amenities.any?
@@ -120,7 +158,31 @@ class Property < ApplicationRecord
     [ address, locality, city, pincode ].compact_blank.join(", ")
   end
 
+  # LAND helpers
+  def listing_label
+    { "rent" => "For rent", "buy" => "For sale", "land" => "Land / Plot" }[listing_type]
+  end
+
+  def land_area_label
+    return if land_area.blank?
+    "#{ActiveSupport::NumberHelper.number_to_delimited(trim_number(land_area))} #{AREA_UNIT_LABELS.fetch(area_unit, 'sq ft')}"
+  end
+
+  def plot_dimensions
+    return unless plot_length && plot_width
+    "#{trim_number(plot_length)} × #{trim_number(plot_width)} ft"
+  end
+
+  def land_kind_label
+    land_type.present? ? "#{land_type.humanize} land" : "Land"
+  end
+
   private
+
+  def trim_number(n)
+    f = n.to_f
+    f == f.to_i ? f.to_i : f
+  end
 
   def restore_availability
     self.available = true
@@ -137,7 +199,19 @@ class Property < ApplicationRecord
   def tidy
     self.amenities = Array(amenities).reject(&:blank?) & AMENITIES
     self.pincode = pincode.to_s.strip.presence
-    self.security_deposit = nil if buy?
+    self.security_deposit = nil unless rent?
+
+    if land?
+      self.property_type = :plot
+      self.area_sqft = (land_area.to_d * LAND_AREA_UNITS.fetch(area_unit.to_s, "1").to_d).round if land_area.present?
+      self.bedrooms = nil
+      self.bathrooms = nil
+      self.furnishing = :unfurnished
+      self.parking_spaces = 0
+      self.floor_number = nil
+      self.total_floors = nil
+      self.age_years = nil
+    end
   end
 
   def photos_valid
@@ -156,39 +230,15 @@ class Property < ApplicationRecord
       errors.add(:videos, "must be under 50 MB") if v.byte_size > 50.megabytes
     end
   end
+
   def self.ransackable_attributes(auth_object = nil)
-    [
-      "id",
-      "title",
-      "description",
-      "address",
-      "locality",
-      "city",
-      "pincode",
-      "contact_name",
-      "contact_phone",
-      "listing_type",
-      "property_type",
-      "furnishing",
-      "poster_type",
-      "price",
-      "security_deposit",
-      "bedrooms",
-      "bathrooms",
-      "area_sqft",
-      "floor_number",
-      "total_floors",
-      "parking_spaces",
-      "available",
-      "available_from",
-      "age_years",
-      "latitude",
-      "longitude",
-      "amenities",
-      "visiting_hours",
-      "user_id",
-      "created_at",
-      "updated_at"
+    %w[
+      id title description address locality city pincode contact_name contact_phone
+      listing_type property_type furnishing poster_type price security_deposit bedrooms bathrooms
+      area_sqft floor_number total_floors parking_spaces available available_from age_years
+      latitude longitude amenities visiting_hours user_id created_at updated_at
+      land_type land_area area_unit plot_length plot_width facing road_width_ft
+      boundary_wall corner_plot ownership_type approval_authority
     ]
   end
 

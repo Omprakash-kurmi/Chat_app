@@ -38,13 +38,15 @@
   <% end %>
 
   <% if user_signed_in? && property.reviewable_by?(current_user) %>
-    <details class="rvx-write" <%= "open" if mine && params[:edit] %>>
+    <details class="rvx-write" <%= "open" unless mine %>>
       <summary><%= mine ? "✎ Edit your review" : "★ Write a review" %></summary>
       <%= render "reviews/form", property: property, review: (mine || property.reviews.build) %>
     </details>
     <div style="height:14px"></div>
+  <% elsif user_signed_in? && property.user_id != current_user.id %>
+    <p class="rvx-note">⭐ Reviews are open to customers whose inquiry was accepted by the owner. Send an inquiry, and once it's accepted you can rate this <%= property.land? ? "land" : "home" %>.</p>
   <% elsif !user_signed_in? %>
-    <p class="rvx-note"><%= link_to "Log in", new_user_session_path %> to rate this home and leave feedback.</p>
+    <p class="rvx-note"><%= link_to "Log in", new_user_session_path %> to rate this <%= property.land? ? "land" : "home" %> and leave feedback.</p>
   <% end %>
 
   <% if total.zero? %>

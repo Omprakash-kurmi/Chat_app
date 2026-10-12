@@ -1,0 +1,20 @@
+.ldx{margin:18px 0;padding:20px;border-radius:18px;background:#fffaf0;border:1px solid #fde68a}
+.ldx[hidden]{display:none!important}
+.ldx .ldx-title{margin:0 0 14px!important;font-size:18px!important;font-weight:800;color:#92400e!important}
+.ldx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ldx-f label{display:block;font-size:12px;font-weight:700;color:#6f6b88;margin-bottom:5px}
+.ldx-f input,.ldx-f select{width:100%!important;height:42px;border:1px solid #e2def0!important;border-radius:12px!important;padding:0 12px!important;background:#fff!important;box-sizing:border-box}
+.ldx-checks{display:flex;gap:22px;margin-top:14px;font-weight:600}
+.badge.land{background:#f59e0b!important;color:#fff!important}
+@media(max-width:700px){.ldx-grid{grid-template-columns:1fr}}
+[data-land-only][hidden],[data-not-land][hidden],[data-rent-only][hidden]{display:none!important}
+.ldx-box{grid-column:1/-1;margin:6px 0;padding:20px;border-radius:18px;background:#fffaf0;border:1px solid #fde68a}
+.ldx-box h3{margin:0 0 14px!important;font-size:18px!important;font-weight:800;color:#92400e!important}
+.ldx-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.ldx-field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
+.ldx-field input,.ldx-field select{width:100%!important;height:42px;border:1px solid #e2def0!important;border-radius:12px!important;padding:0 12px!important;background:#fff!important;box-sizing:border-box}
+.ldx-pair{display:grid;grid-template-columns:1fr 130px;gap:8px}
+.ldx-checks{display:flex;flex-wrap:wrap;gap:22px;margin-top:14px;font-weight:600}
+.ldx-check{display:flex;align-items:center;gap:8px}
+.ldx-check input{width:auto!important;height:auto!important}
+@media(max-width:700px){.ldx-grid{grid-template-columns:1fr}}

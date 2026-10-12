@@ -30,8 +30,9 @@ ActiveAdmin.setup do |config|
   #
   # Note: Aim for an image that's 21px high so it fits in the header.
   #
-  config.site_title_image = "logo.png"
+  # config.site_title_image = "logo.png"
 
+  config.site_title = "Chat_App Admin"
   # == Load Paths
   #
   # By default Active Admin files go inside app/admin/.

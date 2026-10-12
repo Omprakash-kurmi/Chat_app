@@ -98,6 +98,12 @@ module ComparisonsHelper
     rows << cmp_row("Listing type", props.map { |p| p.try(:listing_type).to_s.presence&.humanize })
     rows << cmp_row("Availability", props.map { |p| p.respond_to?(:available) ? (p.available ? "Available" : "Not available") : nil })
 
+    rows << cmp_row("Land type", props.map { |p| p.land? ? p.land_kind_label : nil })
+    rows << cmp_row("Plot dimensions", props.map { |p| p.plot_dimensions })
+    rows << cmp_row("Facing", props.map { |p| p.facing.presence })
+    rows << cmp_row("Road width", props.map { |p| p.road_width_ft ? "#{p.road_width_ft} ft" : nil })
+    rows << cmp_row("Boundary wall", props.map { |p| p.land? ? (p.boundary_wall ? "Yes" : "No") : nil })
+
     rows.reject! { |r| r[:raw].all?(&:blank?) }
 
     amenity_names = defined?(Property::AMENITIES) ? Property::AMENITIES : props.flat_map { |p| cmp_amenities(p) }.uniq

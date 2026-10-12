@@ -1,0 +1,46 @@
+<section class="ldx-box" data-land-only hidden>
+  <h3>🌳 Land / plot details</h3>
+
+  <div class="ldx-grid">
+    <div class="ldx-field">
+      <%= f.label :land_type, "Land type" %>
+      <%= f.select :land_type, Property.land_types.keys.map { |k| [k.humanize, k] }, include_blank: "Choose…" %>
+    </div>
+    <div class="ldx-field">
+      <%= f.label :land_area, "Plot area" %>
+      <div class="ldx-pair">
+        <%= f.number_field :land_area, step: "any", min: 0, placeholder: "e.g. 1200" %>
+        <%= f.select :area_unit, Property::AREA_UNIT_LABELS.map { |k, v| [v, k] } %>
+      </div>
+    </div>
+    <div class="ldx-field">
+      <%= f.label :plot_length, "Length (ft)" %>
+      <%= f.number_field :plot_length, step: "any", min: 0, placeholder: "e.g. 40" %>
+    </div>
+    <div class="ldx-field">
+      <%= f.label :plot_width, "Width (ft)" %>
+      <%= f.number_field :plot_width, step: "any", min: 0, placeholder: "e.g. 30" %>
+    </div>
+    <div class="ldx-field">
+      <%= f.label :facing, "Facing" %>
+      <%= f.select :facing, Property::FACINGS, include_blank: "Not sure" %>
+    </div>
+    <div class="ldx-field">
+      <%= f.label :road_width_ft, "Road width (ft)" %>
+      <%= f.number_field :road_width_ft, min: 0, placeholder: "e.g. 30" %>
+    </div>
+    <div class="ldx-field">
+      <%= f.label :ownership_type, "Ownership" %>
+      <%= f.select :ownership_type, Property::OWNERSHIPS, include_blank: "Choose…" %>
+    </div>
+    <div class="ldx-field">
+      <%= f.label :approval_authority, "Approved by" %>
+      <%= f.select :approval_authority, Property::APPROVALS, include_blank: "Choose…" %>
+    </div>
+  </div>
+
+  <div class="ldx-checks">
+    <label class="ldx-check"><%= f.check_box :boundary_wall %> <span>🧱 Boundary wall built</span></label>
+    <label class="ldx-check"><%= f.check_box :corner_plot %> <span>📍 Corner plot</span></label>
+  </div>
+</section>

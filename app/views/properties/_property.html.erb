@@ -7,7 +7,7 @@
       <% else %>
         <div class="no-photo">No photo</div>
       <% end %>
-      <span class="badge <%= property.listing_type %>"><%= property.rent? ? "For rent" : "For sale" %></span>
+      <span class="badge <%= property.listing_type %>"><%= property.listing_label %></span>
       <% if property.photos.size > 1 %><span class="pc-count">📷 <%= property.photos.size %></span><% end %>
     </div>
 
@@ -17,17 +17,29 @@
         <% if property.rent? %><small>/month</small><% end %>
       </p>
       <h3><%= property.title %></h3>
-      <p class="pc-loc">📍 <%= [property.locality, property.city].compact_blank.join(", ") %> · <%= property.property_type.humanize %></p>
+      <p class="pc-loc">📍 <%= [property.locality, property.city].compact_blank.join(", ") %> · <%= property.land? ? property.land_kind_label : property.property_type.humanize %></p>
 
       <ul class="pc-specs">
-        <% if property.bedrooms %><li>🛏 <%= property.bedrooms %> bed</li><% end %>
-        <% if property.bathrooms %><li>🛁 <%= property.bathrooms %> bath</li><% end %>
-        <% if property.area_sqft %><li>📐 <%= number_with_delimiter(property.area_sqft) %> sq ft</li><% end %>
+        <% if property.land? %>
+          <% if property.land_area %><li>📐 <%= property.land_area_label %></li><% end %>
+          <% if property.plot_dimensions %><li>📏 <%= property.plot_dimensions %></li><% end %>
+          <% if property.facing.present? %><li>🧭 <%= property.facing %></li><% end %>
+        <% else %>
+          <% if property.bedrooms %><li>🛏 <%= property.bedrooms %> bed</li><% end %>
+          <% if property.bathrooms %><li>🛁 <%= property.bathrooms %> bath</li><% end %>
+          <% if property.area_sqft %><li>📐 <%= number_with_delimiter(property.area_sqft) %> sq ft</li><% end %>
+        <% end %>
       </ul>
 
       <p class="tags">
-        <span><%= property.furnishing_label %></span>
-        <% if property.parking_spaces.to_i > 0 %><span>🚗 Parking</span><% end %>
+        <% if property.land? %>
+          <% if property.boundary_wall %><span>🧱 Boundary wall</span><% end %>
+          <% if property.corner_plot %><span>📍 Corner plot</span><% end %>
+          <% if property.approval_authority.present? && property.approval_authority != "Not yet approved" %><span>✅ Approved</span><% end %>
+        <% else %>
+          <span><%= property.furnishing_label %></span>
+          <% if property.parking_spaces.to_i > 0 %><span>🚗 Parking</span><% end %>
+        <% end %>
         <% if !property.available_now? && property.available_from %><span class="soon">From <%= l(property.available_from, format: :short) %></span><% end %>
       </p>
     </div>

@@ -1,0 +1,51 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "ld_land", "data-turbo-track": "reload" %>
+<% end %>
+
+<div class="ldx" data-land-only hidden>
+  <h3 class="ldx-title">🌳 Land / Plot details</h3>
+
+  <div class="ldx-grid">
+    <div class="ldx-f">
+      <%= f.label :land_type, "Land type" %>
+      <%= f.select :land_type, Property.land_types.keys.map { |k| [k.humanize, k] }, { include_blank: "Select" } %>
+    </div>
+    <div class="ldx-f">
+      <%= f.label :land_area, "Land area" %>
+      <%= f.number_field :land_area, step: "0.01", min: 0, placeholder: "e.g. 2400" %>
+    </div>
+    <div class="ldx-f">
+      <%= f.label :area_unit, "Area unit" %>
+      <%= f.select :area_unit, Property::LAND_AREA_UNITS.keys.map { |k| [Property::AREA_UNIT_LABELS[k] || k, k] } %>
+    </div>
+    <div class="ldx-f">
+      <%= f.label :plot_length, "Plot length (ft)" %>
+      <%= f.number_field :plot_length, step: "0.01", min: 0 %>
+    </div>
+    <div class="ldx-f">
+      <%= f.label :plot_width, "Plot width (ft)" %>
+      <%= f.number_field :plot_width, step: "0.01", min: 0 %>
+    </div>
+    <div class="ldx-f">
+      <%= f.label :facing, "Facing" %>
+      <%= f.select :facing, Property::FACINGS, { include_blank: "Select" } %>
+    </div>
+    <div class="ldx-f">
+      <%= f.label :road_width_ft, "Road width (ft)" %>
+      <%= f.number_field :road_width_ft, min: 0 %>
+    </div>
+    <div class="ldx-f">
+      <%= f.label :ownership_type, "Ownership" %>
+      <%= f.select :ownership_type, Property::OWNERSHIPS, { include_blank: "Select" } %>
+    </div>
+    <div class="ldx-f">
+      <%= f.label :approval_authority, "Approval" %>
+      <%= f.select :approval_authority, Property::APPROVALS, { include_blank: "Select" } %>
+    </div>
+  </div>
+
+  <div class="ldx-checks">
+    <label><%= f.check_box :boundary_wall %> Boundary wall</label>
+    <label><%= f.check_box :corner_plot %> Corner plot</label>
+  </div>
+</div>
