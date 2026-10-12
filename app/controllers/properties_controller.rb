@@ -3,14 +3,6 @@ class PropertiesController < ApplicationController
 
   def choose; end
 
-  # def index
-  #   @listing_type = params[:listing_type]
-  #   @properties = Property.available.with_attached_photos
-  #                         .where(listing_type: @listing_type)
-  #                         .matching(params)
-  #                         .sorted(params[:sort])
-  #                         .page(params[:page]).per(12)
-  # end
   def index
     @listing_type = params[:listing_type]
 
@@ -30,9 +22,6 @@ class PropertiesController < ApplicationController
                     .per(12)
   end
 
-  # def show
-  #   @property = Property.find(params[:id])
-  # end
   def show
     @property = Property.find(params[:id])
     # unverified / closed listings are visible only to their owner

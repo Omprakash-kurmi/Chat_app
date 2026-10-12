@@ -46,3 +46,17 @@
   .pgx .pgx-nav{width:38px!important;height:38px!important}
   .pgx .pgx-thumb{flex-basis:84px;height:58px}
 }
+
+/* make the slider win over the site's global img / button / figure styles */
+.pgx .pgx-slide{margin:0!important;display:block!important}
+.pgx .pgx-slide img,
+.pgx .pgx-img{
+  display:block!important;width:100%!important;height:100%!important;
+  max-width:none!important;object-fit:cover!important;border-radius:0!important}
+
+.pgx .pgx-thumb{
+  flex:0 0 112px!important;width:112px!important;height:76px!important;
+  padding:0!important;line-height:0!important;border-radius:14px!important;overflow:hidden}
+.pgx .pgx-thumb img{
+  display:block!important;width:100%!important;height:100%!important;
+  max-width:none!important;object-fit:cover!important;border-radius:0!important}
