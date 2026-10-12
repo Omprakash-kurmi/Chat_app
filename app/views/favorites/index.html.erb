@@ -13,7 +13,7 @@
         <%= render "properties/property", property: favorite.property, removable: true %>
       <% end %>
     </div>
-    <%= paginate @favorites %>
+    <%= render "properties/pagination", collection: @favorites %>
   <% else %>
     <div class="empty">
       <strong>♡ No favorites yet</strong>

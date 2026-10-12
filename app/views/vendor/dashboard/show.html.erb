@@ -1,0 +1,105 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "vd_dashboard", "data-turbo-track": "reload" %>
+<% end %>
+
+<div class="vdx">
+  <header class="vdx-head">
+    <div>
+      <h1>Welcome back, <%= current_user.try(:display_name) || "vendor" %> 👋</h1>
+      <p>Here's how your listings are performing.</p>
+    </div>
+    <%= link_to "+ Add property", new_vendor_property_path, class: "vdx-add" %>
+  </header>
+
+  <section class="vdx-stats">
+    <div class="vdx-stat"><span class="vdx-ico" style="background:#f1e8ff">🏘️</span>
+      <div><small>Total listings</small><b><%= @total %></b><em><%= @published %> live</em></div></div>
+    <div class="vdx-stat"><span class="vdx-ico" style="background:#fff4d6">⏳</span>
+      <div><small>Pending approval</small><b><%= @pending_listings %></b><em style="color:#a16207">waiting for admin</em></div></div>
+    <div class="vdx-stat"><span class="vdx-ico" style="background:#d9f7ef">💬</span>
+      <div><small>New inquiries</small><b><%= @new_inquiries %></b><em><%= @inquiry_total %> in total</em></div></div>
+    <div class="vdx-stat"><span class="vdx-ico" style="background:#fef3c7">⭐</span>
+      <div><small>Average rating</small><b><%= @avg_rating || "–" %></b><em style="color:#a16207"><%= pluralize(@review_total, "review") %></em></div></div>
+  </section>
+
+  <section class="vdx-grid">
+    <div class="vdx-card">
+      <h2>Inquiries · last 7 days</h2>
+      <% max = [@week.map { |d| d[:count] }.max.to_i, 1].max %>
+      <div class="vdx-bars">
+        <% @week.each do |d| %>
+          <div class="vdx-col"><b><%= d[:count] %></b>
+            <i style="height:<%= (d[:count] * 100.0 / max).round %>%"></i>
+            <span><%= d[:label] %></span></div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="vdx-card">
+      <h2>Listings by type</h2>
+      <% [["Rent", "rent", "#6a11ff"], ["Buy", "buy", "#0d9488"], ["Land / Plot", "land", "#f59e0b"]].each do |label, key, color| %>
+        <% n = @by_type[key].to_i %>
+        <div class="vdx-type">
+          <div><span><%= label %></span><span><%= n %></span></div>
+          <span class="vdx-track" style="display:block"><i style="width:<%= @total.zero? ? 0 : (n * 100.0 / @total).round %>%;background:<%= color %>"></i></span>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="vdx-grid" style="grid-template-columns:1fr 1fr">
+    <div class="vdx-card">
+      <h2>Recent inquiries <%= link_to "View all →", inquiries_path %></h2>
+      <% if @recent_inquiries.any? %>
+        <ul class="vdx-list">
+          <% @recent_inquiries.each do |q| %>
+            <% who = q.user.try(:display_name) || "Customer" %>
+            <li>
+              <span class="vdx-av"><%= who[0].upcase %></span>
+              <span class="t"><b><%= who %></b><small><%= q.property.title %></small></span>
+              <span class="vdx-pill <%= q.status %>"><%= q.status.to_s.humanize %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="vdx-empty">No inquiries yet.</p>
+      <% end %>
+    </div>
+
+    <div class="vdx-card">
+      <h2>Latest reviews</h2>
+      <% if @recent_reviews.any? %>
+        <ul class="vdx-list">
+          <% @recent_reviews.each do |r| %>
+            <li>
+              <span class="vdx-av"><%= (r.user.try(:display_name) || "C")[0].upcase %></span>
+              <span class="t"><b><%= r.user.try(:display_name) || "Customer" %></b>
+                <small><%= r.property.title %> · <%= truncate(r.comment.to_s, length: 40) %></small></span>
+              <span class="vdx-stars"><%= "★" * r.rating %><%= "☆" * (5 - r.rating) %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="vdx-empty">No reviews yet.</p>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="vdx-card" style="margin-top:16px">
+    <h2>My listings <%= link_to "Manage all →", vendor_properties_path %></h2>
+    <table class="vdx-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Price</th><th>City</th><th>Status</th></tr></thead>
+      <tbody>
+        <% @latest_properties.each do |p| %>
+          <tr>
+            <td><b><%= link_to p.title, property_path(p) %></b></td>
+            <td><span class="vdx-tb <%= p.listing_type %>"><%= p.listing_type == "land" ? "Land / Plot" : p.listing_type.humanize %></span></td>
+            <td><%= number_to_currency(p.price, unit: "₹", precision: 0) %><%= "/mo" if p.rent? %></td>
+            <td><%= p.city %></td>
+            <td><span class="vdx-pill <%= p.status %>"><%= p.status.to_s.humanize %></span></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+</div>
