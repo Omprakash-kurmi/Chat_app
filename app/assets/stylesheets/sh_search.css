@@ -70,3 +70,10 @@
   .shx-feat .pgx-slide{aspect-ratio:4/3}
   .shx-caption{padding:18px 18px 40px}
 }
+ .shx-choices{grid-template-columns:repeat(3,1fr)!important}
+ .shx .shx-choice{padding:22px 20px}
+ .shx-ico{width:58px;height:58px;font-size:29px}
+ .shx-choice--land::before{background:linear-gradient(135deg,#d97706,#fbbf24)}
+ .shx-choice--land .shx-ico{background:linear-gradient(135deg,#fff0cf,#ffe0a1)}
+ @media(max-width:1000px){.shx-choices{grid-template-columns:1fr!important}}
+ 

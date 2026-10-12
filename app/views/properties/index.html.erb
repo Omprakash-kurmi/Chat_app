@@ -1,7 +1,18 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "ld_land", "data-turbo-track": "reload" %>
+<% end %>
 <%
-  rent = @listing_type == "rent"
+  kind = @listing_type
+  land = kind == "land"
+  rent = kind == "rent"
+  eyebrow, headline = {
+    "rent" => ["Rentals", "Find a home to rent"],
+    "buy"  => ["Homes for sale", "Find a home to buy"],
+    "land" => ["Land & plots", "Find a plot or land"]
+  }[kind]
   picked = ->(key) { Array(params[key]) }
-  advanced_keys = %w[property_types furnishings min_area max_area parking available_by amenities]
+  advanced_keys = land ? %w[facing min_area max_area boundary_wall corner_plot min_road] :
+                         %w[property_types furnishings min_area max_area parking available_by amenities]
   advanced_count = advanced_keys.count { |k| params[k].present? }
 %>
 <div class="sh">
@@ -9,13 +20,20 @@
 
   <header class="sh-hero">
     <div>
-      <p class="sh-eyebrow"><%= rent ? "Rentals" : "Homes for sale" %></p>
-      <h1><%= rent ? "Find a home to rent" : "Find a home to buy" %></h1>
-      <p class="sh-sub">Search by city, locality or pincode, then narrow it down by budget, size and amenities.</p>
+      <p class="sh-eyebrow"><%= eyebrow %></p>
+      <h1><%= headline %></h1>
+      <p class="sh-sub">
+        <% if land %>
+          Search by city, locality or pincode, then narrow it down by budget, plot size, facing and road access.
+        <% else %>
+          Search by city, locality or pincode, then narrow it down by budget, size and amenities.
+        <% end %>
+      </p>
     </div>
     <nav class="sh-switch" aria-label="Listing type">
-      <%= link_to "🔑 Rent", homes_path(listing_type: "rent"), class: ("on" if rent) %>
-      <%= link_to "🏡 Buy", homes_path(listing_type: "buy"), class: ("on" unless rent) %>
+      <%= link_to "🔑 Rent", homes_path(listing_type: "rent"), class: ("on" if kind == "rent") %>
+      <%= link_to "🏡 Buy",  homes_path(listing_type: "buy"),  class: ("on" if kind == "buy") %>
+      <%= link_to "🌳 Land", homes_path(listing_type: "land"), class: ("on" if land) %>
     </nav>
   </header>
 
@@ -36,10 +54,20 @@
         <label for="max_price"><%= rent ? "Max rent / month" : "Max price" %></label>
         <div class="sf-box"><span>₹</span><%= number_field_tag :max_price, params[:max_price], min: 0, step: "any", placeholder: "Any" %></div>
       </div>
-      <div class="sf-field">
-        <label for="bedrooms">Bedrooms</label>
-        <%= select_tag :bedrooms, options_for_select((1..5).map { |n| ["#{n}+ beds", n] }, params[:bedrooms]), include_blank: "Any" %>
-      </div>
+
+      <% if land %>
+        <div class="sf-field">
+          <label for="land_types_select">Land type</label>
+          <%= select_tag "land_types[]",
+                options_for_select(Property.land_types.keys.map { |k| [k.humanize, k] }, picked.call("land_types").first),
+                include_blank: "Any type", id: "land_types_select" %>
+        </div>
+      <% else %>
+        <div class="sf-field">
+          <label for="bedrooms">Bedrooms</label>
+          <%= select_tag :bedrooms, options_for_select((1..5).map { |n| ["#{n}+ beds", n] }, params[:bedrooms]), include_blank: "Any" %>
+        </div>
+      <% end %>
       <div class="sf-go"><%= submit_tag "Search", name: nil, class: "sf-submit" %></div>
     </div>
 
@@ -50,63 +78,101 @@
       </summary>
 
       <div class="sf-more-body">
-        <div class="sf-group">
-          <span class="sf-label">Property type</span>
-          <div class="sf-pills">
-            <% Property.property_types.each_key do |type| %>
+        <% if land %>
+          <div class="sf-row">
+            <div class="sf-field">
+              <label for="facing">Facing</label>
+              <%= select_tag :facing, options_for_select(Property::FACINGS, params[:facing]), include_blank: "Any" %>
+            </div>
+            <div class="sf-field">
+              <label for="min_area">Min plot area</label>
+              <%= number_field_tag :min_area, params[:min_area], min: 0, step: "any", placeholder: "0" %>
+            </div>
+            <div class="sf-field">
+              <label for="max_area">Max plot area</label>
+              <%= number_field_tag :max_area, params[:max_area], min: 0, step: "any", placeholder: "Any" %>
+            </div>
+            <div class="sf-field">
+              <label for="area_unit">Area unit</label>
+              <%= select_tag :area_unit, options_for_select(Property::AREA_UNIT_LABELS.map { |k, v| [v, k] }, params[:area_unit] || "sqft") %>
+            </div>
+            <div class="sf-field">
+              <label for="min_road">Road width</label>
+              <%= select_tag :min_road, options_for_select([["20 ft +", 20], ["30 ft +", 30], ["40 ft +", 40], ["60 ft +", 60]], params[:min_road]), include_blank: "Any" %>
+            </div>
+          </div>
+          <div class="sf-group">
+            <span class="sf-label">Plot features</span>
+            <div class="sf-pills">
               <label class="sf-pill">
-                <%= check_box_tag "property_types[]", type, picked.call("property_types").include?(type), id: "pt_#{type}" %>
-                <span><%= type.humanize %></span>
+                <%= check_box_tag :boundary_wall, "1", params[:boundary_wall] == "1", id: "boundary_wall" %>
+                <span>🧱 Boundary wall</span>
               </label>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="sf-group">
-          <span class="sf-label">Furnishing</span>
-          <div class="sf-pills">
-            <% Property.furnishings.each_key do |key| %>
               <label class="sf-pill">
-                <%= check_box_tag "furnishings[]", key, picked.call("furnishings").include?(key), id: "fu_#{key}" %>
-                <span><%= key == "semi_furnished" ? "Semi-furnished" : key.humanize %></span>
+                <%= check_box_tag :corner_plot, "1", params[:corner_plot] == "1", id: "corner_plot" %>
+                <span>📍 Corner plot</span>
               </label>
-            <% end %>
+            </div>
           </div>
-        </div>
+        <% else %>
+          <div class="sf-group">
+            <span class="sf-label">Property type</span>
+            <div class="sf-pills">
+              <% Property.property_types.each_key do |type| %>
+                <label class="sf-pill">
+                  <%= check_box_tag "property_types[]", type, picked.call("property_types").include?(type), id: "pt_#{type}" %>
+                  <span><%= type.humanize %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
 
-        <div class="sf-row">
-          <div class="sf-field">
-            <label for="min_area">Min area (sq ft)</label>
-            <%= number_field_tag :min_area, params[:min_area], min: 0, placeholder: "0" %>
+          <div class="sf-group">
+            <span class="sf-label">Furnishing</span>
+            <div class="sf-pills">
+              <% Property.furnishings.each_key do |key| %>
+                <label class="sf-pill">
+                  <%= check_box_tag "furnishings[]", key, picked.call("furnishings").include?(key), id: "fu_#{key}" %>
+                  <span><%= key == "semi_furnished" ? "Semi-furnished" : key.humanize %></span>
+                </label>
+              <% end %>
+            </div>
           </div>
-          <div class="sf-field">
-            <label for="max_area">Max area (sq ft)</label>
-            <%= number_field_tag :max_area, params[:max_area], min: 0, placeholder: "Any" %>
-          </div>
-          <div class="sf-field">
-            <label for="available_by">Available by</label>
-            <%= date_field_tag :available_by, params[:available_by] %>
-          </div>
-          <div class="sf-field">
-            <span class="sf-label">Parking</span>
-            <label class="sf-pill">
-              <%= check_box_tag :parking, "1", params[:parking] == "1", id: "parking" %>
-              <span>🚗 Parking available</span>
-            </label>
-          </div>
-        </div>
 
-        <div class="sf-group">
-          <span class="sf-label">Amenities</span>
-          <div class="sf-pills">
-            <% Property::AMENITIES.each do |amenity| %>
+          <div class="sf-row">
+            <div class="sf-field">
+              <label for="min_area">Min area (sq ft)</label>
+              <%= number_field_tag :min_area, params[:min_area], min: 0, placeholder: "0" %>
+            </div>
+            <div class="sf-field">
+              <label for="max_area">Max area (sq ft)</label>
+              <%= number_field_tag :max_area, params[:max_area], min: 0, placeholder: "Any" %>
+            </div>
+            <div class="sf-field">
+              <label for="available_by">Available by</label>
+              <%= date_field_tag :available_by, params[:available_by] %>
+            </div>
+            <div class="sf-field">
+              <span class="sf-label">Parking</span>
               <label class="sf-pill">
-                <%= check_box_tag "amenities[]", amenity, picked.call("amenities").include?(amenity), id: "am_#{amenity.parameterize}" %>
-                <span><%= amenity %></span>
+                <%= check_box_tag :parking, "1", params[:parking] == "1", id: "parking" %>
+                <span>🚗 Parking available</span>
               </label>
-            <% end %>
+            </div>
           </div>
-        </div>
+
+          <div class="sf-group">
+            <span class="sf-label">Amenities</span>
+            <div class="sf-pills">
+              <% Property::AMENITIES.each do |amenity| %>
+                <label class="sf-pill">
+                  <%= check_box_tag "amenities[]", amenity, picked.call("amenities").include?(amenity), id: "am_#{amenity.parameterize}" %>
+                  <span><%= amenity %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       </div>
     </details>
   <% end %>
@@ -120,8 +186,8 @@
 
   <div class="sh-toolbar">
     <p class="sh-count">
-      <%= pluralize(@properties.total_count, "home") %> <small>for <%= rent ? "rent" : "sale" %></small>
-      <% if params.values_at(:q, :min_price, :max_price, :bedrooms).any?(&:present?) || advanced_count > 0 %>
+      <%= pluralize(@properties.total_count, land ? "plot" : "home") %> <small>for <%= rent ? "rent" : "sale" %></small>
+      <% if params.values_at(:q, :min_price, :max_price, :bedrooms).any?(&:present?) || params[:land_types].present? || advanced_count > 0 %>
         &nbsp;<%= link_to "Clear all", homes_path(listing_type: @listing_type), class: "sf-clear" %>
       <% end %>
     </p>
@@ -143,7 +209,7 @@
     <%= render "properties/pagination", collection: @properties %>
   <% else %>
     <div class="empty">
-      <strong>🏠 No homes match your search</strong>
+      <strong><%= land ? "🌳 No plots match your search" : "🏠 No homes match your search" %></strong>
       Try widening the budget or clearing a few filters.
     </div>
   <% end %>

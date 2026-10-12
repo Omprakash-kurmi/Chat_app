@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "ld_land", "data-turbo-track": "reload" %>
+<% end %>
+
 <div class="pf-page">
   <header class="pf-head">
     <%= link_to "← My listings", vendor_properties_path, class: "pf-back" %>
@@ -27,17 +31,23 @@
             <%= f.label :listing_type, "🔑 Rent it out", value: "rent" %>
             <%= f.radio_button :listing_type, "buy", class: "sr" %>
             <%= f.label :listing_type, "🏡 Sell it", value: "buy" %>
+            <%= f.radio_button :listing_type, "land", class: "sr" %>
+            <%= f.label :listing_type, "🌳 Land / Plot", value: "land" %>
           </div>
         </div>
-        <div class="field">
+          
+          <%= render "vendor/properties/land_fields", f: f %>
+
+        <div class="field" data-not-land>
           <%= f.label :property_type, "Property type" %>
           <%= f.select :property_type, Property.property_types.keys.map { |k| [k.humanize, k] } %>
         </div>
         <div class="field">
-          <%= f.label :price, "Price (monthly rent or sale price)" %>
+          <%= f.label :price, "Price (monthly rent or sale price)", "data-price-label": true %>
+
           <div class="input-prefix"><span>₹</span><%= f.number_field :price, step: "any", placeholder: "0" %></div>
         </div>
-        <div class="field">
+        <div class="field" data-rent-only>
           <%= f.label :security_deposit, "Security deposit (rentals only)" %>
           <div class="input-prefix"><span>₹</span><%= f.number_field :security_deposit, step: "any", placeholder: "0" %></div>
         </div>
@@ -48,7 +58,7 @@
       </div>
     </section>
 
-    <section class="pf-section">
+    <section class="pf-section" data-not-land>
       <h2>Details</h2>
       <div class="pf-grid cols-4">
         <div class="field"><%= f.label :bedrooms, "Bedrooms" %><%= f.number_field :bedrooms, min: 0 %></div>

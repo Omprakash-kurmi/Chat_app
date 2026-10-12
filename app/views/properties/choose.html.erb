@@ -5,6 +5,7 @@
 <%
   rent_href = homes_path(listing_type: "rent")
   buy_href  = homes_path(listing_type: "buy")
+  land_href = homes_path(listing_type: "land")
 
   featured = Property.where(status: "published", available: true)
                      .with_attached_gallery.order(created_at: :desc).limit(8)
@@ -37,6 +38,15 @@
       </span>
       <span class="shx-go">→</span>
     <% end %>
+
+    <%= link_to land_href, class: "shx-choice shx-choice--land" do %>
+     <span class="shx-ico">🌳</span>
+     <span class="shx-text">
+       <b>Land / Plot</b>
+       <small>Residential, agricultural and commercial plots.</small>
+     </span>
+     <span class="shx-go">→</span>
+   <% end %>
   </div>
 
  <% if show_property_slider? && featured.any? %>

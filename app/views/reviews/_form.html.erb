@@ -1,6 +1,6 @@
 <% url = review.persisted? ? property_review_path(property, review) : property_reviews_path(property) %>
 <%= form_with model: review, url: url, method: (review.persisted? ? :patch : :post), class: "rvx-form" do |f| %>
-  <h3><%= review.persisted? ? "Edit your review" : "Rate your stay" %></h3>
+<h3><%= review.persisted? ? "Edit your review" : (property.land? ? "Rate this land" : "Rate your experience") %></h3>
   <div class="rvx-pick">
     <% 5.downto(1) do |n| %>
       <%= f.radio_button :rating, n, id: "rvx-r#{n}", checked: review.rating == n %>

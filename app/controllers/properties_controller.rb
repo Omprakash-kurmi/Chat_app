@@ -9,7 +9,7 @@ class PropertiesController < ApplicationController
     @properties = Property.with_attached_photos
                           .where(listing_type: @listing_type)
 
-    if current_user.vendor?
+    if current_user&.vendor?
       @properties = @properties.where(user: current_user)
     else
       @properties = @properties.available
@@ -46,10 +46,15 @@ class PropertiesController < ApplicationController
 
   def property_params
     params.require(:property).permit(
-      :title, :listing_type, :property_type, :price, :security_deposit, :bedrooms, :bathrooms,
-      :area_sqft, :furnishing, :parking_spaces, :floor_number, :total_floors, :age_years,
-      :address, :locality, :city, :pincode, :latitude, :longitude, :description,
-      :poster_type, :contact_name, :contact_phone, :visiting_hours, :available_from, :available,
+      :title, :listing_type, :property_type, :price, :security_deposit,
+      :available_from, :bedrooms, :bathrooms, :area_sqft, :parking_spaces,
+      :furnishing, :floor_number, :total_floors, :age_years,
+      :address, :locality, :city, :pincode, :latitude, :longitude,
+      :poster_type, :contact_name, :contact_phone, :visiting_hours,
+      :description, :available,
+      :land_type, :land_area, :area_unit, :plot_length, :plot_width,
+      :facing, :road_width_ft, :boundary_wall, :corner_plot,
+      :ownership_type, :approval_authority,
       amenities: [], photos: [], videos: []
     )
   end
