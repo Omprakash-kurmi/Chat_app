@@ -33,9 +33,18 @@
     <div class="cmpx-empty">
       <div>⚖️</div>
       <h2>Nothing to compare yet</h2>
-      <p>Tap <b>＋ Compare</b> on any home to add it here. You can compare up to <%= ComparisonsHelper::CMP_MAX %> at a time.</p>
-      <%= link_to "Browse homes to rent", homes_path(listing_type: "rent"), class: "cmpx-btn cmpx-btn--solid" %>
-      <%= link_to "Browse homes to buy", homes_path(listing_type: "buy"), class: "cmpx-btn cmpx-btn--ghost" %>
+      <p class="cmpx-empty-text">
+        Tap <strong>+ Compare</strong> on any home or plot to add it here.
+        You can compare up to 4 at a time.
+      </p>
+      <div class="cmpx-empty-actions">
+        <%= link_to "Browse homes to rent", homes_path(listing_type: "rent"),
+              class: "cmpx-empty-btn cmpx-empty-btn--primary" %>
+        <%= link_to "Browse homes to buy", homes_path(listing_type: "buy"),
+              class: "cmpx-empty-btn cmpx-empty-btn--ghost" %>
+        <%= link_to "🌳 Browse land / plots", homes_path(listing_type: "land"),
+              class: "cmpx-empty-btn cmpx-empty-btn--land" %>
+      </div>
     </div>
   <% else %>
 
@@ -60,7 +69,7 @@
                 </button>
               <% end %>
             <% else %>
-              <div class="cmpx-noimg">🏠</div>
+              <div class="cmpx-noimg"><%= p.land? ? "🌳" : "🏠" %></div>
             <% end %>
           </div>
 
@@ -118,6 +127,17 @@
                       <% if best == i %><em class="cmpx-best">Best</em><% end %>
                     </td>
                   <% end %>
+                  <% slots.times do %><td class="cmpx-slot">—</td><% end %>
+                </tr>
+              <% end %>
+            <% end %>
+
+            <% if props.any?(&:land?) %>
+              <tr class="cmpx-section"><th colspan="<%= ComparisonsHelper::CMP_MAX + 1 %>">🌳 Land / plot details</th></tr>
+              <% cmp_land_rows(props).each do |r| %>
+                <tr class="<%= 'is-same' if r[:same] %>">
+                  <th><%= r[:label] %></th>
+                  <% r[:cells].each do |c| %><td><%= c %></td><% end %>
                   <% slots.times do %><td class="cmpx-slot">—</td><% end %>
                 </tr>
               <% end %>

@@ -130,3 +130,78 @@
   display:block!important;width:100%!important;margin:10px 0 0!important}
 .pc-wrap .cmpx-add{
   width:100%!important;justify-content:center;height:38px!important;border-radius:12px!important}
+
+.cmpx-empty-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  margin-top: 20px !important;
+}
+
+.cmpx-empty-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 11px 20px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: transform .15s ease, box-shadow .15s ease !important;
+}
+.cmpx-empty-btn:hover { transform: translateY(-1px) !important; }
+
+.cmpx-empty-btn--primary { background: #6d4aff !important; color: #fff !important; border: 2px solid #6d4aff !important; }
+.cmpx-empty-btn--ghost   { background: #fff !important; color: #6d4aff !important; border: 2px solid #6d4aff !important; }
+.cmpx-empty-btn--land    { background: #fef3c7 !important; color: #92400e !important; border: 2px solid #f59e0b !important; }
+.cmpx-empty-btn--land:hover { box-shadow: 0 6px 16px rgba(245,158,11,.3) !important; }
+/* ---- Compare empty-state buttons ---- */
+.cmpx .cmpx-empty-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 22px 0 6px !important;
+}
+
+.cmpx .cmpx-empty-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 11px 22px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: transform .15s ease, box-shadow .15s ease !important;
+}
+.cmpx .cmpx-empty-btn:hover {
+  transform: translateY(-1px) !important;
+  text-decoration: none !important;
+}
+
+.cmpx .cmpx-empty-btn--primary {
+  background: #7c1fe0 !important;
+  color: #fff !important;
+  border: 2px solid #7c1fe0 !important;
+}
+.cmpx .cmpx-empty-btn--primary:hover { box-shadow: 0 8px 18px rgba(124,31,224,.28) !important; }
+
+.cmpx .cmpx-empty-btn--ghost {
+  background: #fff !important;
+  color: #7c1fe0 !important;
+  border: 2px solid #7c1fe0 !important;
+}
+.cmpx .cmpx-empty-btn--ghost:hover { background: #f5ecff !important; }
+
+.cmpx .cmpx-empty-btn--land {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  border: 2px solid #f59e0b !important;
+}
+.cmpx .cmpx-empty-btn--land:hover { box-shadow: 0 8px 18px rgba(245,158,11,.3) !important; }

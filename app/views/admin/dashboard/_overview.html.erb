@@ -1,0 +1,92 @@
+<%= stylesheet_link_tag "ad_dashboard" %>
+
+<div class="adx">
+  <section class="adx-hero">
+    <div>
+      <small><%= Time.current.strftime("%A, %d %B %Y") %></small>
+      <h2>Welcome back, <%= (current_admin_user.try(:email) || "Admin").to_s.split("@").first.capitalize %> 👋</h2>
+      <p>Here is what is happening on Chat_App today.</p>
+    </div>
+    <div class="adx-hero-actions">
+      <%= link_to "Review pending (#{d[:pending]})", admin_properties_path(q: { status_eq: "pending" }), class: "adx-btn adx-btn--solid" %>
+      <%= link_to "All listings", admin_properties_path, class: "adx-btn" %>
+    </div>
+  </section>
+  <section class="adx-stats">
+    <div class="adx-stat"><span class="adx-ico" style="background:#f1e8ff">👥</span>
+      <div><small>Total users</small><b><%= d[:users] %></b><em><%= d[:vendors] %> vendors with listings</em></div></div>
+    <div class="adx-stat"><span class="adx-ico" style="background:#d9f7ef">🏘️</span>
+      <div><small>Total listings</small><b><%= d[:listings] %></b><em><%= d[:published] %> published</em></div></div>
+    <div class="adx-stat"><span class="adx-ico" style="background:#fff4d6">⏳</span>
+      <div><small>Pending approval</small><b><%= d[:pending] %></b><em class="warn">needs review</em></div></div>
+    <div class="adx-stat"><span class="adx-ico" style="background:#d9f7ef">💬</span>
+      <div><small>Inquiries</small><b><%= d[:inquiries] %></b><em>all time</em></div></div>
+  </section>
+
+  <section class="adx-grid">
+    <div class="adx-card">
+      <h2>New listings · last 7 days</h2>
+      <% max = [d[:week].map { |x| x[:count] }.max.to_i, 1].max %>
+      <div class="adx-bars">
+        <% d[:week].each do |x| %>
+          <div class="adx-col"><b><%= x[:count] %></b><i style="height:<%= (x[:count] * 100.0 / max).round %>%"></i><span><%= x[:label] %></span></div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="adx-card">
+      <h2>Listings by status</h2>
+      <% total = [d[:listings], 1].max %>
+      <% p1 = d[:published] * 100.0 / total; p2 = p1 + d[:pending] * 100.0 / total; p3 = p2 + d[:rejected] * 100.0 / total %>
+      <div class="adx-donut-wrap">
+        <div class="adx-donut" style="background:conic-gradient(#0d9488 0 <%= p1 %>%, #f59e0b <%= p1 %>% <%= p2 %>%, #ef4444 <%= p2 %>% <%= p3 %>%, #9ca3af <%= p3 %>% 100%)">
+          <span><b><%= d[:listings] %></b>listings</span>
+        </div>
+        <ul class="adx-legend">
+          <li><i style="background:#0d9488"></i>Published <b><%= d[:published] %></b></li>
+          <li><i style="background:#f59e0b"></i>Pending <b><%= d[:pending] %></b></li>
+          <li><i style="background:#ef4444"></i>Rejected <b><%= d[:rejected] %></b></li>
+          <li><i style="background:#9ca3af"></i>Closed <b><%= d[:closed] %></b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="adx-grid adx-grid--3">
+    <div class="adx-card">
+      <h2>Listings by type</h2>
+      <% [["Rent", "rent", "#6a11ff"], ["Buy", "buy", "#0d9488"], ["Land / Plot", "land", "#f59e0b"]].each do |label, key, color| %>
+        <% n = d[:by_type][key].to_i %>
+        <div class="adx-type"><div><span><%= label %></span><span><%= n %></span></div>
+          <span class="adx-track"><i style="width:<%= (n * 100.0 / total).round %>%;background:<%= color %>"></i></span></div>
+      <% end %>
+      <div class="adx-rating">⭐ <b><%= d[:avg_rating] || "–" %></b> average from <%= pluralize(d[:reviews], "review") %></div>
+    </div>
+
+    <div class="adx-card">
+      <h2>Waiting for approval <%= link_to "View all →", admin_properties_path(q: { status_eq: "pending" }) %></h2>
+      <% if d[:pending_list].any? %>
+        <ul class="adx-list">
+          <% d[:pending_list].each do |p| %>
+            <li><span class="t"><b><%= link_to p.title, admin_property_path(p) %></b>
+              <small><%= p.listing_type == "land" ? "Land / Plot" : p.listing_type.humanize %> · <%= p.city %></small></span>
+              <span class="adx-pill">Pending</span></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="adx-empty">Nothing waiting. 🎉</p>
+      <% end %>
+    </div>
+
+    <div class="adx-card">
+      <h2>Newest users <%= link_to "View all →", admin_users_path %></h2>
+      <ul class="adx-list">
+        <% d[:new_users].each do |u| %>
+          <% name = u.try(:display_name) || u.email %>
+          <li><span class="adx-av"><%= name[0].upcase %></span>
+            <span class="t"><b><%= name %></b><small><%= time_ago_in_words(u.created_at) %> ago</small></span></li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+</div>

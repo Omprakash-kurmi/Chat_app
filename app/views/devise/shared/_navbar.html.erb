@@ -33,7 +33,7 @@
         <% if vendor %>
           <%= link_to "My listings", vendor_properties_path, class: ["tn-link", on.call("vendor/properties")] %>
           <%= link_to "Search Home", search_home_path, class: ["tn-link", on.call("properties")] %>
-          <%= link_to "Dashboard", vendor_dashboard_path, class: ["tn-link", on.call("vendor/properties")] %>
+          <%= link_to "Dashboard", vendor_dashboard_path, class: ["tn-link", on.call("vendor/dashboard")] %>
         <% else %>
           <%= link_to "Search Home", search_home_path, class: ["tn-link", on.call("properties")] %>
         <% end %>
