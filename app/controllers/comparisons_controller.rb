@@ -10,6 +10,11 @@ class ComparisonsController < ApplicationController
                 .includes(:reviews).with_attached_gallery.with_attached_photos.index_by(&:id)
     @properties = ids.map { |i| found[i] }.compact
     session[:compare_ids] = @properties.map(&:id) # drop anything no longer published
+
+    # Lets the view switch rows/labels: all land, no land, or a mix
+    @all_land = @properties.any? && @properties.all?(&:land?)
+    @any_land = @properties.any?(&:land?)
+    @mixed    = @any_land && !@all_land
   end
 
   def add
@@ -23,7 +28,7 @@ class ComparisonsController < ApplicationController
         { alert: "You can compare up to #{MAX} properties. Remove one first." }
       else
         session[:compare_ids] = ids + [ property.id ]
-        { notice: "#{helpers.pg_title(property)} added to compare." }
+        { notice: "#{compare_label(property)} added to compare." }
       end
 
     redirect_back fallback_location: compare_path, status: :see_other, **flash_opts
@@ -43,6 +48,15 @@ class ComparisonsController < ApplicationController
 
   def compare_ids
     Array(session[:compare_ids]).map(&:to_i).uniq.first(MAX)
+  end
+
+  # pg_title may read oddly for plots, so use a simple label for land
+  def compare_label(property)
+    if property.land?
+      [ property.try(:title), property.try(:city) ].compact_blank.join(", ").presence || "Plot"
+    else
+      helpers.pg_title(property)
+    end
   end
 
   def customers_only

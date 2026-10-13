@@ -159,4 +159,22 @@ module ComparisonsHelper
     d = property.try(:available_from)
     d.respond_to?(:strftime) ? "From #{d.strftime('%d %b %Y')}" : nil
   end
+
+  def cmp_land_rows(props)
+    fmt = {
+      "Land type"     => ->(p) { p.land_type.to_s.humanize.presence },
+      "Total area"    => ->(p) { p.land_area.present? ? "#{number_with_delimiter(p.land_area)} #{p.area_unit.to_s.humanize.downcase}" : nil },
+      "Plot size"     => ->(p) { (p.plot_length.present? && p.plot_width.present?) ? "#{p.plot_length} × #{p.plot_width} ft" : nil },
+      "Facing"        => ->(p) { p.facing.to_s.humanize.presence },
+      "Road width"    => ->(p) { p.road_width_ft.present? ? "#{p.road_width_ft} ft" : nil },
+      "Corner plot"   => ->(p) { p.corner_plot ? "Yes" : "No" },
+      "Boundary wall" => ->(p) { p.boundary_wall ? "Yes" : "No" },
+      "Ownership"     => ->(p) { p.ownership_type.to_s.humanize.presence },
+      "Approval"      => ->(p) { p.approval_authority.presence }
+    }
+    fmt.map do |label, fn|
+      cells = props.map { |p| p.land? ? (fn.call(p) || "—") : "—" }
+      { label: label, cells: cells, same: cells.uniq.size == 1 }
+    end
+  end
 end

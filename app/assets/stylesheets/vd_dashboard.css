@@ -1,0 +1,48 @@
+.vdx{--ink:#1b1733;--muted:#6f6b88;--line:#ece8f5;--v2:#6a11ff;--v3:#b44cff;max-width:1120px;margin:0 auto;padding:28px 16px 70px;color:var(--ink);font-family:Inter,system-ui,sans-serif}
+.vdx *{box-sizing:border-box}
+.vdx a{text-decoration:none!important}
+.vdx-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.vdx .vdx-head h1{margin:0!important;font-size:34px!important;font-weight:800;color:var(--ink)!important}
+.vdx-head p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.vdx .vdx-add{padding:12px 22px;border-radius:14px;background:linear-gradient(135deg,var(--v2),var(--v3));color:#fff!important;font-weight:800;font-size:14px;box-shadow:0 14px 26px -14px rgba(106,17,255,.7)}
+.vdx-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.vdx-stat{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;gap:14px;align-items:center;box-shadow:0 16px 34px -28px rgba(40,10,110,.5)}
+.vdx-ico{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}
+.vdx-stat small{display:block;color:var(--muted);font-size:13px;font-weight:600}
+.vdx-stat b{font-size:28px;font-weight:800;line-height:1.1}
+.vdx-stat em{display:block;font-style:normal;font-size:12px;color:#0d9488;font-weight:700;margin-top:2px}
+.vdx-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-top:16px}
+.vdx-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 16px 34px -28px rgba(40,10,110,.5)}
+.vdx .vdx-card h2{margin:0 0 16px!important;font-size:18px!important;font-weight:800;color:var(--ink)!important;display:flex;justify-content:space-between;align-items:center}
+.vdx-card h2 a{font-size:13px;font-weight:700;color:var(--v2)!important}
+.vdx-bars{display:flex;align-items:flex-end;gap:14px;height:190px;padding-top:10px}
+.vdx-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:8px}
+.vdx-col i{display:block;width:100%;max-width:46px;border-radius:12px 12px 6px 6px;background:linear-gradient(180deg,var(--v3),var(--v2));min-height:6px}
+.vdx-col span{font-size:12px;color:var(--muted);font-weight:600}
+.vdx-col b{font-size:12px}
+.vdx-type{margin-bottom:16px}
+.vdx-type div{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px}
+.vdx-track{height:12px;border-radius:99px;background:#f3effb;overflow:hidden}
+.vdx-track i{display:block;height:100%;border-radius:99px}
+.vdx-list{list-style:none;margin:0;padding:0}
+.vdx-list li{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.vdx-list li:first-child{border-top:0;padding-top:0}
+.vdx-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--v2),var(--v3));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+.vdx-list .t{flex:1;min-width:0}
+.vdx-list b{display:block;font-size:14px}
+.vdx-list small{color:var(--muted);font-size:12px}
+.vdx-pill{padding:4px 11px;border-radius:99px;font-size:11px;font-weight:800}
+.vdx-pill.pending{background:#fff4d6;color:#a16207}
+.vdx-pill.accepted{background:#d9f7ef;color:#0f766e}
+.vdx-pill.declined{background:#fde2e2;color:#b91c1c}
+.vdx-pill.published{background:#d9f7ef;color:#0f766e}
+.vdx-pill.rejected{background:#fde2e2;color:#b91c1c}
+.vdx-pill.closed{background:#eceaf3;color:#55506f}
+.vdx-stars{color:#f59e0b;letter-spacing:1px;font-size:13px}
+.vdx-table{width:100%;border-collapse:collapse;font-size:14px}
+.vdx-table th{text-align:left;color:var(--muted);font-size:12px;font-weight:700;padding:0 8px 10px}
+.vdx-table td{padding:12px 8px;border-top:1px solid var(--line);vertical-align:middle}
+.vdx-tb{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:800}
+.vdx-tb.rent{background:#f1e8ff;color:#6a11ff}.vdx-tb.buy{background:#d9f7ef;color:#0f766e}.vdx-tb.land{background:#fef3c7;color:#92400e}
+.vdx-empty{color:var(--muted);font-size:14px;margin:0}
+@media(max-width:900px){.vdx-stats{grid-template-columns:repeat(2,1fr)}.vdx-grid{grid-template-columns:1fr}}

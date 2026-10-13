@@ -39,7 +39,7 @@ class Property < ApplicationRecord
   validates :security_deposit, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :latitude, numericality: { in: -90..90 }, allow_nil: true
   validates :longitude, numericality: { in: -180..180 }, allow_nil: true
-  validate :photos_valid, :videos_valid
+  # validate :photos_valid, :videos_valid
   validate :gallery_ok
 
   # LAND: extra rules only for land listings
@@ -53,6 +53,7 @@ class Property < ApplicationRecord
   end
 
   scope :available, -> { where(available: true) }
+  scope :publicly_visible, -> { where(status: "published") }
 
   def average_rating
     reviews.average(:rating).to_f.round(1)

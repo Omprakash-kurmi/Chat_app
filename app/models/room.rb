@@ -1,7 +1,7 @@
 class Room < ApplicationRecord
   has_many :messages, dependent: :destroy
   has_many :events, dependent: :destroy
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
 
   after_create_commit :notify_all_users
 

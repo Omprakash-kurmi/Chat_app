@@ -66,6 +66,7 @@ Rails.application.routes.draw do
   end
 
   namespace :vendor do
+    get "dashboard", to: "dashboard#show", as: :dashboard
     resources :properties, except: :show do
       member { patch :reopen }
     end

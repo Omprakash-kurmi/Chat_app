@@ -10,9 +10,9 @@ class PropertiesController < ApplicationController
                           .where(listing_type: @listing_type)
 
     if current_user&.vendor?
-      @properties = @properties.where(user: current_user)
+      @properties = @properties.where(user: current_user)      # vendors still see all their own
     else
-      @properties = @properties.available
+      @properties = @properties.publicly_visible.available     # customers: approved only
     end
 
     @properties = @properties
@@ -22,11 +22,21 @@ class PropertiesController < ApplicationController
                     .per(12)
   end
 
+  # def show
+  #   @property = Property.find(params[:id])
+  #   # unverified / closed listings are visible only to their owner
+  #   own_listing = user_signed_in? && @property.user_id == current_user.id
+  #   # raise ActiveRecord::RecordNotFound unless @property.published? || own_listing
+  # end
   def show
     @property = Property.find(params[:id])
-    # unverified / closed listings are visible only to their owner
+
     own_listing = user_signed_in? && @property.user_id == current_user.id
-    # raise ActiveRecord::RecordNotFound unless @property.published? || own_listing
+    admin_view  = respond_to?(:admin_user_signed_in?, true) && admin_user_signed_in?
+
+    unless @property.status == "published" || own_listing || admin_view
+      raise ActiveRecord::RecordNotFound      # customers get a 404 for unapproved listings
+    end
   end
 
   def update
@@ -44,6 +54,18 @@ class PropertiesController < ApplicationController
     end
   end
 
+  def create
+    @property = current_user.properties.new(property_params)
+
+    if @property.save
+      redirect_to vendor_properties_path, notice: "Property published successfully."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  private
+  
   def property_params
     params.require(:property).permit(
       :title, :listing_type, :property_type, :price, :security_deposit,
