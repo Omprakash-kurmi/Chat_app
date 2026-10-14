@@ -13,14 +13,14 @@ FactoryBot.define do
     security_deposit { 50000 }
     latitude { 12.9716 }
     longitude { 77.5946 }
-    
+
     listing_type { :buy }
     property_type { :apartment }
     furnishing { :semi_furnished }
     poster_type { :owner }
     available { true }
     status { "published" }
-    amenities { ["Lift", "Power backup", "CCTV", "24x7 security"] }
+    amenities { [ "Lift", "Power backup", "CCTV", "24x7 security" ] }
 
     # Trait specifically tailored for Land Listings (handles the conditional validations)
     trait :land_listing do
@@ -49,9 +49,9 @@ FactoryBot.define do
     trait :with_gallery do
       after(:build) do |property|
         property.gallery.attach(
-          io: File.open(Rails.root.join('spec', 'support', 'assets', 'test_property.png')),
-          filename: 'test_property.png',
-          content_type: 'image/png'
+          io: File.open(Rails.root.join("spec", "support", "assets", "test_property.png")),
+          filename: "test_property.png",
+          content_type: "image/png"
         )
       end
     end

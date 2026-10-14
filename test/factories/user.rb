@@ -5,11 +5,11 @@ FactoryBot.define do
     sequence(:email) { |n| "user#{n}@example.com" }
     password { "Password123!" }
     password_confirmation { password }
-    
+
     # Validates under your 50 and 280 character limits
     name { "Jane Doe" }
     bio { "Hello! I am a passionate home seeker looking for great properties." }
-    
+
     # Defaults to the first enum value as per your configuration
     role { :customer }
     admin { false }
@@ -26,9 +26,9 @@ FactoryBot.define do
     trait :with_avatar do
       after(:build) do |user|
         user.avatar.attach(
-          io: File.open(Rails.root.join('spec', 'support', 'assets', 'test_avatar.png')),
-          filename: 'test_avatar.png',
-          content_type: 'image/png'
+          io: File.open(Rails.root.join("spec", "support", "assets", "test_avatar.png")),
+          filename: "test_avatar.png",
+          content_type: "image/png"
         )
       end
     end
