@@ -61,7 +61,7 @@ class PropertiesController < ApplicationController
   end
 
   private
-  
+
   def property_params
     params.require(:property).permit(
       :title, :listing_type, :property_type, :price, :security_deposit,

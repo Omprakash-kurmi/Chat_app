@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :rsvp do
-    event { nil }
-    user { nil }
+    association :user
+    association :event
     status { "MyString" }
   end
 end

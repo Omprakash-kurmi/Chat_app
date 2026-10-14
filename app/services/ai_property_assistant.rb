@@ -91,11 +91,11 @@ class AiPropertyAssistant
   def to_rupees(num, unit)
     n = num.to_s.delete(",").to_f
     mult = case unit.to_s
-           when "cr", "crore" then 10_000_000
-           when "l", "lac", "lakh", "lakhs" then 100_000
-           when "k", "thousand" then 1_000
-           else 1
-           end
+    when "cr", "crore" then 10_000_000
+    when "l", "lac", "lakh", "lakhs" then 100_000
+    when "k", "thousand" then 1_000
+    else 1
+    end
     (n * mult).to_i
   end
 
