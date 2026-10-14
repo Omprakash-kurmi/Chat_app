@@ -133,6 +133,7 @@
           amount: [(@property.price * 0.8 / 50_000).round * 50_000, 100_000].max,
           note: "Estimated for a #{number_to_currency(@property.price, unit: '₹', precision: 0)} home with a 20% down payment. Adjust any value." %>
   <% end %>
+  <%= render "properties/related", nearby: @nearby_properties, similar: @similar_properties %>
   <%= render "reviews/section", property: @property %>
   <%= render "comparisons/tray" %>
 </article>

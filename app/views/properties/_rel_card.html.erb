@@ -1,0 +1,112 @@
+<% slides = property_slides(p) %>
+<% img    = slides.first %>
+
+<% tag, tag_cls =
+     case p.listing_type.to_s
+     when "rent" then [ "For rent", "relx-tag--rent" ]
+     when "land" then [ "Land",     "relx-tag--land" ]
+     else             [ "For sale", "" ]
+     end %>
+
+<% area_val = p.land? ? p.land_area : (p.try(:area_sqft) || p.try(:area) || p.try(:built_up_area)) %>
+<% area_txt = if area_val.present?
+                unit = p.land? ? " #{p.area_unit.to_s.humanize.downcase}" : " sq ft"
+                "#{number_with_delimiter(area_val)}#{unit}"
+              end %>
+
+<% stats = [] %>
+<% if p.land? %>
+  <% stats << "📐 #{area_txt}" if area_txt %>
+  <% stats << "🌳 #{p.land_type.to_s.humanize}" if p.land_type.present? %>
+  <% stats << "🧭 #{p.facing.to_s.humanize}" if p.facing.present? %>
+<% else %>
+  <% beds  = p.try(:bedrooms)  || p.try(:bhk) %>
+  <% baths = p.try(:bathrooms) %>
+  <% stats << "🛏 #{beds} bed"   if beds.present? %>
+  <% stats << "🛁 #{baths} bath" if baths.present? %>
+  <% stats << "📐 #{area_txt}"   if area_txt %>
+<% end %>
+
+<% chips = [] %>
+<% if p.land? %>
+  <% chips << [ p.ownership_type.to_s.humanize, "" ] if p.ownership_type.present? %>
+  <% chips << [ "Boundary wall", "" ] if p.boundary_wall %>
+  <% chips << [ "Corner plot", "" ]   if p.corner_plot %>
+  <% chips << [ p.approval_authority.to_s, "relx-chip--warm" ] if p.approval_authority.present? %>
+<% else %>
+  <% chips << [ p.furnishing.to_s.humanize, "" ] if p.try(:furnishing).present? %>
+  <% chips << [ "🚗 Parking", "" ] if p.try(:parking).present? && p.parking.to_s != "false" %>
+  <% if p.try(:available_from).present? %>
+    <% chips << [ "From #{p.available_from.strftime('%b %d')}", "relx-chip--warm" ] %>
+  <% end %>
+<% end %>
+
+<% fav_on =
+ if current_user.nil?
+   false
+ elsif p.respond_to?(:favorited_by?)
+   p.favorited_by?(current_user)
+ elsif current_user.respond_to?(:favorite_properties)
+   current_user.favorite_properties.exists?(p.id)
+ elsif defined?(Favorite) && Favorite.column_names.include?("property_id")
+   Favorite.exists?(user_id: current_user.id, property_id: p.id)
+ elsif current_user.respond_to?(:favorites)
+   current_user.favorites.exists?(property_id: p.id)
+ else
+   false
+ end %>
+
+<% fav_on = current_user && (p.try(:favorited_by?, current_user) || false) %>
+
+<div class="relx-item">
+  <div class="relx-card">
+    <div class="relx-media">
+      <%= link_to property_path(p) do %>
+        <% if img %>
+          <%= image_tag pg_src(img, [ 800, 600 ]), alt: pg_title(p), loading: "lazy" %>
+        <% else %>
+          <div class="relx-noimg"><%= p.land? ? "🌳" : "🏠" %></div>
+        <% end %>
+      <% end %>
+
+     <% if current_user && !current_user.vendor? %>
+        <span class="relx-heart">
+          <% if fav_on %>
+            <%= button_to property_favorite_path(p), method: :delete, form_class: "fav-form",
+                  class: "fav-btn on", title: "Remove from favorites",
+                  "aria-label": "Remove from favorites", "aria-pressed": "true" do %>
+              <span aria-hidden="true">♥</span>
+            <% end %>
+          <% else %>
+            <%= button_to property_favorite_path(p), method: :post, form_class: "fav-form",
+              params: { go_to_favorites: 1 },
+              class: "fav-btn", title: "Save to favorites",
+              "aria-label": "Save to favorites", "aria-pressed": "false" do %>
+          <span aria-hidden="true">♡</span>
+            <% end %>
+          <% end %>
+        </span>
+      <% end %>
+
+      <span class="relx-count">📷 <%= slides.size %></span>
+    </div>
+
+    <%= link_to property_path(p), class: "relx-body" do %>
+      <p class="relx-price"><%= cmp_price_label(p) || "Price on request" %></p>
+      <p class="relx-name"><%= pg_title(p) %></p>
+      <% if cmp_place(p) %><p class="relx-place">📍 <%= cmp_place(p) %></p><% end %>
+      <% if stats.any? %>
+        <div class="relx-stats"><% stats.each do |s| %><span><%= s %></span><% end %></div>
+      <% end %>
+      <div class="relx-chips">
+        <% chips.each do |text, cls| %><span class="relx-chip <%= cls %>"><%= text %></span><% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if respond_to?(:add_compare_path) && current_user && !current_user.vendor? %>
+    <span class="relx-cmp">
+      <%= button_to "＋ Compare", add_compare_path(p), method: :post, form: { style: "margin:0" } %>
+    </span>
+  <% end %>
+</div>

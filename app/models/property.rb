@@ -178,6 +178,50 @@ class Property < ApplicationRecord
     land_type.present? ? "#{land_type.humanize} land" : "Land"
   end
 
+  def related_base_scope
+    s = Property.publicly_visible.where.not(id: id).where(listing_type: listing_type)
+    s = s.available if Property.respond_to?(:available)
+    s.includes(:reviews).with_attached_gallery.with_attached_photos
+  end
+
+  # Same area first (by coordinates if you have them, else locality, then city)
+  def nearby_properties(limit = 3)
+    cols  = self.class.column_names
+    conn  = Property.connection
+    scope = related_base_scope
+
+    if cols.include?("latitude") && cols.include?("longitude") && latitude.present? && longitude.present?
+      dist = "(6371 * acos(LEAST(1, cos(radians(#{latitude.to_f})) * cos(radians(properties.latitude)) * " \
+             "cos(radians(properties.longitude) - radians(#{longitude.to_f})) + " \
+             "sin(radians(#{latitude.to_f})) * sin(radians(properties.latitude)))))"
+      scope = scope.where.not(latitude: nil, longitude: nil).order(Arel.sql(dist))
+    else
+      scope = scope.where(city: city) if cols.include?("city") && city.present?
+      if cols.include?("locality") && locality.present?
+        scope = scope.order(Arel.sql("(CASE WHEN properties.locality = #{conn.quote(locality)} THEN 0 ELSE 1 END)"))
+      end
+    end
+    scope.order(created_at: :desc).limit(limit)
+  end
+
+  # Same kind + closest price, excluding the nearby ones already shown
+  def similar_properties(limit = 3, exclude_ids: [])
+    cols  = self.class.column_names
+    scope = related_base_scope.where.not(id: exclude_ids)
+
+    if land?
+      scope = scope.where(land_type: land_type) if land_type.present?
+    elsif cols.include?("property_type") && property_type.present?
+      scope = scope.where(property_type: property_type)
+    end
+    scope = scope.where(bhk: bhk) if !land? && cols.include?("bhk") && bhk.present?
+
+    if cols.include?("price") && price.to_f > 0
+      scope = scope.order(Arel.sql("ABS(COALESCE(properties.price, 0) - #{price.to_f}) ASC"))
+    end
+    scope.order(created_at: :desc).limit(limit)
+  end
+
   private
 
   def trim_number(n)
