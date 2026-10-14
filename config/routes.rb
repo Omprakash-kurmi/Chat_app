@@ -17,7 +17,11 @@ Rails.application.routes.draw do
   # root to: "devise/registrations#new"
   root to: "pages#home"
   get "/pages/:slug", to: "pages#show", as: :page
-  resource :profile, only: [ :show, :edit, :update ]
+  # resource :profile, only: [ :show, :edit, :update ]
+  resource :profile, only: [ :show, :update, :destroy ] do
+    patch :password
+  end
+
   resources :rooms, only: [ :index, :show, :new, :create ] do
     resources :messages, only: [ :create ]
     resources :events, only: [ :index, :new, :create, :destroy ] do

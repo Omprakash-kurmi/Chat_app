@@ -12,6 +12,9 @@ class User < ApplicationRecord
   has_many :saved_searches, dependent: :destroy
   has_many :reviews, dependent: :destroy
   has_many :review_votes, dependent: :destroy
+  has_many :messages, dependent: :destroy
+  has_many :events, dependent: :destroy
+  has_many :rsvps, dependent: :destroy
 
   enum :role, { customer: 0, vendor: 1 }, validate: true
 

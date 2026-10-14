@@ -1,52 +1,370 @@
-<%
-  src    = @user.avatar.attached? ? url_for(@user.avatar) : @user.avatar_url.presence
-  google = @user.provider.present?
-%>
 <% content_for :head do %>
   <%= stylesheet_link_tag "pf_profile", "data-turbo-track": "reload" %>
 <% end %>
 
-<div class="pf">
-  <h1>Your profile</h1>
-  <p class="pf-sub">This is how you appear to owners and other members.</p>
+<%
+  user = @user
+  states = [ "Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat", "Haryana",
+             "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra",
+             "Odisha", "Punjab", "Rajasthan", "Tamil Nadu", "Telangana", "Uttar Pradesh",
+             "Uttarakhand", "West Bengal" ]
 
-  <div class="pf-card">
-    <div class="pf-top">
-      <span class="pf-av" <%= tag.attributes(style: "background-image:url('#{src}')") if src %>><%= @user.display_name.to_s[0].to_s.upcase unless src %></span>
-      <div class="pf-who">
-        <strong><%= @user.display_name %></strong>
-        <span class="pf-mail"><%= @user.email %></span>
-        <div class="pf-tags">
-          <span class="pf-tag"><%= @user.role.to_s.humanize %></span>
-          <% if google %><span class="pf-tag g">Google</span><% end %>
+  display_name = user[@name_col].presence || user.email.to_s.split("@").first
+  is_vendor    = user.try(:vendor?) ? true : false
+  provider     = user.try(:provider).to_s.presence
+  provider_txt = provider ? provider.sub("_oauth2", "").humanize : "Email"
+
+  # counts: uses whichever associations your User model has (0 if none)
+  count_of = lambda do |*names|
+    n = names.find { |m| user.respond_to?(m) }
+    n ? user.public_send(n).count : 0
+  end
+  favorites_count = count_of.call(:favorites, :favorite_properties)
+  searches_count  = count_of.call(:saved_searches)
+  inquiries_count = count_of.call(:inquiries, :sent_inquiries)
+
+  # avatar: Active Storage "avatar", or an image URL column from Google sign-in
+  avatar_attached = user.respond_to?(:avatar) && user.avatar.respond_to?(:attached?) && user.avatar.attached?
+  avatar_url      = user.try(:avatar_url).presence || user.try(:image).presence || user.try(:picture).presence
+  can_upload      = user.respond_to?(:avatar) && user.avatar.respond_to?(:attach)
+  has_bio         = User.column_names.include?("bio")
+%>
+
+<div class="pfx">
+  <div class="pfx-shell">
+    <header class="pfx-top">
+      <h1 class="pfx-title">Your profile</h1>
+      <p>This is how you appear to owners and other members.</p>
+    </header>
+
+    <!-- ============ HERO ============ -->
+    <div class="pfx-card pfx-hero">
+      <div class="pfx-hero-av">
+        <% if avatar_attached %>
+          <%= image_tag url_for(user.avatar), alt: display_name %>
+        <% elsif avatar_url %>
+          <%= image_tag avatar_url, alt: display_name, referrerpolicy: "no-referrer" %>
+        <% else %>
+          <span><%= display_name[0].to_s.upcase %></span>
+        <% end %>
+      </div>
+
+      <div class="pfx-hero-info">
+        <b><%= display_name %></b>
+        <small><%= user.email %></small>
+        <div class="pfx-badges">
+          <span class="pfx-badge <%= 'pfx-badge--v' if is_vendor %>"><%= is_vendor ? "Vendor" : "Customer" %></span>
+          <span class="pfx-badge <%= 'pfx-badge--g' if provider %>"><%= provider_txt %></span>
         </div>
       </div>
-      <%= link_to "Edit profile", edit_profile_path, class: "pf-edit" %>
+
+      <a href="#pfx-form" class="pfx-cta" data-pfx-focus>Edit profile</a>
+
+      <div class="pfx-hero-stats">
+        <%= link_to (respond_to?(:favorites_path) ? favorites_path : "#"), class: "pfx-hs" do %>
+          <b><%= favorites_count %></b><small>Favorites</small>
+        <% end %>
+        <%= link_to (respond_to?(:saved_searches_path) ? saved_searches_path : "#"), class: "pfx-hs" do %>
+          <b><%= searches_count %></b><small>Saved searches</small>
+        <% end %>
+        <%= link_to (respond_to?(:inquiries_path) ? inquiries_path : "#"), class: "pfx-hs" do %>
+          <b><%= inquiries_count %></b><small>Inquiries</small>
+        <% end %>
+      </div>
     </div>
 
-    <div class="pf-stats">
-      <% if @user.vendor? %>
-        <div class="pf-stat"><b><%= @user.properties.count %></b><span>Listings</span></div>
-        <div class="pf-stat"><b><%= @user.inquiries.count %></b><span>Inquiries</span></div>
-      <% else %>
-        <div class="pf-stat"><b><%= @user.favorites.count %></b><span>Favorites</span></div>
-        <div class="pf-stat"><b><%= @user.saved_searches.count %></b><span>Saved searches</span></div>
-        <div class="pf-stat"><b><%= @user.inquiries.count %></b><span>Inquiries</span></div>
-      <% end %>
+    <div class="pfx-grid">
+      <!-- ============ LEFT ============ -->
+      <aside class="pfx-side">
+        <div class="pfx-card pfx-health">
+          <h3>Profile Health</h3>
+          <div class="pfx-bar"><i style="width:<%= @health[:pct] %>%"></i></div>
+          <p class="pfx-pct"><%= @health[:pct] %>% complete</p>
+          <div class="pfx-stats">
+            <div class="pfx-stat pfx-stat--ok"><small>COMPLETED</small><b><%= @health[:done] %></b></div>
+            <div class="pfx-stat pfx-stat--no"><small>MISSING</small><b><%= @health[:missing].size %></b></div>
+          </div>
+          <% if @health[:missing].any? %>
+            <p class="pfx-next">Complete next: <b><%= @health[:missing].first(3).join(", ") %></b></p>
+          <% else %>
+            <p class="pfx-next"><b>Your profile is complete 🎉</b></p>
+          <% end %>
+        </div>
+
+        <div class="pfx-card pfx-facts">
+          <h3>Account details</h3>
+          <div class="pfx-fact"><small>Account type</small><b><%= is_vendor ? "Vendor" : "Customer" %></b></div>
+          <div class="pfx-fact"><small>Signed up with</small><b><%= provider_txt %></b></div>
+          <div class="pfx-fact"><small>Member since</small><b><%= user.created_at.strftime("%B %Y") %></b></div>
+          <% if user.try(:user_code).present? %>
+            <div class="pfx-fact"><small>User code</small><b><%= user.user_code %></b></div>
+          <% end %>
+        </div>
+      </aside>
+
+      <!-- ============ RIGHT ============ -->
+      <main class="pfx-main">
+        <%= form_with model: user, url: profile_path, method: :patch, scope: :user, local: true, id: "pfx-form" do |f| %>
+          <% if user.errors.any? %>
+            <div class="pfx-errors"><%= user.errors.full_messages.to_sentence %></div>
+          <% end %>
+
+          <!-- Personal -->
+          <div class="pfx-card" data-pfx-section="personal" data-pfx-unlocked="true">
+            <div class="pfx-head">
+              <h2>Personal Information</h2>
+              <button type="button" class="pfx-btn pfx-btn--save" data-pfx-btn>Save</button>
+            </div>
+            <div class="pfx-row">
+              <div class="pfx-f">
+                <label>Full Name <em>*</em></label>
+                <%= f.text_field @name_col, placeholder: "Your full name", required: true %>
+              </div>
+              <div class="pfx-f">
+                <label>Email ID</label>
+                <%= f.email_field :email, placeholder: "Add an email" %>
+              </div>
+              <div class="pfx-f">
+                <label>Mobile Number</label>
+                <%= f.telephone_field :phone, placeholder: "10-digit mobile number", maxlength: 10, pattern: "[0-9]{10}" %>
+              </div>
+              <% if can_upload %>
+                <div class="pfx-f">
+                  <label>Profile photo</label>
+                  <%= f.file_field :avatar, accept: "image/*" %>
+                </div>
+              <% end %>
+              <% if has_bio %>
+                <div class="pfx-f pfx-full">
+                  <label>Bio</label>
+                  <%= f.text_area :bio, rows: 3, placeholder: "Tell owners what you are looking for" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Business (vendors only) -->
+          <% if is_vendor %>
+            <div class="pfx-card" data-pfx-section="business">
+              <div class="pfx-head">
+                <h2>Business and Verification</h2>
+                <button type="button" class="pfx-btn" data-pfx-btn>Edit</button>
+              </div>
+              <div class="pfx-row">
+                <div class="pfx-f">
+                  <label>Company Name</label>
+                  <%= f.text_field :company_name, placeholder: "Your company or firm name", readonly: true %>
+                </div>
+                <div class="pfx-f">
+                  <label>GSTIN Number</label>
+                  <%= f.text_field :gstin, placeholder: "15-character GSTIN", maxlength: 15, readonly: true, style: "text-transform:uppercase" %>
+                </div>
+                <div class="pfx-note pfx-full">Add GSTIN only if you want to use business verification workflows.</div>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Address -->
+          <div class="pfx-card" data-pfx-section="address">
+            <div class="pfx-head">
+              <h2>Address Information</h2>
+              <button type="button" class="pfx-btn" data-pfx-btn>Edit</button>
+            </div>
+            <div class="pfx-row">
+              <div class="pfx-f pfx-full">
+                <label>Address</label>
+                <%= f.text_field :address, placeholder: "Street, building, and area", readonly: true %>
+              </div>
+            </div>
+            <div class="pfx-row pfx-row--3" style="margin-top:14px">
+              <div class="pfx-f"><label>City</label><%= f.text_field :city, readonly: true %></div>
+              <div class="pfx-f">
+                <label>State</label>
+                <%= f.select :state, states, { include_blank: "Select state" }, disabled: true %>
+              </div>
+              <div class="pfx-f">
+                <label>Pincode</label>
+                <%= f.text_field :pincode, maxlength: 6, pattern: "[0-9]{6}", readonly: true %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Password -->
+        <div class="pfx-card">
+          <div class="pfx-head">
+            <h2>Change Password</h2>
+            <% unless provider %>
+              <button type="button" class="pfx-btn" data-pfx-pass-toggle>Change</button>
+            <% end %>
+          </div>
+          <% if provider %>
+            <div class="pfx-note">You signed up with <%= provider_txt %>, so there is no password to change.</div>
+          <% else %>
+            <div class="pfx-pass" id="pfx-pass">
+              <%= form_with url: password_profile_path, method: :patch, scope: :user, local: true do |pf| %>
+                <div class="pfx-row">
+                  <div class="pfx-f pfx-full">
+                    <label>Current password</label>
+                    <%= pf.password_field :current_password, autocomplete: "current-password", required: true %>
+                  </div>
+                  <div class="pfx-f">
+                    <label>New password</label>
+                    <%= pf.password_field :password, autocomplete: "new-password", minlength: 6, required: true %>
+                  </div>
+                  <div class="pfx-f">
+                    <label>Confirm new password</label>
+                    <%= pf.password_field :password_confirmation, autocomplete: "new-password", required: true %>
+                  </div>
+                </div>
+                <div style="margin-top:14px"><%= pf.submit "Update password", class: "pfx-btn pfx-btn--save" %></div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Push notifications -->
+        <div class="pfx-card pfx-push">
+          <div class="pfx-push-ico">🔔</div>
+          <div class="pfx-push-body">
+            <h3><%= is_vendor ? "Lead Push Notifications" : "Inquiry Push Notifications" %></h3>
+            <div class="pfx-tags">
+              <span class="pfx-tag" data-pfx-push-tag>NOT ENABLED YET</span>
+              <span class="pfx-tag pfx-tag--ghost">browser</span>
+            </div>
+            <p>
+              <%= is_vendor ? "Receive instant real-time alerts on this device whenever a new property lead is assigned to you."
+                            : "Receive instant alerts on this device when a vendor replies to or accepts your inquiry." %>
+            </p>
+          </div>
+          <div class="pfx-switch">
+            <label><input type="checkbox" data-pfx-push-switch><i></i></label>
+            <small data-pfx-push-label>Disallowed</small>
+          </div>
+        </div>
+
+        <!-- Recent login activity -->
+        <div class="pfx-card">
+          <div class="pfx-head">
+            <h2>Recent Login Activity</h2>
+            <%= link_to "Refresh", profile_path, class: "pfx-btn" %>
+          </div>
+          <% rows = [] %>
+          <% if user.respond_to?(:current_sign_in_at) && user.current_sign_in_at %>
+            <% rows << [ "Current session", user.current_sign_in_at, user.try(:current_sign_in_ip) ] %>
+          <% end %>
+          <% if user.respond_to?(:last_sign_in_at) && user.last_sign_in_at %>
+            <% rows << [ "Previous sign in", user.last_sign_in_at, user.try(:last_sign_in_ip) ] %>
+          <% end %>
+          <% if rows.any? %>
+            <% rows.each do |label, at, ip| %>
+              <div class="pfx-act">
+                <span class="pfx-act-ico">🖥️</span>
+                <div>
+                  <b><%= label %></b>
+                  <small><%= at.strftime("%d %B %Y, %H:%M") %><%= " · IP #{ip}" if ip.present? %></small>
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="pfx-empty">No recent activity found for this account yet.</div>
+          <% end %>
+        </div>
+
+        <!-- Sign out -->
+        <div class="pfx-card pfx-signout">
+          <div>
+            <b>Sign out</b>
+            <small>You will need to log in again on this device.</small>
+          </div>
+          <%= button_to "Sign out", destroy_user_session_path, method: :delete,
+                class: "pfx-btn pfx-btn--out", form: { style: "margin:0" } %>
+        </div>
+
+        <!-- Delete account -->
+        <div class="pfx-card pfx-del">
+          <div class="pfx-head"><h2 class="pfx-danger">Delete Account</h2></div>
+          <p>Permanently delete your account and personal details. This action cannot be undone and you will be signed out immediately.</p>
+          <%= button_to "Delete my account", profile_path, method: :delete,
+                class: "pfx-btn pfx-btn--danger", form: { style: "margin:0" },
+                data: { turbo_confirm: "Delete your account permanently? This cannot be undone." } %>
+        </div>
+      </main>
     </div>
-
-    <dl class="pf-info">
-      <div><dt>Name</dt><dd><%= @user.name.presence || @user.display_name %></dd></div>
-      <div><dt>Email</dt><dd><%= @user.email %></dd></div>
-      <div><dt>Account type</dt><dd><%= @user.role.to_s.humanize %></dd></div>
-      <div><dt>Signed up with</dt><dd><%= google ? "Google" : "Email and password" %></dd></div>
-      <div><dt>Member since</dt><dd><%= @user.created_at.strftime("%B %Y") %></dd></div>
-      <div><dt>Bio</dt><% if @user.bio.present? %><dd><%= simple_format(h(@user.bio)) %></dd><% else %><dd class="none">No bio yet. Add one so owners know who you are.</dd><% end %></div>
-    </dl>
-  </div>
-
-  <div class="pf-card pf-out">
-    <div><strong>Sign out</strong><small>You will need to log in again on this device.</small></div>
-    <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
   </div>
 </div>
+
+<script>
+(function () {
+  if (window.__pfxBound) return;
+  window.__pfxBound = true;
+
+  document.addEventListener("click", function (e) {
+    // "Edit profile" button in the header: jump to the form and focus the name
+    var jump = e.target.closest("[data-pfx-focus]");
+    if (jump) {
+      e.preventDefault();
+      var form = document.getElementById("pfx-form");
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+      var first = form.querySelector("input:not([type=hidden]):not([readonly])");
+      if (first) setTimeout(function () { first.focus(); }, 350);
+      return;
+    }
+
+    // Edit / Save per section
+    var btn = e.target.closest("[data-pfx-btn]");
+    if (btn) {
+      var card = btn.closest("[data-pfx-section]");
+      if (card.dataset.pfxUnlocked === "true") {
+        document.getElementById("pfx-form").requestSubmit();
+        return;
+      }
+      card.querySelectorAll("input[readonly]").forEach(function (i) { i.removeAttribute("readonly"); });
+      card.querySelectorAll("select[disabled]").forEach(function (s) { s.removeAttribute("disabled"); });
+      card.dataset.pfxUnlocked = "true";
+      btn.textContent = "Save";
+      btn.classList.add("pfx-btn--save");
+      var f1 = card.querySelector("input:not([type=hidden]), select");
+      if (f1) f1.focus();
+      return;
+    }
+
+    var pw = e.target.closest("[data-pfx-pass-toggle]");
+    if (pw) {
+      var box = document.getElementById("pfx-pass");
+      box.classList.toggle("is-open");
+      pw.textContent = box.classList.contains("is-open") ? "Cancel" : "Change";
+    }
+  });
+
+  // Browser push permission switch
+  function pushUI() {
+    var sw = document.querySelector("[data-pfx-push-switch]");
+    if (!sw) return;
+    var on = ("Notification" in window) && Notification.permission === "granted" && localStorage.getItem("pfx_push") === "1";
+    sw.checked = on;
+    var tag = document.querySelector("[data-pfx-push-tag]");
+    var lbl = document.querySelector("[data-pfx-push-label]");
+    tag.textContent = on ? "ENABLED" : "NOT ENABLED YET";
+    tag.classList.toggle("pfx-tag--on", on);
+    lbl.textContent = on ? "Allowed" : "Disallowed";
+    if ("Notification" in window && Notification.permission === "denied") lbl.textContent = "Blocked in browser";
+  }
+  document.addEventListener("change", function (e) {
+    if (!e.target.matches("[data-pfx-push-switch]")) return;
+    if (!("Notification" in window)) { e.target.checked = false; return; }
+    if (e.target.checked) {
+      Notification.requestPermission().then(function (p) {
+        localStorage.setItem("pfx_push", p === "granted" ? "1" : "0");
+        pushUI();
+      });
+    } else {
+      localStorage.setItem("pfx_push", "0");
+      pushUI();
+    }
+  });
+  document.addEventListener("turbo:load", pushUI);
+  document.addEventListener("DOMContentLoaded", pushUI);
+  pushUI();
+})();
+</script>
