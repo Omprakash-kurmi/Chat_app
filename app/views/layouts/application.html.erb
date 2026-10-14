@@ -22,6 +22,7 @@
     <%= stylesheet_link_tag "search", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "navbar","favorites","site","rooms","profile","inquiries","events","chat_room","auth", "footer", "properties", "home", "landing", "data-turbo-track": "reload" %>
   </head>
+   <%= render "shared/ai_assistant" if current_user && !current_user.vendor? %>
   <body>
     <%= render "devise/shared/navbar" %>
 

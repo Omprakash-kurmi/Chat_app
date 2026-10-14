@@ -1,0 +1,2 @@
+module AiAssistantsHelper
+end

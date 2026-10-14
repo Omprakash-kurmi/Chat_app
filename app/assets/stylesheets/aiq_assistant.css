@@ -1,0 +1,57 @@
+/* ===== AI Assistant widget (all rules scoped under #aiq) ===== */
+#aiq,#aiq *{box-sizing:border-box!important;letter-spacing:normal!important;text-transform:none!important;text-decoration:none!important;font-family:Inter,"Segoe UI",system-ui,sans-serif!important}
+#aiq{position:fixed!important;right:24px!important;bottom:24px!important;z-index:9999!important}
+#aiq button{all:unset!important;box-sizing:border-box!important;cursor:pointer!important;font-family:Inter,"Segoe UI",system-ui,sans-serif!important}
+
+/* floating button */
+#aiq .aiq-fab{display:inline-flex!important;align-items:center!important;gap:10px!important;padding:14px 22px 14px 16px!important;border-radius:999px!important;background:linear-gradient(135deg,#6d28d9,#c026d3)!important;color:#fff!important;font-size:15px!important;font-weight:700!important;line-height:1!important;box-shadow:0 12px 30px rgba(109,40,217,.45)!important;transition:transform .2s,box-shadow .2s!important}
+#aiq .aiq-fab:hover{transform:translateY(-3px)!important;box-shadow:0 18px 38px rgba(109,40,217,.55)!important}
+#aiq .aiq-fab .aiq-fab-ico{width:30px!important;height:30px!important;border-radius:50%!important;background:rgba(255,255,255,.22)!important;display:grid!important;place-items:center!important;font-size:16px!important}
+
+/* panel */
+#aiq .aiq-panel{position:absolute!important;right:0!important;bottom:68px!important;width:380px!important;max-width:calc(100vw - 32px)!important;height:560px!important;max-height:calc(100vh - 120px)!important;display:flex!important;flex-direction:column!important;background:#fff!important;border-radius:26px!important;overflow:hidden!important;box-shadow:0 30px 80px rgba(40,10,90,.35),0 0 0 1px rgba(124,58,237,.08)!important;animation:aiqIn .25s ease!important}
+#aiq .aiq-panel[hidden]{display:none!important}
+@keyframes aiqIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+
+/* header */
+#aiq .aiq-head{position:relative!important;display:flex!important;align-items:center!important;gap:12px!important;padding:18px 18px 22px!important;background:linear-gradient(135deg,#5b21b6,#a21caf 70%,#db2777)!important;color:#fff!important}
+#aiq .aiq-avatar{width:44px!important;height:44px!important;border-radius:14px!important;background:rgba(255,255,255,.2)!important;display:grid!important;place-items:center!important;font-size:22px!important;flex:none!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)!important}
+#aiq .aiq-head-txt{flex:1!important;min-width:0!important}
+#aiq .aiq-head-txt b{display:block!important;font-size:17px!important;font-weight:800!important;line-height:1.2!important;color:#fff!important}
+#aiq .aiq-head-txt small{display:flex!important;align-items:center!important;gap:6px!important;margin-top:4px!important;font-size:12px!important;color:rgba(255,255,255,.88)!important}
+#aiq .aiq-head-txt small i{width:8px!important;height:8px!important;border-radius:50%!important;background:#4ade80!important;box-shadow:0 0 0 3px rgba(74,222,128,.3)!important;display:inline-block!important}
+#aiq .aiq-close{width:34px!important;height:34px!important;border-radius:50%!important;background:rgba(255,255,255,.18)!important;color:#fff!important;font-size:20px!important;line-height:34px!important;text-align:center!important;flex:none!important}
+#aiq .aiq-close:hover{background:rgba(255,255,255,.32)!important}
+
+/* messages */
+#aiq .aiq-msgs{flex:1!important;overflow-y:auto!important;padding:18px 16px!important;margin-top:-12px!important;border-radius:22px 22px 0 0!important;background:#faf7ff!important;display:flex!important;flex-direction:column!important;gap:12px!important;position:relative!important}
+#aiq .aiq-msg{max-width:86%!important;padding:11px 15px!important;border-radius:18px!important;font-size:14px!important;line-height:1.5!important;word-wrap:break-word!important}
+#aiq .aiq-msg--bot{align-self:flex-start!important;background:#fff!important;color:#2b1f45!important;border-bottom-left-radius:5px!important;box-shadow:0 2px 8px rgba(76,29,149,.08)!important}
+#aiq .aiq-msg--user{align-self:flex-end!important;background:linear-gradient(135deg,#7c3aed,#c026d3)!important;color:#fff!important;border-bottom-right-radius:5px!important;box-shadow:0 4px 12px rgba(124,58,237,.3)!important}
+#aiq .aiq-typing{color:#8b7aa8!important;font-style:italic!important;animation:aiqPulse 1.2s ease-in-out infinite!important}
+@keyframes aiqPulse{50%{opacity:.45}}
+
+/* quick suggestions */
+#aiq .aiq-hint{margin:2px 2px -4px!important;font-size:11px!important;font-weight:700!important;color:#8b7aa8!important;letter-spacing:.06em!important;text-transform:uppercase!important}
+#aiq .aiq-chips{display:flex!important;flex-direction:column!important;gap:8px!important}
+#aiq .aiq-chips button{display:flex!important;align-items:center!important;gap:10px!important;width:100%!important;padding:11px 14px!important;border-radius:14px!important;background:#fff!important;border:1.5px solid #e9dcff!important;color:#4c1d95!important;font-size:13.5px!important;font-weight:600!important;line-height:1.2!important;transition:all .15s!important}
+#aiq .aiq-chips button:hover{border-color:#a855f7!important;background:#f5ecff!important;transform:translateX(3px)!important}
+#aiq .aiq-chips button span{width:30px!important;height:30px!important;border-radius:10px!important;background:#f3e8ff!important;display:grid!important;place-items:center!important;font-size:16px!important;flex:none!important}
+
+/* result cards */
+#aiq a.aiq-card{display:flex!important;gap:12px!important;align-items:center!important;padding:12px!important;background:#fff!important;border-radius:16px!important;color:inherit!important;box-shadow:0 2px 10px rgba(76,29,149,.09)!important;border:1.5px solid transparent!important;transition:all .15s!important}
+#aiq a.aiq-card:hover{border-color:#a855f7!important;transform:translateY(-2px)!important;box-shadow:0 10px 22px rgba(124,58,237,.2)!important}
+#aiq .aiq-card-ico{width:46px!important;height:46px!important;border-radius:14px!important;background:linear-gradient(135deg,#f3e8ff,#fae8ff)!important;display:grid!important;place-items:center!important;font-size:24px!important;flex:none!important}
+#aiq .aiq-card-body{min-width:0!important;flex:1!important}
+#aiq .aiq-card-body b{display:block!important;font-size:14px!important;font-weight:700!important;color:#2b1f45!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#aiq .aiq-card-body small{display:block!important;margin-top:2px!important;font-size:12px!important;color:#7d7592!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#aiq .aiq-card-body em{display:block!important;margin-top:4px!important;font-style:normal!important;font-size:15px!important;font-weight:800!important;color:#7c1fe0!important}
+#aiq a.aiq-card::after{content:"›"!important;font-size:22px!important;color:#c4a8f0!important}
+
+/* input */
+#aiq .aiq-form{display:flex!important;align-items:center!important;gap:10px!important;padding:14px 16px 16px!important;background:#fff!important;border-top:1px solid #f0e8fb!important;margin:0!important}
+#aiq .aiq-form input{flex:1!important;min-width:0!important;height:46px!important;padding:0 18px!important;border:1.5px solid #e9dcff!important;border-radius:999px!important;background:#faf7ff!important;color:#2b1f45!important;font-size:14px!important;outline:none!important;box-shadow:none!important;margin:0!important}
+#aiq .aiq-form input::placeholder{color:#a396bb!important}
+#aiq .aiq-form input:focus{border-color:#a855f7!important;background:#fff!important;box-shadow:0 0 0 4px rgba(168,85,247,.15)!important}
+#aiq .aiq-form button{width:46px!important;height:46px!important;border-radius:50%!important;background:linear-gradient(135deg,#7c3aed,#c026d3)!important;color:#fff!important;display:grid!important;place-items:center!important;font-size:18px!important;flex:none!important;box-shadow:0 6px 16px rgba(124,58,237,.4)!important;transition:transform .15s!important}
+#aiq .aiq-form button:hover{transform:scale(1.08)!important}

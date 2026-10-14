@@ -78,4 +78,7 @@ Rails.application.routes.draw do
     collection { patch :read_all }
     member     { patch :read }
   end
+
+  post "ai/assistant", to: "ai_assistants#create", as: :ai_assistant
+
 end

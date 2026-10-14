@@ -1,0 +1,33 @@
+<%= stylesheet_link_tag "aiq_assistant", "data-turbo-track": "reload" %>
+
+<div id="aiq" class="aiq" data-turbo-permanent>
+  <button type="button" class="aiq-fab" data-aiq-toggle aria-label="Open AI assistant">
+    <span class="aiq-fab-ico">✨</span> AI Assistant
+  </button>
+
+  <section class="aiq-panel" hidden>
+    <header class="aiq-head">
+      <div class="aiq-avatar">✨</div>
+      <div class="aiq-head-txt">
+        <b>AI Assistant</b>
+        <small><i></i>Online · finds properties instantly</small>
+      </div>
+      <button type="button" class="aiq-close" data-aiq-toggle aria-label="Close">×</button>
+    </header>
+
+    <div class="aiq-msgs" id="aiq-msgs">
+      <div class="aiq-msg aiq-msg--bot">Hi! 👋 Tell me what you are looking for and I will find matching properties for you.</div>
+      <p class="aiq-hint">Try asking</p>
+      <div class="aiq-chips">
+        <button type="button" data-aiq-chip="Homes to rent under 30k"><span>🏠</span>Homes to rent under 30k</button>
+        <button type="button" data-aiq-chip="3BHK to buy"><span>🔑</span>3BHK to buy</button>
+        <button type="button" data-aiq-chip="Plots under 50 lakh"><span>🌳</span>Plots under 50 lakh</button>
+      </div>
+    </div>
+
+    <form id="aiq-form" class="aiq-form" autocomplete="off">
+      <input id="aiq-input" type="text" maxlength="500" placeholder="Ask about homes or plots…">
+      <button type="submit" aria-label="Send">➤</button>
+    </form>
+  </section>
+</div>
