@@ -20,7 +20,7 @@
         <h4>Social</h4>
         <div class="footer-social">
           <% social_links.each do |s| %>
-            <%= link_to s.platform, s.url, target: "_blank", rel: "noopener", title: s.platform %>
+            <%= link_to s.platform, safe_external_url(s.url), target: "_blank", rel: "noopener", title: s.platform %>
           <% end %>
         </div>
       <% end %>
