@@ -23,6 +23,7 @@ class Property < ApplicationRecord
   has_many :inquiry_messages, dependent: :destroy
   has_many :proposed_visits, class_name: "Visit", foreign_key: :proposed_by_id, dependent: :destroy
   has_many :reviews, dependent: :destroy
+  has_many :favorites, dependent: :destroy
 
   enum :listing_type,  { rent: 0, buy: 1, land: 2 }          # LAND: third option
   enum :property_type, { apartment: 0, house: 1, villa: 2, plot: 3, studio: 4, penthouse: 5, commercial: 6 }
@@ -58,18 +59,6 @@ class Property < ApplicationRecord
   def average_rating
     reviews.average(:rating).to_f.round(1)
   end
-
-  # def reviewable_by?(user)
-  #   return false unless user&.customer?
-  #   return false if user_id == user.id            # owner can't review own home
-  #   inquiries.where(user_id: user.id, status: %w[accepted closed]).exists?
-  # end
-
-  # def verified_reviewer_ids
-  #     inquiries.where(status: %w[accepted closed]).pluck(:user_id)
-  #   rescue ActiveRecord::StatementInvalid, NoMethodError
-  #     []
-  # end
 
   def reviewable_by?(user)
     return false if user.nil?
