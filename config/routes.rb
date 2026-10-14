@@ -84,5 +84,4 @@ Rails.application.routes.draw do
   end
 
   post "ai/assistant", to: "ai_assistants#create", as: :ai_assistant
-
 end
