@@ -37,6 +37,14 @@
         Tap <strong>+ Compare</strong> on any home or plot to add it here.
         You can compare up to 4 at a time.
       </p>
+      <style>
+        .cmpx-empty-actions{display:flex!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;gap:12px!important;margin:22px 0 6px!important}
+        .cmpx-empty-actions a.cmpx-empty-btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;padding:11px 22px!important;border-radius:12px!important;font-size:14px!important;line-height:1.2!important;font-weight:600!important;text-decoration:none!important;transition:transform .15s,box-shadow .15s!important}
+        .cmpx-empty-actions a.cmpx-empty-btn:hover{transform:translateY(-1px)!important}
+        .cmpx-empty-actions a.cmpx-empty-btn--primary{background:#7c1fe0!important;color:#fff!important;border:2px solid #7c1fe0!important}
+        .cmpx-empty-actions a.cmpx-empty-btn--ghost{background:#fff!important;color:#7c1fe0!important;border:2px solid #7c1fe0!important}
+        .cmpx-empty-actions a.cmpx-empty-btn--land{background:#fef3c7!important;color:#92400e!important;border:2px solid #f59e0b!important}
+      </style>
       <div class="cmpx-empty-actions">
         <%= link_to "Browse homes to rent", homes_path(listing_type: "rent"),
               class: "cmpx-empty-btn cmpx-empty-btn--primary" %>

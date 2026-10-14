@@ -1,0 +1,23 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "rel_related", "data-turbo-track": "reload" %>
+<% end %>
+
+<% if nearby.present? || similar.present? %>
+  <section class="relx">
+    <% if nearby.present? %>
+      <div class="relx-block">
+        <h2 class="relx-title">Nearby Properties</h2>
+        <p class="relx-sub">Discover properties located near your current selection, offering convenient access and attractions for a vibrant living experience.</p>
+        <div class="relx-grid"><%= render partial: "properties/rel_card", collection: nearby, as: :p %></div>
+      </div>
+    <% end %>
+
+    <% if similar.present? %>
+      <div class="relx-block">
+        <h2 class="relx-title">Similar Properties</h2>
+        <p class="relx-sub">Explore properties similar to your current selection, offering comparable features and amenities to help you find the perfect match.</p>
+        <div class="relx-grid"><%= render partial: "properties/rel_card", collection: similar, as: :p %></div>
+      </div>
+    <% end %>
+  </section>
+<% end %>

@@ -22,12 +22,6 @@ class PropertiesController < ApplicationController
                     .per(12)
   end
 
-  # def show
-  #   @property = Property.find(params[:id])
-  #   # unverified / closed listings are visible only to their owner
-  #   own_listing = user_signed_in? && @property.user_id == current_user.id
-  #   # raise ActiveRecord::RecordNotFound unless @property.published? || own_listing
-  # end
   def show
     @property = Property.find(params[:id])
 
@@ -37,6 +31,8 @@ class PropertiesController < ApplicationController
     unless @property.status == "published" || own_listing || admin_view
       raise ActiveRecord::RecordNotFound      # customers get a 404 for unapproved listings
     end
+    @nearby_properties  = @property.nearby_properties(3)
+    @similar_properties = @property.similar_properties(3, exclude_ids: @nearby_properties.map(&:id))
   end
 
   def update
