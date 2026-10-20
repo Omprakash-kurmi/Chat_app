@@ -1,0 +1,21 @@
+<% keys = property.facility_keys %>
+<% if keys.any? %>
+  <% content_for :head do %>
+    <%= stylesheet_link_tag "fc_facilities", "data-turbo-track": "reload" %>
+  <% end %>
+
+  <section class="fcx-show">
+    <h3>Facilities</h3>
+    <p>What this PG offers</p>
+    <div class="fcx-list">
+      <% keys.each do |key| %>
+        <% label, icon = Property::PG_FACILITIES[key] %>
+        <% if label %>
+          <div class="fcx-item"><b><%= icon %></b><%= label %></div>
+        <% else %>
+          <div class="fcx-item fcx-item--extra"><b>✨</b><%= key %></div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>

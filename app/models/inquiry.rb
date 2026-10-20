@@ -19,6 +19,9 @@ class Inquiry < ApplicationRecord
   validate :not_own_listing, :listing_open, :single_open_inquiry, on: :create
 
   after_create :start_conversation
+  after_create_commit :notify_vendor
+  after_update_commit :notify_customer, if: :saved_change_to_status?
+
 
   scope :active, -> { where(status: [ :pending, :accepted ]) }
 
@@ -94,6 +97,19 @@ class Inquiry < ApplicationRecord
   end
 
   private
+  
+  def customer_user = user
+  def vendor_user   = property.user
+
+  def notify_vendor
+    Notifier.inquiry_received(self, customer: customer_user, vendor: vendor_user)
+  end
+
+  def notify_customer
+    return unless %w[accepted rejected].include?(status.to_s)
+    Notifier.inquiry_decided(self, customer: customer_user, vendor: vendor_user,
+                             accepted: status.to_s == "accepted")
+  end
 
   def not_own_listing
     if property && property.user_id == user_id

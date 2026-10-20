@@ -103,6 +103,7 @@
                 <source src="<%= url_for(video) %>" type="<%= video.content_type %>">
               </video>
             <% end %>
+            <%= render "properties/facilities", property: @property %>
           </div>
         </section>
       <% end %>

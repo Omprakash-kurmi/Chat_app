@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_14_120402) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_16_051549) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -214,7 +214,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_120402) do
     t.boolean "corner_plot", default: false, null: false
     t.string "ownership_type"
     t.string "approval_authority"
+    t.string "facilities", default: [], null: false, array: true
     t.index ["amenities"], name: "index_properties_on_amenities", using: :gin
+    t.index ["facilities"], name: "index_properties_on_facilities", using: :gin
     t.index ["land_type"], name: "index_properties_on_land_type"
     t.index ["locality"], name: "index_properties_on_locality"
     t.index ["pincode"], name: "index_properties_on_pincode"
