@@ -97,7 +97,7 @@ class Inquiry < ApplicationRecord
   end
 
   private
-  
+
   def customer_user = user
   def vendor_user   = property.user
 

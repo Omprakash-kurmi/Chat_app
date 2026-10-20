@@ -17,22 +17,22 @@ class Property < ApplicationRecord
                   "Gram panchayat", "Not yet approved" ].freeze
 
   PG_FACILITIES = {
-    "wifi"           => ["Wi-Fi", "📶"],
-    "meals"          => ["Meals included", "🍽️"],
-    "laundry"        => ["Laundry", "🧺"],
-    "ac"             => ["AC rooms", "❄️"],
-    "hot_water"      => ["Hot water", "🚿"],
-    "power_backup"   => ["Power backup", "🔋"],
-    "cctv"           => ["CCTV security", "📹"],
-    "housekeeping"   => ["Housekeeping", "🧹"],
-    "parking"        => ["Parking", "🅿️"],
-    "gym"            => ["Gym", "🏋️"],
-    "study_room"     => ["Study room", "📚"],
-    "tv"             => ["TV / common room", "📺"],
-    "fridge"         => ["Refrigerator", "🧊"],
-    "water_purifier" => ["RO water", "💧"],
-    "lift"           => ["Lift", "🛗"],
-    "bed_linen"      => ["Bed & linen", "🛏️"]
+    "wifi"           => [ "Wi-Fi", "📶" ],
+    "meals"          => [ "Meals included", "🍽️" ],
+    "laundry"        => [ "Laundry", "🧺" ],
+    "ac"             => [ "AC rooms", "❄️" ],
+    "hot_water"      => [ "Hot water", "🚿" ],
+    "power_backup"   => [ "Power backup", "🔋" ],
+    "cctv"           => [ "CCTV security", "📹" ],
+    "housekeeping"   => [ "Housekeeping", "🧹" ],
+    "parking"        => [ "Parking", "🅿️" ],
+    "gym"            => [ "Gym", "🏋️" ],
+    "study_room"     => [ "Study room", "📚" ],
+    "tv"             => [ "TV / common room", "📺" ],
+    "fridge"         => [ "Refrigerator", "🧊" ],
+    "water_purifier" => [ "RO water", "💧" ],
+    "lift"           => [ "Lift", "🛗" ],
+    "bed_linen"      => [ "Bed & linen", "🛏️" ]
   }.freeze
 
   belongs_to :user
@@ -315,5 +315,5 @@ class Property < ApplicationRecord
     return if @custom_facilities.nil?
     extras = @custom_facilities.to_s.split(",").map { |s| s.strip.first(40) }.reject(&:blank?).uniq.first(10)
     self.facilities = (facility_keys & PG_FACILITIES.keys) + extras
-  end      
+  end
 end
