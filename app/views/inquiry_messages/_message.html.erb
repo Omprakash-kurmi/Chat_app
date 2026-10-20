@@ -12,8 +12,12 @@
     
     <% if message.image.attached? %>
       <%= link_to rails_blob_path(message.image, only_path: true), target: "_blank", rel: "noopener", class: "icx-img-link" do %>
-        <%= image_tag rails_representation_path(message.image.variant(resize_to_limit: [640, 640]), only_path: true),
-                      class: "icx-img", alt: "Photo" %>
+        <% if message.image.variable? %>
+          <%= image_tag rails_representation_path(message.image.variant(resize_to_limit: [640, 640]), only_path: true),
+                        class: "icx-img", alt: "Photo" %>
+        <% else %>
+          <%= image_tag rails_blob_path(message.image, only_path: true), class: "icx-img", alt: "Photo" %>
+        <% end %>
       <% end %>
     <% end %>
 

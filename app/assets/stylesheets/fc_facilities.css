@@ -1,0 +1,42 @@
+/* ===== PG / hostel facilities (prefix fcx-) ===== */
+.fcx{margin:18px 0!important;padding:20px!important;border:1.5px solid #e9dcff!important;border-radius:18px!important;background:linear-gradient(180deg,#faf7ff,#fff)!important;grid-column:1/-1!important}
+.fcx[hidden]{display:none!important}
+.fcx-head{display:flex!important;align-items:center!important;gap:12px!important;margin-bottom:6px!important}
+.fcx-head-ico{width:40px!important;height:40px!important;border-radius:12px!important;background:#f0e4ff!important;display:grid!important;place-items:center!important;font-size:20px!important}
+.fcx-head h3{margin:0!important;font-size:17px!important;font-weight:800!important;color:#1d1230!important}
+.fcx-head p{margin:2px 0 0!important;font-size:12px!important;color:#7a7090!important}
+.fcx-grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))!important;gap:10px!important;margin-top:14px!important}
+.fcx-opt{position:relative!important;display:block!important;margin:0!important;cursor:pointer!important}
+.fcx-opt input{position:absolute!important;opacity:0!important;width:0!important;height:0!important}
+.fcx-opt span{display:flex!important;align-items:center!important;gap:10px!important;padding:11px 14px!important;border:1.5px solid #e6dcf6!important;border-radius:12px!important;background:#fff!important;font-size:13px!important;font-weight:600!important;color:#3b2b5c!important;transition:all .15s!important}
+.fcx-opt span b{font-size:18px!important;font-weight:400!important}
+.fcx-opt:hover span{border-color:#b98cf0!important}
+.fcx-opt input:checked+span{background:linear-gradient(135deg,#7c1fe0,#a21caf)!important;border-color:transparent!important;color:#fff!important;box-shadow:0 6px 14px rgba(124,31,224,.3)!important}
+.fcx-opt input:checked+span::after{content:"✓"!important;margin-left:auto!important;font-weight:800!important}
+.fcx-custom{margin-top:16px!important}
+.fcx-custom label{display:block!important;margin-bottom:6px!important;font-size:12px!important;font-weight:800!important;color:#5b4a78!important}
+.fcx-custom input{width:100%!important;height:44px!important;padding:0 14px!important;border:1.5px solid #e4d9f5!important;border-radius:10px!important;font-size:14px!important;background:#fff!important}
+.fcx-custom small{display:block!important;margin-top:6px!important;font-size:11px!important;color:#8b7aa8!important}
+
+/* show page */
+.fcx-show{margin:24px 0!important;padding:22px!important;border-radius:20px!important;background:#fff!important;border:1px solid #ece6f6!important;box-shadow:0 4px 16px rgba(76,29,149,.06)!important}
+.fcx-show h3{margin:0 0 4px!important;font-size:19px!important;font-weight:800!important;color:#1d1230!important}
+.fcx-show>p{margin:0 0 16px!important;font-size:13px!important;color:#7a7090!important}
+.fcx-list{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))!important;gap:12px!important}
+.fcx-item{display:flex!important;align-items:center!important;gap:10px!important;padding:12px 14px!important;border-radius:14px!important;background:#faf7ff!important;border:1px solid #efe6fb!important;font-size:14px!important;font-weight:600!important;color:#2b1f45!important}
+.fcx-item b{width:34px!important;height:34px!important;border-radius:10px!important;background:#f0e4ff!important;display:grid!important;place-items:center!important;font-size:18px!important;font-weight:400!important;flex:none!important}
+.fcx-item--extra b{background:#fff1dc!important}
+
+/* search filter */
+.fcx-filter{margin:14px 0!important}
+.fcx-filter>b{display:block!important;margin-bottom:8px!important;font-size:13px!important;font-weight:800!important;color:#1d1230!important}
+.fcx-chips{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+.fcx-chip{position:relative!important;margin:0!important;cursor:pointer!important}
+.fcx-chip input{position:absolute!important;opacity:0!important;width:0!important;height:0!important}
+.fcx-chip span{display:inline-flex!important;align-items:center!important;gap:6px!important;padding:8px 14px!important;border-radius:999px!important;border:1.5px solid #e1d3f5!important;background:#fff!important;font-size:13px!important;font-weight:600!important;color:#4c1d95!important}
+.fcx-chip input:checked+span{background:#7c1fe0!important;border-color:#7c1fe0!important;color:#fff!important}
+.fcx-wrap[hidden],
+.fcx-block[hidden],
+[data-fcx-block][hidden] {
+  display: none !important;
+}

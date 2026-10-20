@@ -1,5 +1,7 @@
 class Property < ApplicationRecord
   include PropertyWorkflow
+  attr_writer :custom_facilities
+
   AMENITIES = [
     "Lift", "Power backup", "24x7 security", "CCTV", "Gym", "Swimming pool", "Clubhouse", "Garden",
     "Children's play area", "24x7 water supply", "Gas pipeline", "Intercom", "Visitor parking",
@@ -14,6 +16,25 @@ class Property < ApplicationRecord
   APPROVALS   = [ "Municipal / local authority", "DTCP / town planning", "RERA registered",
                   "Gram panchayat", "Not yet approved" ].freeze
 
+  PG_FACILITIES = {
+    "wifi"           => [ "Wi-Fi", "📶" ],
+    "meals"          => [ "Meals included", "🍽️" ],
+    "laundry"        => [ "Laundry", "🧺" ],
+    "ac"             => [ "AC rooms", "❄️" ],
+    "hot_water"      => [ "Hot water", "🚿" ],
+    "power_backup"   => [ "Power backup", "🔋" ],
+    "cctv"           => [ "CCTV security", "📹" ],
+    "housekeeping"   => [ "Housekeeping", "🧹" ],
+    "parking"        => [ "Parking", "🅿️" ],
+    "gym"            => [ "Gym", "🏋️" ],
+    "study_room"     => [ "Study room", "📚" ],
+    "tv"             => [ "TV / common room", "📺" ],
+    "fridge"         => [ "Refrigerator", "🧊" ],
+    "water_purifier" => [ "RO water", "💧" ],
+    "lift"           => [ "Lift", "🛗" ],
+    "bed_linen"      => [ "Bed & linen", "🛏️" ]
+  }.freeze
+
   belongs_to :user
   has_many_attached :photos
   has_many_attached :videos
@@ -26,12 +47,14 @@ class Property < ApplicationRecord
   has_many :favorites, dependent: :destroy
 
   enum :listing_type,  { rent: 0, buy: 1, land: 2 }          # LAND: third option
-  enum :property_type, { apartment: 0, house: 1, villa: 2, plot: 3, studio: 4, penthouse: 5, commercial: 6 }
+  enum :property_type, { apartment: 0, house: 1, villa: 2, plot: 3, studio: 4, penthouse: 5, commercial: 6, hostel: 7 }
   enum :furnishing,    { unfurnished: 0, semi_furnished: 1, furnished: 2 }
   enum :poster_type,   { owner: 0, agent: 1 }
   enum :land_type,     { residential: 0, agricultural: 1, commercial: 2, industrial: 3 }, prefix: :land  # LAND
 
   before_validation :tidy
+  before_validation :merge_custom_facilities
+
   before_save :restore_availability, if: -> { status_changed? && published? }
 
   validates :title, :address, :city, :contact_phone, presence: true
@@ -211,6 +234,14 @@ class Property < ApplicationRecord
     scope.order(created_at: :desc).limit(limit)
   end
 
+  def facility_keys
+    Array(facilities).reject(&:blank?)
+  end
+
+  def custom_facilities
+    @custom_facilities || (facility_keys - PG_FACILITIES.keys).join(", ")
+  end
+
   private
 
   def trim_number(n)
@@ -278,5 +309,11 @@ class Property < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     [ "user" ]
+  end
+
+  def merge_custom_facilities
+    return if @custom_facilities.nil?
+    extras = @custom_facilities.to_s.split(",").map { |s| s.strip.first(40) }.reject(&:blank?).uniq.first(10)
+    self.facilities = (facility_keys & PG_FACILITIES.keys) + extras
   end
 end

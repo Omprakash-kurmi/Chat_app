@@ -15,6 +15,8 @@ class PropertiesController < ApplicationController
       @properties = @properties.publicly_visible.available     # customers: approved only
     end
 
+    selected = Array(params[:facilities]) & Property::PG_FACILITIES.keys
+    @properties = @properties.where("properties.facilities @> ARRAY[?]::varchar[]", selected) if selected.any?
     @properties = @properties
                     .matching(params)
                     .sorted(params[:sort])
@@ -72,8 +74,8 @@ class PropertiesController < ApplicationController
       :description, :available,
       :land_type, :land_area, :area_unit, :plot_length, :plot_width,
       :facing, :road_width_ft, :boundary_wall, :corner_plot,
-      :ownership_type, :approval_authority,
-      amenities: [], photos: [], videos: []
+      :ownership_type, :approval_authority, :custom_facilities,
+      amenities: [], photos: [], videos: [], facilities: []
     )
   end
 end

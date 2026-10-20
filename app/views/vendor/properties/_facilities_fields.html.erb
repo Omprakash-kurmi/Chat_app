@@ -1,0 +1,17 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag "fc_facilities", "data-turbo-track": "reload" %>
+<% end %>
+
+<% selected = Array(params[:facilities]) & Property::PG_FACILITIES.keys %>
+
+<div class="sf-group fcx-filter">
+  <span class="sf-label">PG / hostel facilities</span>
+  <div class="sf-pills fcx-chips">
+    <% Property::PG_FACILITIES.each do |key, (label, icon)| %>
+      <label class="sf-pill fcx-chip">
+        <%= check_box_tag "facilities[]", key, selected.include?(key), id: "fcf_#{key}" %>
+        <span><%= icon %> <%= label %></span>
+      </label>
+    <% end %>
+  </div>
+</div>

@@ -12,7 +12,7 @@
   }[kind]
   picked = ->(key) { Array(params[key]) }
   advanced_keys = land ? %w[facing min_area max_area boundary_wall corner_plot min_road] :
-                         %w[property_types furnishings min_area max_area parking available_by amenities]
+                         %w[property_types furnishings min_area max_area parking available_by amenities facilities]
   advanced_count = advanced_keys.count { |k| params[k].present? }
 %>
 <div class="sh">
@@ -172,6 +172,7 @@
               <% end %>
             </div>
           </div>
+          <%= render "properties/facility_filter" %>
         <% end %>
       </div>
     </details>

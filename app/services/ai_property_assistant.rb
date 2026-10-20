@@ -5,6 +5,27 @@ class AiPropertyAssistant
   MODEL = ENV.fetch("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
   KINDS = %w[rent buy land].freeze
 
+  PG_WORDS = /\b(pg|p\.g\.?|hostel|hostels|hostle|hostile|paying\s*guest|co-?living)\b/i
+
+  FACILITY_WORDS = {
+    "wifi"           => /wi-?fi|internet/i,
+    "meals"          => /\bmeals?\b|\bfood\b|\bmess\b|tiffin/i,
+    "laundry"        => /laundry|washing/i,
+    "ac"             => /\bac\b|air.?condition/i,
+    "hot_water"      => /hot\s*water|geyser/i,
+    "power_backup"   => /power\s*backup|inverter|generator/i,
+    "cctv"           => /cctv/i,
+    "housekeeping"   => /housekeeping/i,
+    "parking"        => /parking/i,
+    "gym"            => /\bgym\b/i,
+    "study_room"     => /study\s*room/i,
+    "tv"             => /\btv\b|television/i,
+    "fridge"         => /fridge|refrigerator/i,
+    "water_purifier" => /\bro\b|purifier/i,
+    "lift"           => /\blift\b|elevator/i,
+    "bed_linen"      => /bed\s*(&|and)?\s*linen/i
+  }.freeze
+
   def initialize(message, history: [])
     @message = message
     @history = history
@@ -12,11 +33,12 @@ class AiPropertyAssistant
 
   def call
     filters, reply = ENV["ANTHROPIC_API_KEY"].present? ? ask_claude : [ rule_filters, nil ]
+    filters = with_pg(filters)
     props = search(filters)
     { reply: reply.presence || fallback_reply(filters, props), properties: props }
   rescue StandardError => e
     Rails.logger.warn("[AiPropertyAssistant] #{e.class}: #{e.message}")
-    filters = rule_filters
+    filters = with_pg(rule_filters)
     props   = search(filters)
     { reply: fallback_reply(filters, props), properties: props }
   end
@@ -53,17 +75,34 @@ class AiPropertyAssistant
   def system_prompt
     cities = column?("city") ? Property.publicly_visible.distinct.pluck(:city).compact.first(60) : []
     <<~P
-      You are the friendly property assistant of an Indian real-estate app (rent, buy and land/plots).
+      You are the friendly property assistant of an Indian real-estate app (rent, buy, land/plots, and PG / hostel rooms).
       Reply with ONLY a JSON object, no other text:
       {"reply": "<1-2 short friendly sentences>",
        "filters": {"listing_type": "rent|buy|land|null", "city": null, "locality": null,
-                   "min_price": null, "max_price": null, "bhk": null, "land_type": null}}
+                   "min_price": null, "max_price": null, "bhk": null, "land_type": null,
+                   "pg": null, "facilities": []}}
       Rules: prices are integers in rupees (1 lakh = 100000, 1 crore = 10000000). bhk is an integer.
       land_type is one of residential, commercial, agricultural, industrial or null.
+      Set "pg" to true when the user wants a PG, hostel, paying guest or co-living room.
+      "facilities" may contain: #{Property::PG_FACILITIES.keys.join(', ')}.
       Known cities: #{cities.join(', ')}.
       If the user is only chatting or greeting, set all filters to null and answer helpfully.
       Never invent properties; the app shows real results under your reply.
     P
+  end
+
+  # ---------- PG / hostel (works with or without Claude) ----------
+  def with_pg(filters)
+    f = filters.to_h.transform_keys(&:to_s)
+    if f["pg"].to_s == "true"
+      s = pg_scope(s)
+
+      wanted = Array(f["facilities"]) & pg_keys
+      if wanted.any? && column?("facilities")
+        s = s.where("properties.facilities @> ARRAY[?]::varchar[]", wanted)
+      end
+    end
+    f
   end
 
   # ---------- Fallback (no API key / API error) ----------
@@ -116,14 +155,28 @@ class AiPropertyAssistant
     s = s.where(bhk_col => f["bhk"].to_i)                                     if f["bhk"].to_i > 0 && bhk_col
     s = s.where(land_type: f["land_type"])                                    if f["land_type"].present? && Property.land_types.key?(f["land_type"].to_s)
 
+    if f["pg"].to_s == "true"
+      cond = [ "properties.property_type ILIKE ANY (ARRAY['%pg%','%hostel%','%paying%'])" ]
+      cond << "cardinality(properties.facilities) > 0" if column?("facilities")
+      s = s.where(cond.join(" OR "))
+
+      wanted = Array(f["facilities"]) & Property::PG_FACILITIES.keys
+      if wanted.any? && column?("facilities")
+        s = s.where("properties.facilities @> ARRAY[?]::varchar[]", wanted)
+      end
+    end
+
     s.order(created_at: :desc).limit(5).to_a
   end
 
   def fallback_reply(filters, props)
+    pg = filters.to_h.transform_keys(&:to_s)["pg"].to_s == "true"
     if filters.blank?
-      "Hi! Tell me what you are looking for, for example “2BHK for rent in Indore under 30k” or “plots under 50 lakh”."
+      "Hi! Tell me what you are looking for, for example “2BHK for rent in Indore under 30k”, “PG with wifi and meals” or “plots under 50 lakh”."
     elsif props.any?
-      "I found #{props.size} #{'property'.pluralize(props.size)} that match. Take a look:"
+      "I found #{props.size} #{(pg ? 'PG / hostel' : 'property').pluralize(props.size)} that match. Take a look:"
+    elsif pg
+      "I couldn't find a PG or hostel for that yet. Try another city, a higher budget or fewer facilities."
     else
       "I couldn't find an exact match. Try a higher budget or a nearby city."
     end
@@ -131,5 +184,26 @@ class AiPropertyAssistant
 
   def column?(name)
     Property.column_names.include?(name)
+  end
+
+  def pg_keys
+    defined?(Property::PG_FACILITIES) ? Property::PG_FACILITIES.keys : FACILITY_WORDS.keys
+  end
+
+  # Listings that are a PG / hostel type, or that have facilities ticked
+  def pg_scope(base)
+    by_type =
+      if column?("property_type") && Property.respond_to?(:property_types)
+        names = Property.property_types.keys.grep(/pg|hostel|paying/i)
+        names.any? ? base.where(property_type: names) : base.none
+      elsif column?("property_type")
+        base.where("CAST(properties.property_type AS TEXT) ILIKE ANY (ARRAY['%pg%','%hostel%','%paying%'])")
+      else
+        base.none
+      end
+
+    return by_type unless column?("facilities")
+
+    by_type.or(base.where("cardinality(properties.facilities) > 0"))
   end
 end
