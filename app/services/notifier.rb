@@ -34,4 +34,12 @@ class Notifier
          body: "They tried to reach you but you were unavailable.",
          path: (Rails.application.routes.url_helpers.inquiry_path(inquiry) if inquiry))
   end
+
+  # Deal completed -> customer is notified
+  def self.deal_done(inquiry, customer:, vendor:)
+    call(user: customer,
+         title: "Deal done successfully 🎉",
+         body: "Your deal for #{inquiry.property.try(:title)} with #{name_of(vendor)} is complete.",
+         path: Rails.application.routes.url_helpers.inquiry_path(inquiry))
+  end
 end

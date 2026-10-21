@@ -56,6 +56,7 @@ class Property < ApplicationRecord
   before_validation :merge_custom_facilities
 
   before_save :restore_availability, if: -> { status_changed? && published? }
+  after_update_commit :notify_deal_done, if: :saved_change_to_status?
 
   validates :title, :address, :city, :contact_phone, presence: true
   validates :price, numericality: { greater_than: 0 }
@@ -243,6 +244,13 @@ class Property < ApplicationRecord
   end
 
   private
+
+  def notify_deal_done
+    return unless %w[sold rented].include?(status.to_s)   # ADJUST: your real values
+    inquiry = inquiries.where(status: "accepted").order(updated_at: :desc).first
+    return unless inquiry
+    Notifier.deal_done(inquiry, customer: inquiry.user, vendor: user)
+  end
 
   def trim_number(n)
     f = n.to_f
