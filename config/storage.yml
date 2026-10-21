@@ -51,3 +51,8 @@ minio:
   force_path_style: true
   request_checksum_calculation: when_required
   response_checksum_validation: when_required
+
+cloudinary:
+  service: Cloudinary
+  # Add any other required Cloudinary options here if needed, 
+  # or ensure your cloudinary gem handles environment variables automatically.
