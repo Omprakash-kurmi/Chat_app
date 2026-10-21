@@ -1,0 +1,16 @@
+# Exported from Render on 2026-10-21T16:06:23Z
+version: "1"
+projects:
+- name: Chat_app
+  environments:
+  - name: Production
+    databases:
+    - name: DATABASE_URL
+      databaseName: database_url_ve5e
+      user: database_url_ve5e_user
+      plan: free
+      region: oregon
+      ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+      postgresMajorVersion: "18"
