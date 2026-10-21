@@ -105,10 +105,20 @@ class Inquiry < ApplicationRecord
     Notifier.inquiry_received(self, customer: customer_user, vendor: vendor_user)
   end
 
+  # def notify_customer
+  #   return unless %w[accepted rejected].include?(status.to_s)
+  #   Notifier.inquiry_decided(self, customer: customer_user, vendor: vendor_user,
+  #                            accepted: status.to_s == "accepted")
+  # end
+
   def notify_customer
-    return unless %w[accepted rejected].include?(status.to_s)
-    Notifier.inquiry_decided(self, customer: customer_user, vendor: vendor_user,
-                             accepted: status.to_s == "accepted")
+    case status.to_s
+    when "accepted", "rejected"
+      Notifier.inquiry_decided(self, customer: customer_user, vendor: vendor_user,
+                               accepted: status.to_s == "accepted")
+    when "deal_done", "closed", "completed"   # ADJUST: use your real status name(s)
+      Notifier.deal_done(self, customer: customer_user, vendor: vendor_user)
+    end
   end
 
   def not_own_listing
