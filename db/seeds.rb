@@ -7,10 +7,18 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+puts "Starting database seeding..."
+
 admin = AdminUser.find_or_initialize_by(email: 'admin@example.com')
 admin.password = 'password'
 admin.password_confirmation = 'password'
-admin.save!
+if admin.save
+  puts "Successfully created/updated AdminUser: #{admin.email}"
+else
+  puts "Failed to create AdminUser: #{admin.errors.full_messages.join(', ')}"
+end
+
+puts "Seeding finished."
 # about = FooterColumn.create!(title: "About", position: 1)
 # [ [ "Contact us", "/contact" ], [ "About us", "/about" ], [ "Careers", "/careers" ] ].each_with_index do |(l, u), i|
 #   about.footer_links.create!(label: l, url: u, position: i)
