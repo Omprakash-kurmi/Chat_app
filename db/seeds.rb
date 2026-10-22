@@ -7,10 +7,10 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
-AdminUser.find_or_create_by!(email: 'omprakashkurmi205@gmail.com') do |admin|
-  admin.password = 'password'
-  admin.password_confirmation = 'password'
-end
+admin = AdminUser.find_or_initialize_by(email: 'admin@example.com')
+admin.password = 'password'
+admin.password_confirmation = 'password'
+admin.save!
 # about = FooterColumn.create!(title: "About", position: 1)
 # [ [ "Contact us", "/contact" ], [ "About us", "/about" ], [ "Careers", "/careers" ] ].each_with_index do |(l, u), i|
 #   about.footer_links.create!(label: l, url: u, position: i)
