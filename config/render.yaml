@@ -14,3 +14,15 @@ projects:
       - source: 0.0.0.0/0
         description: everywhere
       postgresMajorVersion: "18"
+
+  services:
+    - type: web
+      name: chat-app-2
+      runtime: ruby
+      buildCommand: "bundle install && bundle exec rails assets:precompile"
+      startCommand: "bundle exec rails db:prepare db:seed && bundle exec rails server"
+      envVars:
+        - key: RAILS_ENV
+          value: production
+        - key: RAILS_MASTER_KEY
+          sync: true
