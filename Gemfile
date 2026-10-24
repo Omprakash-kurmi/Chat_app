@@ -59,7 +59,7 @@ group :test do
 end
 gem "devise"
 gem "oj"
-gem "json", "~> 2.9"
+gem "json", "~> 3.1"
 gem "activeadmin"
 gem "sassc-rails"
 gem "rspec"
