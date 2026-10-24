@@ -76,4 +76,3 @@ gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 gem "minitest", "~> 5.25"
 gem "cloudinary"
-
