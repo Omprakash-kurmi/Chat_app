@@ -1,4 +1,6 @@
-import consumer from "./consumer"
+// import consumer from "./consumer"
+import consumer from "channels/consumer"
+import "channels/room_channel"
 
 document.addEventListener("turbo:load", () => {
   const messages = document.getElementById("messages")
