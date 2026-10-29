@@ -1,0 +1,33 @@
+<% if user_signed_in? %>
+  <%= stylesheet_link_tag "mn_mobile_nav", "data-turbo-track": "reload" %>
+  <% path = request.path %>
+  <% vendor = current_user.respond_to?(:vendor?) && current_user.vendor? %>
+
+  <% items =
+       if vendor
+         [
+           ["💬", "Chats",     "/rooms",              path.start_with?("/rooms")],
+           ["🏘️", "Listings",  "/vendor/properties",  path.start_with?("/vendor/properties")],
+           ["🔎", "Search",    "/search_home",        path.start_with?("/search_home", "/homes")],
+           ["📊", "Dashboard", "/vendor/dashboard",   path.start_with?("/vendor/dashboard")],
+           ["📩", "Inquiries", "/inquiries",          path.start_with?("/inquiries")]
+         ]
+       else
+         [
+           ["🏠", "Search",    "/search_home",  path.start_with?("/search_home", "/homes", "/properties")],
+           ["💬", "Chats",     "/rooms",        path.start_with?("/rooms")],
+           ["📩", "Inquiries", "/inquiries",    path.start_with?("/inquiries")],
+           ["❤️", "Saved",     "/favorites",    path.start_with?("/favorites")],
+           ["👤", "Profile",   "/profile",      path.start_with?("/profile", "/account")]
+         ]
+       end %>
+
+  <nav class="mnx-bar" aria-label="Main">
+    <% items.each do |icon, label, href, active| %>
+      <%= link_to href, class: "mnx-item #{'mnx-active' if active}" do %>
+        <span class="mnx-ico"><%= icon %></span>
+        <span class="mnx-txt"><%= label %></span>
+      <% end %>
+    <% end %>
+  </nav>
+<% end %>

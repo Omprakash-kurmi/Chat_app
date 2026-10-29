@@ -1,5 +1,5 @@
 <%
-  name    = current_user.try(:display_name).presence || current_user.try(:username).presence || current_user.try(:email).to_s.split("@").first if user_signed_in?
+  name    = display_name(current_user) if user_signed_in?
   vendor  = user_signed_in? && current_user.try(:vendor?)
   on      = ->(*paths) { paths.include?(controller_path) ? "on" : nil }
   profile = respond_to?(:profile_path) ? profile_path : edit_user_registration_path
@@ -58,7 +58,7 @@
 
         <details class="tn-user">
           <summary>
-            <span class="tn-avatar"><%= name.to_s[0].to_s.upcase %></span>
+            <%= user_avatar(current_user, size: 32) %>
             <span class="tn-uname"><%= name %></span>
             <svg class="tn-caret" viewBox="0 0 12 8" width="10" height="7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m1 1 5 5 5-5"/></svg>
           </summary>

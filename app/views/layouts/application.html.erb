@@ -23,6 +23,8 @@
     <%= stylesheet_link_tag "navbar","favorites","site","rooms","profile","inquiries","events","chat_room","auth", "footer", "properties", "home", "landing", "data-turbo-track": "reload" %>
   </head>
    <%= render "shared/ai_assistant" if current_user && !current_user.vendor? %>
+   
+   <%= render "shared/mobile_nav" %>
   <body>
     <%= render "devise/shared/navbar" %>
 

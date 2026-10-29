@@ -20,7 +20,7 @@
     <span class="rmr-live"><i></i> Live</span>
 
     <div class="rmr-hero-text">
-      <h1>Welcome back, <span><%= current_user.email.split("@").first %></span> 👋</h1>
+      <h1>Welcome back, <span> <%= display_name(current_user) %></span> 👋</h1>
       <p>Every room here updates in real time — jump into one and the conversation is already moving.</p>
     </div>
 
