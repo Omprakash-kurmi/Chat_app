@@ -1,16 +1,16 @@
 <div class="message" data-user-id="<%= message.user_id %>">
   <div class="bubble">
     <span class="sender">
-      <% if message.user.avatar.attached? %>
-        <%= image_tag rails_storage_proxy_url(message.user.avatar.variant(resize_to_fill: [20, 20])), class: "sender-avatar" %>
-      <% else %>
-        <span class="sender-avatar sender-initial"><%= message.user.display_name.to_s.first.to_s.upcase %></span>
-      <% end %>
-      <%= message.user.display_name %>
+      <%= user_avatar(message.user, size: 20, extra_class: "sender-avatar") %>
+      <%= display_name(message.user) %>
     </span>
 
     <% if message.image.attached? %>
-      <%= image_tag rails_storage_proxy_url(message.image.variant(resize_to_limit: [320, 320])), class: "message-image", alt: "Photo" %>
+      <% if message.image.variable? %>
+        <%= image_tag rails_storage_proxy_url(message.image.variant(resize_to_limit: [320, 320])), class: "message-image", alt: "Photo" %>
+      <% else %>
+        <%= image_tag rails_storage_proxy_url(message.image), class: "message-image", alt: "Photo" %>
+      <% end %>
     <% end %>
 
     <% if message.content.present? %>
