@@ -1,19 +1,20 @@
-<% keys = property.facility_keys %>
+<% keys = property.respond_to?(:facility_keys) ? property.facility_keys : [] %>
 <% if keys.any? %>
-  <% content_for :head do %>
-    <%= stylesheet_link_tag "fc_facilities", "data-turbo-track": "reload" %>
-  <% end %>
-
+  <style>
+    .fcx-show{margin-top:18px!important;padding:18px 20px!important;background:#fff!important;border:1px solid #ece4f7!important;border-radius:18px!important;box-shadow:0 2px 10px rgba(80,30,140,.05)!important}
+    .fcx-show h3{margin:0 0 12px!important;font-size:17px!important;color:#1b1033!important}
+    .fcx-show .fcx-list{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+    .fcx-show .fcx-item{display:inline-flex!important;align-items:center!important;gap:6px!important;padding:7px 14px!important;border-radius:999px!important;background:#f6f0ff!important;color:#5b21b6!important;font-size:13px!important;font-weight:600!important}
+  </style>
   <section class="fcx-show">
     <h3>Facilities</h3>
-    <p>What this PG offers</p>
     <div class="fcx-list">
       <% keys.each do |key| %>
         <% label, icon = Property::PG_FACILITIES[key] %>
         <% if label %>
-          <div class="fcx-item"><b><%= icon %></b><%= label %></div>
+          <span class="fcx-item"><%= icon %> <%= label %></span>
         <% else %>
-          <div class="fcx-item fcx-item--extra"><b>✨</b><%= key %></div>
+          <span class="fcx-item"><%= key.to_s.humanize %></span>
         <% end %>
       <% end %>
     </div>
